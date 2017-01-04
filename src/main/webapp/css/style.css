@@ -1,0 +1,172 @@
+.loginDiv{
+		
+		width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+		border: 1px solid #a0a0a0;
+		padding: 20px;
+		border-radius: 6px;
+	
+}
+.uploadDiv{
+		width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+		border: 1px solid #a0a0a0;
+		padding: 20px;
+		border-radius: 6px;
+}
+.dataTables_wrapper{
+		width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		font-size: 13px;
+}
+
+.addUserFormDiv{
+	
+	width: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #a0a0a0;
+	padding: 20px;
+	border-radius: 6px;
+}
+
+#asnTable_wrapper input,
+#itemExpiryTable_wrapper input,
+#usersTable_wrapper input,
+#upcItemTable_wrapper input{
+	
+	padding: 5px;
+	border: 1px solid #a0a0a0;
+	border-radius: 4px;
+	
+}
+#asnTable, 
+#itemExpiryTable, 
+#usersTable,
+#upcItemTable{
+	border: none;
+}
+
+#asnTable, 
+#itemExpiryTable, 
+#usersTable,
+#upcItemTable,
+#orderTable,
+#itemReport,
+#asnList,
+#orderReport1{
+	
+	background-color: #fff;
+	border: 1px solid #a0a0a0;
+	
+}
+
+.rejected{
+		width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		font-size: 13px;
+}
+
+
+.menu{
+	background-color: #2F70A9;
+	padding: 10px;
+	
+}
+.menu a{
+	color: #fff;
+	margin: 10px;
+}
+.glyphicon-remove{
+	cursor: pointer;
+}
+
+#uploadASNDiv{
+	float: left;
+	margin-left: 230px;
+}
+#uploadUPCDiv{ 
+	float: right;
+	margin-right: 230px;
+}
+
+#uploadItemExpiryDiv{
+	float: left;
+	margin-left: 230px;
+}
+#uploadArchive{ 
+	float: center;
+	margin-right: 230px;
+}
+input[type='file']{
+	height: auto;
+}
+
+.dropdown{
+	display:inline-block;
+	cursor:pointer;
+}
+
+.dropdown-toggle{
+	
+}
+.home-wrapper{
+	margin-top:5%;
+	padding:30px;
+	color: #7b1111;
+	    text-align:center;
+	
+}
+
+.home-wrapper .top-buttons{
+	margin-bottom:70px;
+	    color: #7b1111;
+	    text-align:center;
+}
+.home-wrapper button{
+    width: 400px;
+    padding: 20px;
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+.home-wrapper button1{
+    width: 800px;
+    padding: 20px;
+    margin-bottom: 10px;
+    font-size: 30px;
+}
+.home-wrapper .left-div{
+	text-align:right;
+}
+.home-wrapper .right-div{
+	text-align:left;
+	 
+}
+.home-wrapper .center-div{
+	text-align:center;
+	
+}
+.home-wrapper .center-div button{width:830px}
+
+.selectdevice{
+	
+}
+.search-field button{
+	 
+}
+.search-field div{
+ padding:0
+}
+.entry:not(:first-of-type)
+{
+    margin-top: 10px;
+}
+
+.glyphicon
+{
+    font-size: 12px;
+}
