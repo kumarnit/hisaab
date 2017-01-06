@@ -2,7 +2,7 @@ package hisaab.util;
 
 public class Constants {
 	
-	public static boolean DEV_MODE = false;
+	public static boolean DEV_MODE = true;
 	
 	public static boolean RECORD_LOGS = true;
 	

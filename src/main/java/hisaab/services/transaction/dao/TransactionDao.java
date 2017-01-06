@@ -2840,11 +2840,16 @@ public class TransactionDao {
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
 		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
 		boolean updateResultFlag = false;
-		TransactionDoc transDoc = null;
-		query.or(
+		TransactionDoc transDoc = new TransactionDoc();
+		transDoc.setUser1(obr.getForUserId());
+		transDoc.setUser2(""+user.getUserId());
+		transDoc.setDocType(docType);
+		transDoc = TransactionDao.getTransactionDoc(transDoc);
+		/*query.or(
 				query.and(query.criteria("user1").equal(obr.getRequesterUserId()),query.criteria("user2").equal(obr.getForUserId())),
 				query.and(query.criteria("user1").equal(obr.getForUserId()),query.criteria("user2").equal(obr.getRequesterUserId()))
-				);
+				);*/
+		query.field("_id").equal(new ObjectId(transDoc.getIdString()));
 		query.filter("docType", docType);
 		if(!query.asList().isEmpty()){
 			transDoc = query.get();

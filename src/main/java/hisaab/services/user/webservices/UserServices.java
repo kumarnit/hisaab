@@ -883,7 +883,13 @@ public class UserServices {
 			    	result = responsebean;
 			    }
 			    else
-			    	result = ServiceResponse.getResponse(Constants.FAILURE, "Transaction Doc Doesn't exist");
+			    {
+			    	responsebean.setFriend(frnd);
+			    	responsebean.setStatus(Constants.SUCCESS_RESPONSE);
+			    	responsebean.setMsg("Transaction Doc Doesn't exist");
+			    	responsebean.setTransactionDoc(null);
+			    	result = responsebean;
+			    }
 			}
 			else
 				result = ServiceResponse.getResponse(Constants.FAILURE, "Associate Doesn't exist");

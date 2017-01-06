@@ -92,14 +92,16 @@ public class OpeningBalService {
 							}else{
 								result = ServiceResponse.getResponse(501, "Opening Balance Amount cannot be null or Zero.");
 								}
-						}else{
+						}else if(frnd.getFrndStatus() != 5){
 							if(TransactionDao.updateOpeningBalTransactionDoc(user, obrBean.getOpeningBalRequest(), frnd.getFrndStatus())){
 								obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 								 obrBean.setMsg("Updated the opening Bal.");
 								 result = obrBean;
 							}else{
-								ServiceResponse.getResponse(501, "Unable to add your request.");
+								result = ServiceResponse.getResponse(501, "Unable to add your request.");
 							}
+						}else{
+							result = ServiceResponse.getResponse(501, "User is Blocked.");
 						}
 						
 					}else{
