@@ -163,19 +163,28 @@ public class ContactHelper {
 	}
 
 	
-	public static List<FriendContact> getFriends(ContactList clist, long count){
+public static List<FriendContact> getFriends(ContactList clist, long count){
+		
+		HashMap<String, Contact> contactMap	 = 	new HashMap<String, Contact>();
+		for(Contact cont : clist.getContactList()){
+			contactMap.put(cont.getContactNo(), cont);
+		}
+		
 		List<String> contactNos = ContactHelper.getContactNoList(clist.getContactList());
 		List<String> userContactNos = UserDao.getContactNoListOfUsers();
 		List<String> tempContacts = contactNos;
+		List<String> unmanaged = contactNos; 
+		unmanaged.removeAll(userContactNos);
+		UserDao.addUnRegisteredUserInBulk(unmanaged,contactMap);
 		List<FriendContact> friends = new ArrayList<FriendContact>();
+		
+		userContactNos = UserDao.getContactNoListOfUsers();
 		tempContacts.retainAll(userContactNos);
+//		tempContacts.addAll(unmanaged);
 		if(!tempContacts.isEmpty()){
 			
 			HashMap<String, UserMaster> userMap	 = 	 UserDao.getUserListFronNumbers(tempContacts);
-			HashMap<String, Contact> contactMap	 = 	new HashMap<String, Contact>();
-			for(Contact cont : clist.getContactList()){
-				contactMap.put(cont.getContactNo(), cont);
-			}
+			
 			
 			
 			for(String number : tempContacts ){

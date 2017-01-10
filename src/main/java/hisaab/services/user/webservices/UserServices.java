@@ -156,6 +156,9 @@ public class UserServices {
 				UserRequest userReq = RequestDao.verifyUserCode(serverToken,contactNo, securityCode);
 				if(userReq != null){
 					UserMaster user = UserDao.userLogin(contactNo, serverToken, userReq.getCountryCode(),appVersion);
+					if(user != null && user.getUserId() > 0){
+							Constants.userMaster.put(""+user.getUserId(), user);
+						}
 					UserBean ubean = new UserBean();
 					ubean.setUser(user);
 					

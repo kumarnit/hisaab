@@ -32,7 +32,7 @@ public class PullServices {
 	@Path("/pull")
 	@GET
 	@Produces("application/json")
-	public Response pullUserData(@HeaderParam("authToken") String authToken, @HeaderParam("pullTime") long pullTime) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response pullUserData(@HeaderParam("authToken") String authToken,@HeaderParam("authId") String authId, @HeaderParam("pullTime") long pullTime) throws JsonGenerationException, JsonMappingException, IOException{
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", pullTime : "+pullTime;
 		
@@ -41,8 +41,21 @@ public class PullServices {
 		logModel.setUserToken(authToken);
 		
 		Object result = null;
-		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+ 		long epoch = System.currentTimeMillis();
+
+		long test1,test2;
+		test1 = System.currentTimeMillis();
+		System.out.println("##starttime : "+test1);
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
+		test2 = System.currentTimeMillis();
+		System.out.println("**EndTime : "+test2);
+		System.out.println("Difference :: "+(test2-test1));
 		PullBean pullBean = new PullBean();
 		if(user.getUserId()>0){
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());

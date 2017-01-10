@@ -39,6 +39,9 @@
 	<listener>
 	    <listener-class>hisaab.quartz.QuartzListener</listener-class>
 	  </listener>
+	<listener>
+		<listener-class>hisaab.util.Intializer</listener-class>
+	</listener>
 	 
 </web-app>
 

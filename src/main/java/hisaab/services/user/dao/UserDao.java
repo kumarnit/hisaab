@@ -806,20 +806,20 @@ public class UserDao {
 	}
 
 
-	public static FriendContact addUnRegisteredUserInBulk(UserMaster user1,
-			List<Contact> contactList) {
+	public static FriendContact addUnRegisteredUserInBulk(List<String> contactList, HashMap<String, Contact> contactMap) {
 		FriendContact friendResponse = null;
 		long epoch= System.currentTimeMillis();
 		
 		FriendContact fr = null;
-		FriendList frndlist = FriendsDao.getAssociatedUserDoc(user1);
-		for(Contact contact : contactList )
+//		FriendList frndlist = FriendsDao.getAssociatedUserDoc(user1);
+		for(String contact : contactList )
 		{
 			try
 			{
-				UserMaster user = UserDao.userLogin2(contact,TokenModal.generateToken(), Constants.NOT_REGISTERED_USER, 0);
-			    if(user.getUserId()>0){
-			    	fr = FriendsDao.getFriendForWeb(""+user.getUserId(), 0, user1);
+//				UserDao.test(contactMap.get(contact),Constants.NOT_REGISTERED_USER);
+				UserDao.userLogin2(contactMap.get(contact),TokenModal.generateToken(), Constants.NOT_REGISTERED_USER, 0);
+//			    if(user.getUserId()>0){
+			    	/*fr = FriendsDao.getFriendForWeb(""+user.getUserId(), 0, user1);
 					FriendContact frncon = new FriendContact();
 				    frncon.setContactName(contact.getName());
 				    frncon.setContactNo(contact.getContactNo());
@@ -847,9 +847,9 @@ public class UserDao {
 							}
 						}
 					
-					}
+					}*/
 
-			}
+//			}
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -858,4 +858,127 @@ public class UserDao {
 		
 		return friendResponse;
 	}
+	public static UserMaster getUserFromAuthToken1(String authToken,String userId) {
+		Session session = null;
+		Transaction tx = null;
+		UserMaster user = new UserMaster();
+		UserMaster user1 = new UserMaster();
+		user1 = Constants.userMaster.get(userId);
+		if(user1 != null && user1.getUserId() > 0){
+			if(user1.getAuthToken().equals(authToken)){
+				user = user1;
+			}
+			System.out.print(":*Hash Map*:");
+		}else{
+			System.out.print(":*DAta BAse*:");
+			try {
+				
+				session = HibernateUtil.getSessionFactory().openSession();
+				String hql = "from UserMaster where authToken = :authToken and delFlag = :delFlag";
+				Query query = session.createQuery(hql);
+				query.setParameter("authToken", authToken);
+				query.setParameter("delFlag", 0);
+				
+				if(query.list().size()>0){
+					user = (UserMaster) query.list().get(0);
+				}
+				
+			} catch (Exception e) {
+				System.out.println("Exception = " + e.getMessage());
+				if (tx != null)
+					tx.rollback();
+				e.printStackTrace();
+				
+			} finally {
+				session.close();
+			}
+	}
+		return user;
+	}
+	
+	public static void setUserMasterInHashMap() {
+		Session session = null;
+		Transaction tx = null;
+		String str = "";
+		
+		UserMaster useritr = null;
+		
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String hql = "from UserMaster where userType = :usertype and delFlag = :delFlag";
+			Query query = session.createQuery(hql);
+			query.setParameter("usertype", 0);
+			query.setParameter("delFlag", 0);
+			Iterator<UserMaster> itr = null;
+			if(query.list().size()>0){
+				itr = query.list().iterator();
+				while(itr.hasNext()){
+					useritr = itr.next();
+					Constants.userMaster.put(""+useritr.getUserId(), useritr);
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}
+		
+	}
+	public static void test(Contact contact, int userType) {
+		  Session session = null;
+		  Transaction tx = null;
+		  String str = "";
+
+		  
+		  UserMaster user = null;
+		  long epoch = System.currentTimeMillis();
+		  
+		  try {
+		   session = HibernateUtil.getSessionFactory().openSession();
+		   tx = session.beginTransaction();
+		    Query query = session.createSQLQuery("INSERT IGNORE INTO user_master (auth_token,contact_no,user_type,created_time) "
+		       + " VALUES (:token,:contact, :userType, :time)");
+		             query.setParameter("token",TokenModal.generateToken() );
+		             query.setParameter("contact", contact.getContactNo());
+		             query.setParameter("userType",userType);
+		             query.setParameter("time",epoch);
+		             
+		             int i= query.executeUpdate();
+		             System.out.println("res : "+i);
+		             if(i > 0){
+		              Query subquery = session.createSQLQuery("INSERT IGNORE INTO user_profile (contact_no,user_name,user_type,created_time,updated_time) "
+		        + " VALUES (:contact,:name,:userType, :time, :utime)");
+		               
+		               subquery.setParameter("contact", contact.getContactNo());
+		               subquery.setParameter("name", contact.getName());
+		               subquery.setParameter("userType",userType);
+		               subquery.setParameter("time",epoch);
+		               subquery.setParameter("utime",epoch);
+		               
+		               subquery.executeUpdate();
+		             }
+		/*    tx = session.beginTransaction();
+		    session.save(user);
+		    
+		    user.getUserProfile().setUser(user);
+		    session.save(user.getUserProfile());
+		    tx.commit();*/
+		             tx.commit();
+		   
+		  } catch (Exception e) {
+		   System.out.println("Exception = " + e.getMessage());
+		   if (tx != null)
+		    tx.rollback();
+		   e.printStackTrace();
+		   
+		  } finally {
+		   session.close();
+		  }
+//		  return user;
+		 }
 }

@@ -15,6 +15,8 @@ public class Constants {
 	
 	public static boolean RECORD_LOGS = true;
 	
+	public static boolean AUTH_USERID = false;
+	
 	public static String USER_IMAGES_SMALL = "/hisaab/user_images";
 	
 	public static String USER_IMAGES_LARGE = "/hisaab/user_images_large";
