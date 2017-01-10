@@ -1,8 +1,17 @@
 package hisaab.util;
 
+import hisaab.services.staff.modal.StaffUser;
+import hisaab.services.user.modal.UserMaster;
+
+import java.util.HashMap;
+
 public class Constants {
 	
 	public static boolean DEV_MODE = true;
+	
+	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
+		
+	public static HashMap<String,StaffUser> staffUser = new HashMap<String,StaffUser>();
 	
 	public static boolean RECORD_LOGS = true;
 	
@@ -153,6 +162,8 @@ public class Constants {
 	public static final int NOTIFICATION_SYSTEM_NOTIFICATION = 14;
 	
 	public static final int NOTIFICATION_BLOCK_USER = 15;
+	
+	public static final int NOTIFICATION_SERVER_MIGRATE = 16;
 	
 	/**
 	 * System update Notification 

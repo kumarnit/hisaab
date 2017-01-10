@@ -103,7 +103,17 @@ public class TransactionSql {
 	@Column(name="last_edited_by", length = 40)
 	private String  lastEditedBy = "";
 	
+	@Column(name="sr_no", length=20)
+	private long srNo;
+	 	
+	 	
+	public long getSrNo() {
+		return srNo;
+	}
 	
+	public void setSrNo(long srNo) {
+		this.srNo = srNo;
+	}
 	
 	public String getLastEditedBy() {
 		return lastEditedBy;

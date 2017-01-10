@@ -28,7 +28,7 @@ public class DeviceInfoService {
 			DeviceInfoBean deviceInfoBean){
 		UserMaster user = UserDao.getUserFromAuthToken(authToken);
 		Object result = null;
-		if(user != null){
+		if(user.getUserId() > 0){
 			
 			DeviceInfoDoc deviceInfodoc = DeviceInfoDao.getDeviceInfoDoc(user);
 			deviceInfodoc.setDevice(Arrays.asList(deviceInfoBean.getDeviceInfo()));
@@ -44,7 +44,7 @@ public class DeviceInfoService {
 			}else
 				result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "success");
 		}else
-			result = ServiceResponse.getResponse(401, "Invalid Server Token");
+			result = ServiceResponse.getResponse(401, "Invalid auth Token");
 		
 		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();

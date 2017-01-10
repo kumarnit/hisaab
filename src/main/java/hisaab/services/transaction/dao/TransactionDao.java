@@ -1037,6 +1037,7 @@ public class TransactionDao {
 				trnsql.setReadFlag(transaction.getReadFlag());
 				trnsql.setModReqId(transaction.getModReqId());
 				trnsql.setLastEditedBy(transaction.getLastEditedBy());
+				trnsql.setSrNo(transaction.getSrNo());
 				session.save(trnsql);
 			
 			tx.commit();
@@ -1322,6 +1323,7 @@ public class TransactionDao {
 				trnsql.setReceivedTime(trnc.getReceivedTime());
 				trnsql.setLastEditedBy(trnc.getLastEditedBy());
 				trnsql.setModReqId(trnc.getModReqId());
+				trnsql.setSrNo(trnc.getSrNo());
 				session.save(trnsql);
 			}
 			tx.commit();
@@ -3070,6 +3072,7 @@ public class TransactionDao {
 				trnsql.setReadFlag(transaction.getReadFlag());
 				trnsql.setModReqId(transaction.getModReqId());
 				trnsql.setLastEditedBy(transaction.getLastEditedBy());
+				trnsql.setSrNo(transaction.getSrNo());
 				session.save(trnsql);
 			
 			tx.commit();

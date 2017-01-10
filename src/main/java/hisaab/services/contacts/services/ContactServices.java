@@ -74,7 +74,7 @@ public class ContactServices {
 			}
 			
 
-			System.out.println("==> "+clist.getContactList().get(0).getName());
+//			System.out.println("==> "+clist.getContactList().get(0).getName());
 
 			if(!clist.getContactList().isEmpty()){
 				ContactsDao.addContacts(clist);

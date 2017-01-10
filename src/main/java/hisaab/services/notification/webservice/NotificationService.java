@@ -74,7 +74,7 @@ public class NotificationService {
 	public Response servermigrateSystemNotification(ServerMigrateNotification sermigrate ){
 		Object result = null;
 		try{
-			sermigrate.setNotificationType(Constants.NOTIFICATION_SYSTEM_NOTIFICATION);
+			sermigrate.setNotificationType(Constants.NOTIFICATION_SERVER_MIGRATE);
 			NotificationHelper.buildAndSendServerMigrateSystemNotification(sermigrate,"Server Migrate");
 //			String newToken = RequestDao.addNewUserRequest();
 //			result =  "{ " + "\"status\" : 200, " +  "\"serverToken\" : \""+newToken+ "\", \"msg\": \"New token\"}";

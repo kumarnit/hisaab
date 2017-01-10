@@ -41,7 +41,7 @@ public class HibernateUtil {
 				
 //				config.setProperty("hibernate.connection.url","jdbc:mysql://192.168.0.21:3306/productionwebapp");
 				config.setProperty("hibernate.connection.username", "root");
-				config.setProperty("hibernate.connection.password", "admin");
+				config.setProperty("hibernate.connection.password", "");
 				
 				/*config.setProperty("hibernate.connection.url","jdbc:mysql://139.59.26.175:3306/hisaab");
 				

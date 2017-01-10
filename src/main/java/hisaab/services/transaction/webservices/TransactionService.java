@@ -125,6 +125,7 @@ public class TransactionService {
 							t.setUpdatedTime(epoch);
 							t.setCreatedBy(""+user.getUserId());
 							t.setSyncFlag(0);
+							t.setReadStatus(0);
 						}
 						transDoc.setUpdatedTime(epoch);
 						transDoc.setIdCount(lastCount);
