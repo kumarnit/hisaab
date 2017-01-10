@@ -193,12 +193,14 @@ public class ContactServices {
 			         ContactListBean contactListBean ){
 		long epoch = System.currentTimeMillis();
 		Object result = null;
+		long test1,test2;
+		test1 = System.currentTimeMillis();
 		Calendar cal = Calendar.getInstance();
 		try{
 
 		UserMaster user = UserDao.getUserFromAuthToken(authToken);
 		
-		System.out.println(authToken+" in contact service called "+cal.getTime()+ " ----"+cal.getTimeInMillis());
+		System.out.println(authToken+" in contact service called "+test1);
 		if(user.getUserId()>0){
 			
 			
@@ -225,16 +227,16 @@ public class ContactServices {
 			}
 			
 
-			System.out.println("==> "+clist.getContactList().get(0).getName());
+//			System.out.println("==> "+clist.getContactList().get(0).getName());
 
 			if(!clist.getContactList().isEmpty()){
 				ContactsDao.addContacts(clist);
-				for(Contact contact24 : clist.getContactList()){
+				/*for(Contact contact24 : clist.getContactList()){
 					FriendContact friendunmanged = UserDao.addUnRegisteredUser(user, contact24);
 					if(friendunmanged != null){
 						unmangedFriend.add(friendunmanged);
 					}
-				}
+				}*/
 				FriendList frndList = FriendsDao.getAssociatedUserDoc(user);
 				
 				if(frndList.getFriends().isEmpty()){
@@ -287,7 +289,9 @@ public class ContactServices {
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		
-		System.out.println(authToken+"  contact service finished "+cal.getTime()+ " ----"+cal.getTimeInMillis());
+		test2 = System.currentTimeMillis();
+		System.out.println(authToken+"  contact service finished :"+test2);
+		System.out.println("!! Difference : "+(test2-test1));
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

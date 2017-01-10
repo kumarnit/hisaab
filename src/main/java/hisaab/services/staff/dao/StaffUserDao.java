@@ -3,6 +3,7 @@ package hisaab.services.staff.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -1021,5 +1022,77 @@ public class StaffUserDao {
 			session.close();
 		}
 		return staffIds;
+	}
+	
+	public static void setStaffUserInHashMap() {
+		Session session = null;
+		Transaction tx = null;
+		String str = "";
+		
+		StaffUser staffUser = null;
+		
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String hql = "from StaffUser where ownerId > :ownerid and delFlag = :delFlag";
+			Query query = session.createQuery(hql);
+			query.setParameter("ownerid", Long.parseLong("0"));
+			query.setParameter("delFlag", 0);
+			Iterator<StaffUser> itr = null;
+			if(query.list().size()>0){
+				itr = query.list().iterator();
+				while(itr.hasNext()){
+					staffUser = itr.next();
+					Constants.staffUser.put(staffUser.getStaffId(), staffUser);
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}
+		
+	}
+	
+	public static StaffUser getStaffUserFromAuthToken1(String authToken,String userId) {
+		Session session = null;
+		Transaction tx = null;
+		StaffUser user = new StaffUser();
+		StaffUser user1 = new StaffUser();
+		user1 = Constants.staffUser.get(userId);
+		if(user1 != null && user1.getStaffId().equals("")){
+			if(user1.getAuthToken().equals(authToken)){
+				user = user1;
+			}
+			System.out.print(":*Hash Map*:");
+		}else{
+			System.out.print(":*DAta BAse*:");
+			try {
+				
+				session = HibernateUtil.getSessionFactory().openSession();
+				String hql = "from StaffUser where authToken = :authToken and delFlag = :delFlag";
+				Query query = session.createQuery(hql);
+				query.setParameter("authToken", authToken);
+				query.setParameter("delFlag", 0);
+				
+				if(query.list().size()>0){
+					user = (StaffUser) query.list().get(0);
+				}
+				
+			} catch (Exception e) {
+				System.out.println("Exception = " + e.getMessage());
+				if (tx != null)
+					tx.rollback();
+				e.printStackTrace();
+				
+			} finally {
+				session.close();
+			}
+	}
+		return user;
 	}
 }

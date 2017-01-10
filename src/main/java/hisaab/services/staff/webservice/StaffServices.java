@@ -73,6 +73,9 @@ public class StaffServices {
 			if(st != null){
 				if(status == Constants.STAFFUSER_REQ_ACCEPTED){
 					StaffUser user = StaffUserDao.staffUserLogin(st,contact, TokenModal.generateToken(), Constants.STAFF_USER, st.getOwnerId(),status);
+					if(user != null)
+						Constants.staffUser.put(user.getStaffId(), user);
+					
 					/**
 					 * ADding staff to contact and friendcontacts
 					 * */
