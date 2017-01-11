@@ -142,6 +142,7 @@ public class ContactHelper {
 						if(pnum != null){
 							conta.setContactNo(pnum.getNationalNumber()+"");
 							conta.setName(contact.getName());
+							conta.setCountryCode(""+pnum.getCountryCode());
 							cont.add(conta);
 						}
 						
@@ -170,10 +171,12 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 			contactMap.put(cont.getContactNo(), cont);
 		}
 		
-		List<String> contactNos = ContactHelper.getContactNoList(clist.getContactList());
+		ArrayList<String> contactNos = (ArrayList<String>) ContactHelper.getContactNoList(clist.getContactList());
 		List<String> userContactNos = UserDao.getContactNoListOfUsers();
-		List<String> tempContacts = contactNos;
-		List<String> unmanaged = contactNos; 
+		ArrayList<String> tempContacts = (ArrayList<String>) contactNos.clone();
+//		List<String> tempContacts = contactNos.;
+//		List<String> unmanaged = contactNos; 
+		ArrayList<String> unmanaged = (ArrayList<String>) contactNos.clone();
 		unmanaged.removeAll(userContactNos);
 		UserDao.addUnRegisteredUserInBulk(unmanaged,contactMap);
 		List<FriendContact> friends = new ArrayList<FriendContact>();
@@ -196,6 +199,7 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 				frndc.setContactName(cont.getName());
 				frndc.setCreatedTime(System.currentTimeMillis());
 				frndc.setUpdatedTime(System.currentTimeMillis());
+				frndc.setFrndStatus(usr.getUserType());
 				frndc.setContactNo(number);
 				frndc.setFrndId(""+usr.getUserId());
 				friends.add(frndc);

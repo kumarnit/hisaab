@@ -56,8 +56,8 @@ public enum MongoResource {
 				db = mongoClient.getDB( "hisaab" );
 				System.out.println("db....");
 				
-*//***for digital ocean
- * **//*
+//***for digital ocean
+//*
 				String pass = "tacktile2014";
 				 char[] password = pass.toCharArray();
 				
@@ -78,6 +78,7 @@ public enum MongoResource {
 				
 
 				this.db = db;
+
 	*/
 				
 //				mongoConnection = new MongoConnection(mongoClient, db);

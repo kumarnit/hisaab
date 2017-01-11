@@ -153,12 +153,19 @@ public class StaffServices {
 	@PUT
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response updatePush(@HeaderParam("authToken") String authToken, StaffUserBean userBean){
+	public Response updatePush(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId, StaffUserBean userBean){
 		
 		Object result = null;
+		StaffUser user = null;
 		long epoch = System.currentTimeMillis();
 		try {
-				StaffUser user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+				if(Constants.AUTH_USERID){
+					user = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+				}
+				else{
+					user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+				}
 				
 				long userId = user.getsId();
 				
@@ -197,12 +204,18 @@ public class StaffServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("/update/profile")
-	public Response updateStaffProfile(@HeaderParam("authToken") String authToken, StaffUserBean userBean){
+	public Response updateStaffProfile(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId,StaffUserBean userBean){
 		
 		Object result = null;
-		
+		StaffUser requestingUser =null;
 		try{
-			StaffUser requestingUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+			if(Constants.AUTH_USERID){
+				requestingUser = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				requestingUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+			}
 			if(requestingUser.getsId()>0){
 				userBean.getStaffUser().getStaffProfile().setsId(requestingUser.getsId());
 				if(StaffProfile.validateProfileUpdate(userBean.getStaffUser().getStaffProfile())){
@@ -238,8 +251,15 @@ public class StaffServices {
 	@Path("/leave/owner/{ownerId}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response removeStaff(@HeaderParam("authToken") String authToken, @PathParam("ownerId") long ownerId ){
-		StaffUser requestingUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+	public Response removeStaff(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId,@PathParam("ownerId") long ownerId ){
+		StaffUser requestingUser = null;
+		if(Constants.AUTH_USERID){
+			requestingUser = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			requestingUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
 		Object result = null;
 		
 		try{
