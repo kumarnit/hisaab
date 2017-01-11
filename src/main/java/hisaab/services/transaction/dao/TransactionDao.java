@@ -2843,7 +2843,7 @@ public class TransactionDao {
 		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
 		boolean updateResultFlag = false;
 		TransactionDoc transDoc = new TransactionDoc();
-		transDoc.setUser1(obr.getForUserId());
+		transDoc.setUser1(obr.getRequesterUserId());
 		transDoc.setUser2(""+user.getUserId());
 		transDoc.setDocType(docType);
 		transDoc = TransactionDao.getTransactionDoc(transDoc);

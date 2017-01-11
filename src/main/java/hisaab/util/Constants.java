@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Constants {
 	
-	public static boolean DEV_MODE = true;
+	public static boolean DEV_MODE = false;
 	
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		
