@@ -206,7 +206,24 @@ public class Constants {
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 
 	
+	
+	/***
+	 * Mongo Creds
+	 ***/
+	public static final String MONGO_URL = "139.59.26.175";
 
+	public static final String MONGO_USER = "tacktile";
+	
+	public static final String MONGO_PASS = "tacktile2014";
 	
 	
+	/***
+	 * MYSQL Creds
+	 ***/	
+	public static final String MYSQL_URL = "jdbc:mysql://139.59.26.175:3306/hisaab";
+
+	public static final String MYSQL_USER = "hisaab2";
+	
+	public static final String MYSQL_PASS = "hisaab";
+
 }

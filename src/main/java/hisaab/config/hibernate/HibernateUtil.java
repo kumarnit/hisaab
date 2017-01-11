@@ -50,9 +50,9 @@ public class HibernateUtil {
 				config.setProperty("hibernate.connection.password", "hisaab");*/
 
 			}else{
-				config.setProperty("hibernate.connection.url","jdbc:mysql://"+System.getenv("OPENSHIFT_MYSQL_DB_HOST")+":"+System.getenv("OPENSHIFT_MYSQL_DB_PORT")+"/hisaab?amp;amp;autoReconnect=true;characterEncoding=utf8");
-				config.setProperty("hibernate.connection.username", "adminElzmZfd");
-				config.setProperty("hibernate.connection.password", "kN9Gw67Jz5KV");
+				config.setProperty("hibernate.connection.url",Constants.MYSQL_URL+"?amp;amp;autoReconnect=true;characterEncoding=utf8");
+				config.setProperty("hibernate.connection.username", Constants.MYSQL_USER);
+				config.setProperty("hibernate.connection.password", Constants.MYSQL_PASS);
 				
 			}
 
