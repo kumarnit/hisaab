@@ -37,8 +37,15 @@ public class UserImageServices {
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@Context ServletContext servletContext,
-			@HeaderParam("authToken") String authToken) {
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			@HeaderParam("authToken") String authToken,
+			@HeaderParam("authToken") String authId) {
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		Object result = null;
 		if (user.getUserId() > 0) {
 			String uploadedFileLocation = "";

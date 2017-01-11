@@ -41,7 +41,7 @@ public class OpeningBalService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response openingBalRequest(@HeaderParam("authToken") String authToken, 
-	 	         OpeningBalBean obrBean){
+	 	         @HeaderParam("authId") String authId, OpeningBalBean obrBean){
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -49,7 +49,6 @@ public class OpeningBalService {
 		try {
 			req += mapper.writeValueAsString(obrBean);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String res = "";
@@ -57,7 +56,13 @@ public class OpeningBalService {
 		logModel.setUserToken(authToken);
 		
 		
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 //			 int i = OpeningBalHelper.validateOpeningBalRequest(obrBean.getOpeningBalRequest(), user);
@@ -145,7 +150,8 @@ public class OpeningBalService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response openingBalVerification(@HeaderParam("authToken") String authToken,
-				@PathParam("reqId") long reqId, @PathParam("response") int userResponse){
+				@PathParam("reqId") long reqId, @PathParam("response") int userResponse,
+				@HeaderParam("authId") String authId){
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -160,7 +166,14 @@ public class OpeningBalService {
 		
 		TransactionDoc transDoc = null;
 		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
+		
 //		TransactionDoc transDoc = null;
 		if(user.getUserId()>0){
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());

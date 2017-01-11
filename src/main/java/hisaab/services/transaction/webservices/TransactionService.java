@@ -61,7 +61,8 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addTransaction(@HeaderParam("authToken") String authToken, 
-	 	         TransactionBean transBean, @PathParam("userId") String uid ){
+	 	         TransactionBean transBean, @PathParam("userId") String uid,
+	 	         @HeaderParam("authId") String authId){
 		Object result = null;
 		List<Transaction> rejectedTransaction = null;
 		TransDocBean trnsDocBean = new TransDocBean();
@@ -81,7 +82,13 @@ public class TransactionService {
 			
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				FriendList frndList = FriendsDao.getAssociatedUserDoc(user);
@@ -195,12 +202,18 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response updateTransactionAsRead(@HeaderParam("authToken") String authToken,
-			     ReadBean rBean ){
+			    @HeaderParam("authId")String authId, ReadBean rBean ){
 		Object result = null;
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				if(TransactionDao.markTransactionsAsReadInSql(rBean.getTransIds(), user, 1)){
 					result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "transactions marked as read.");
@@ -224,13 +237,19 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response updateTransactionAsRead2(@HeaderParam("authToken") String authToken,
-				@PathParam("readStatus") int readStatus,
+				@HeaderParam("authId") String authId, @PathParam("readStatus") int readStatus,
 			     ReadBean rBean ){
 		Object result = null;
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				List<String> failed = new ArrayList<String>();
 				if(!rBean.getTransIds().isEmpty())
@@ -261,7 +280,7 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response disputeTransaction(@HeaderParam("authToken") String authToken, 
-	 	         TransactionDisputeBean transDispBean ){
+	 	        @HeaderParam("authId") String authId, TransactionDisputeBean transDispBean ){
 		Object result = null;
 		try{
 			ObjectMapper mapper = new ObjectMapper();
@@ -279,7 +298,13 @@ public class TransactionService {
 			TransDocBean tranbean = new TransDocBean();
 			TransactionDoc transDoc = null;
 			long epoch = System.currentTimeMillis();
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				if(ObjectId.isValid(transDispBean.getTransactionDocId()))
@@ -325,7 +350,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response deleteTransaction(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("transacDocId") String transacDocId, 
-	 	         @PathParam("transacId") String transacId){
+	 	         @PathParam("transacId") String transacId, 
+	 	         @HeaderParam("authId") String authId){
 		Object result = null;
 		try{
 			ObjectMapper mapper = new ObjectMapper();
@@ -341,7 +367,13 @@ public class TransactionService {
 			long epoch = System.currentTimeMillis();
 			System.out.println("transacId : "+transacId);
 			System.out.println("transacDocId : "+transacDocId);
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				if(transacDocId != null && transacId != null && ObjectId.isValid(transacDocId)){
@@ -404,12 +436,19 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addUnmanagedUserTransaction(@HeaderParam("authToken") String authToken, 
-	 	         TransactionBean transBean, @PathParam("userId") String uid ){
+	 	         TransactionBean transBean, @PathParam("userId") String uid,
+	 	         @HeaderParam("authId") String authId){
 		Object result = null;
 		try{
 		TransactionDoc transDoc = new TransactionDoc();
 		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			transDoc.setUser1(""+user.getUserId());
 			transDoc.setUser2(""+uid);
@@ -445,7 +484,7 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response updateTransactions(@HeaderParam("authToken") String authToken, 
-	 	         TransactionBean1 transBean){
+	 	         @HeaderParam("authId") String authId, TransactionBean1 transBean){
 		Object result = null;
 //		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -466,7 +505,13 @@ public class TransactionService {
 		TransDocBean  transBean1 = new TransDocBean();
 		TransactionDoc trnsDoc = null;
 		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			if(transBean.getTransactions().getTransactionDocId()!= null
@@ -526,7 +571,8 @@ public class TransactionService {
 				@HeaderParam("requestId") long reqId,
 	 	         @HeaderParam("transacDocId") String transacDocId, 
 	 	         @PathParam("transacId") String transacId, @PathParam("action") int action,
-	 	         @PathParam("response") int userResponse){
+	 	         @PathParam("response") int userResponse,
+	 	         @HeaderParam("authId") String authId){
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -540,7 +586,13 @@ public class TransactionService {
 		
 		TransactionDoc transDoc = null;
 		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 //		TransactionDoc transDoc = null;
 		if(user.getUserId()>0){
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
@@ -676,7 +728,7 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response updateMultipleTransactions(@HeaderParam("authToken") String authToken, 
-	 	         TransactionBean transBean){
+	 	         @HeaderParam("authId") String authId, TransactionBean transBean){
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -684,7 +736,6 @@ public class TransactionService {
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String res = "";
@@ -692,7 +743,13 @@ public class TransactionService {
 		logModel.setUserToken(authToken);
 		
 		
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user =null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			 TransactionDao.syncUpdate(transBean.getTransactions(),user);
@@ -760,12 +817,18 @@ public class TransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response getUpdateTransactionBackup(@HeaderParam("authToken") String authToken,
-			     ReadBean rBean ){
+			     @HeaderParam("authId") String authId, ReadBean rBean ){
 		Object result = null;
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
-			UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			UserMaster user = null;
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				if(rBean.getTransIds()!= null && !rBean.getTransIds().isEmpty()){
 					TransactionBean transBean = new TransactionBean();
@@ -794,7 +857,6 @@ public class TransactionService {
 			logModel.setRequestName("update transaction");
 			if(Constants.RECORD_LOGS)
 				LogHelper.addLogHelper(logModel);*/
-			
 		
 		}catch(Exception e){
 				System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
@@ -802,6 +864,4 @@ public class TransactionService {
 			}
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 		}
-
-
 }

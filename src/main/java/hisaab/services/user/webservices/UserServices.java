@@ -208,12 +208,20 @@ public class UserServices {
 	@PUT
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response updatePush(@HeaderParam("authToken") String authToken, UserBean userBean){
+	public Response updatePush(@HeaderParam("authToken") String authToken, UserBean userBean,
+			@HeaderParam("authId") String authId){
 		
 		Object result = null;
 		long epoch = System.currentTimeMillis();
 		try {
-				UserMaster user = UserDao.getUserFromAuthToken(authToken);
+				UserMaster user = null;
+				
+				if(Constants.AUTH_USERID){
+					user = UserDao.getUserFromAuthToken1(authToken,authId);
+				}
+				else{
+					user = UserDao.getUserFromAuthToken(authToken);
+				}
 				
 				long userId = user.getUserId();
 				String email = user.getEmail();
@@ -252,12 +260,19 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	@Path("/update")
-	public Response updateProfile(@HeaderParam("authToken") String authToken, UserBean userBean){
+	public Response updateProfile(@HeaderParam("authToken") String authToken, 
+			@HeaderParam("authId") String authId, UserBean userBean){
 		
 		Object result = null;
 		try{
 		
-			UserMaster requestingUser = UserDao.getUserFromAuthToken(authToken);
+			UserMaster requestingUser = null;
+			if(Constants.AUTH_USERID){
+				requestingUser = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				requestingUser = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(requestingUser.getUserId()>0){
 				userBean.getUser().getUserProfile().setUserId(requestingUser.getUserId());
 				if(UserProfile.validateProfileUpdate(userBean.getUser().getUserProfile())){
@@ -322,7 +337,8 @@ public class UserServices {
 	@Path("/request/userProfileList")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response requestUserProfileList(UserprofileBean userbean,@HeaderParam("authToken") String authToken ) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response requestUserProfileList(UserprofileBean userbean,
+			@HeaderParam("authToken") String authToken, @HeaderParam("authId")String authId ) {
 //		HashMap<Long,FriendContact> frndhash = new HashMap<Long,FriendContact>();
 		ObjectMapper mapper = new ObjectMapper();
 		Gson gson = new Gson();
@@ -338,7 +354,13 @@ public class UserServices {
 		HashMap<String,UserProfileFriendBean> hashmap =null;
 //		HashMap<Long,UserProfileFriendBean> hashmap1 = new HashMap<Long,UserProfileFriendBean>();
 //		HashMap<Long,UserProfileFriendBean> hashprofile = new HashMap<Long,UserProfileFriendBean>();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null ;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			if(!userbean.getUserlist().isEmpty()){
 				try{
@@ -477,8 +499,15 @@ public class UserServices {
 	@Path("/add/unmanaged")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response adNewuser(@HeaderParam("authToken") String authToken , Contact contact){
-		UserMaster user1=UserDao.getUserFromAuthToken(authToken);
+	public Response adNewuser(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId, Contact contact){
+		UserMaster user1= null;
+		if(Constants.AUTH_USERID){
+			user1 = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user1 = UserDao.getUserFromAuthToken(authToken);
+		}
 		Object result = null;
 		long epoch= System.currentTimeMillis();
 		try{
@@ -562,7 +591,8 @@ public class UserServices {
 	@Path("/add/staffuser")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response addStaff(@HeaderParam("authToken") String authToken , ContactBean contact){
+	public Response addStaff(@HeaderParam("authToken") String authToken , 
+			@HeaderParam("authId") String authId, ContactBean contact){
 		
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", contactBean : ";
@@ -578,7 +608,13 @@ public class UserServices {
 		
 		Object result = null;
 		try{
-			UserMaster user1=UserDao.getUserFromAuthToken(authToken);
+			UserMaster user1=null;
+			if(Constants.AUTH_USERID){
+				user1 = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user1 = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user1.getUserId()>0){
 			
 				List<String> contact1 = new ArrayList<String>();
@@ -665,8 +701,15 @@ public class UserServices {
 	@Path("/remove/staffuser/{staffId}")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response removeStaff(@HeaderParam("authToken") String authToken, @PathParam("staffId") String staffId ){
-		UserMaster user1=UserDao.getUserFromAuthToken(authToken);
+	public Response removeStaff(@HeaderParam("authToken") String authToken, @PathParam("staffId") String staffId,
+						@HeaderParam("authId") String authId){
+		UserMaster user1=null;
+		if(Constants.AUTH_USERID){
+			user1 = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user1 = UserDao.getUserFromAuthToken(authToken);
+		}
 		Object result = null;
 		
 		try{	
@@ -726,10 +769,16 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response cancelRequestForStaffUser(@HeaderParam("authToken") String authToken,
-													@PathParam("requestId") long reqId){
+			@HeaderParam("authId") String authId, @PathParam("requestId") long reqId){
 		Object result = null;
 		try{
-			UserMaster usermaster = UserDao.getUserFromAuthToken(authToken);
+			UserMaster usermaster = null;
+			if(Constants.AUTH_USERID){
+				usermaster = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				usermaster = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(usermaster != null){
 				    StaffUserRequest st =StaffUserDao.getStaffRequestsByReqId(reqId);
 					if(StaffUserDao.cancelStaffUserRequest(usermaster,reqId,4,st)){
@@ -752,11 +801,19 @@ public class UserServices {
 	@Path("/add/privateuser")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response addPrivateUser(@HeaderParam("authToken") String authToken , Contact contact){
+	public Response addPrivateUser(@HeaderParam("authToken") String authToken, 
+			@HeaderParam("authId") String authId, Contact contact){
 		Object result = null;
 		FriendList frndlist = null;
 		try{
-			UserMaster user=UserDao.getUserFromAuthToken(authToken);
+			UserMaster user=null;
+			
+			if(Constants.AUTH_USERID){
+				user = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				user = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(user.getUserId()>0){
 				try
 				{
@@ -798,11 +855,17 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response deletePrivateUser(@HeaderParam("authToken") String authToken,
-								@PathParam("privateUserId") String privateUserId){
+				@HeaderParam("authId") String authId, @PathParam("privateUserId") String privateUserId){
 
 		Object result = null;
 		try{
-			UserMaster usermaster = UserDao.getUserFromAuthToken(authToken);
+			UserMaster usermaster = null;
+			if(Constants.AUTH_USERID){
+				usermaster = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				usermaster = UserDao.getUserFromAuthToken(authToken);
+			}
 			if(usermaster != null){
 					if(PrivateUserDao.getPrivateUserById(privateUserId,usermaster)){
 						if(PrivateUserDao.deletePrivateUser(privateUserId,usermaster))
@@ -863,11 +926,19 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response getTansactionDocAndAssociateFriend(@PathParam("associateId") String associateId,
-			@HeaderParam("authToken") String authToken){
+			@HeaderParam("authToken") String authToken, @HeaderParam("authId") String authId){
 		TransactionDoc transDoc = null;
 		Object result = null;
 		try{
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
+		
 		TransactionDocFriendBean responsebean = new TransactionDocFriendBean();
 		if(user.getUserId()>0)
 		{   

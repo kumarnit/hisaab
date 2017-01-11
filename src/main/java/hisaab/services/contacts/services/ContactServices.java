@@ -44,13 +44,21 @@ public class ContactServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addContactList(@HeaderParam("authToken") String authToken, 
-			         ContactListBean contactListBean ){
+			       @HeaderParam("authId") String authId,  ContactListBean contactListBean ){
 		long epoch = System.currentTimeMillis();
 		Object result = null;
 
 		try{
 
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
+		
 		if(user.getUserId()>0){
 			ContactList clist = ContactsDao.getContactsDocForUser(user);
 			clist.setContactList(ContactHelper.validateContactNoList2(contactListBean.getContactList()));
@@ -135,13 +143,22 @@ public class ContactServices {
 	@Path("/get/frnds")
 	@Consumes("application/json")
 	@Produces("application/json")
-	public Response getFriendList(@HeaderParam("authToken") String authToken) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response getFriendList(@HeaderParam("authToken") String authToken,
+				@HeaderParam("authId") String authId) {
 
 				    Object result = null;
 				    try{
 					    String userId;
 					    FriendListBean frndbean=new FriendListBean();
-					    UserMaster user = UserDao.getUserFromAuthToken(authToken);
+					    
+					    UserMaster user = null;
+					    
+					    if(Constants.AUTH_USERID){
+							user = UserDao.getUserFromAuthToken1(authToken,authId);
+						}
+						else{
+							user = UserDao.getUserFromAuthToken(authToken);
+						}
 					    if(user.getUserId()>0){
 						    userId=""+user.getUserId();
 						    List<FriendContact> frnd=ContactsDao.getFriendListbyUserId(userId);
@@ -165,11 +182,18 @@ public class ContactServices {
 	@Produces("application/json")
 	@Consumes("application/json")
 	
-	public Response updateFriend(@HeaderParam("authToken") String authToken,FriendListBean friendlistbean) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response updateFriend(@HeaderParam("authToken") String authToken,FriendListBean friendlistbean,
+					@HeaderParam("authId") String authId) {
 					List<FriendContact> frndcont;
 					Object result=null;
 					try{
-						UserMaster user = UserDao.getUserFromAuthToken(authToken);
+						UserMaster user = null;
+						if(Constants.AUTH_USERID){
+							user = UserDao.getUserFromAuthToken1(authToken,authId);
+						}
+						else{
+							user = UserDao.getUserFromAuthToken(authToken);
+						}
 						if (user.getUserId()>0)
 						{
 							 frndcont= friendlistbean.getFriends();
@@ -190,7 +214,7 @@ public class ContactServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addContactListtest(@HeaderParam("authToken") String authToken, 
-			         ContactListBean contactListBean ){
+			      @HeaderParam("authId") String authId, ContactListBean contactListBean ){
 		long epoch = System.currentTimeMillis();
 		Object result = null;
 		long test1,test2;
@@ -198,7 +222,15 @@ public class ContactServices {
 		Calendar cal = Calendar.getInstance();
 		try{
 
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			
+		UserMaster user = null;
+		
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		
 		System.out.println(authToken+" in contact service called "+test1);
 		if(user.getUserId()>0){

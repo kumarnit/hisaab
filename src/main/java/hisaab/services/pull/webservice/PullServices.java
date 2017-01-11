@@ -32,7 +32,8 @@ public class PullServices {
 	@Path("/pull")
 	@GET
 	@Produces("application/json")
-	public Response pullUserData(@HeaderParam("authToken") String authToken,@HeaderParam("authId") String authId, @HeaderParam("pullTime") long pullTime) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response pullUserData(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId, @HeaderParam("pullTime") long pullTime){
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", pullTime : "+pullTime;
 		
@@ -71,7 +72,11 @@ public class PullServices {
 				        res += ", No Of FriendList : "+pullBean.getFriendList().size();
 					}else{
 			result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid token");
-			res = mapper.writeValueAsString(result);
+			try {
+				res = mapper.writeValueAsString(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 
@@ -87,7 +92,8 @@ public class PullServices {
 	@Path("/pull/staff")
 	@GET
 	@Produces("application/json")
-	public Response pushTransactions(@HeaderParam("authToken") String authToken, @HeaderParam("pullTime") long pullTime) throws JsonGenerationException, JsonMappingException, IOException{
+	public Response pushTransactions(@HeaderParam("authToken") String authToken, 
+			@HeaderParam("pullTime") long pullTime, @HeaderParam("authId") String authId) {
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", pullTime : "+pullTime;
 		
@@ -97,7 +103,14 @@ public class PullServices {
 		
 		Object result = null;
 		long epoch = System.currentTimeMillis();
-		StaffUser user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		StaffUser user = null;
+		if(Constants.AUTH_USERID){
+			user = StaffUserDao.getStaffUserFromAuthToken1(authToken, authId);
+		}else{
+			user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
+		
+		
 		PullStaffBean pullBean = new PullStaffBean();
 		if(user.getsId()>0){
 				logModel.setUser(user.getStaffId()+"_"+user.getStaffProfile().getUserName());
@@ -113,7 +126,11 @@ public class PullServices {
 				        res += ", No Of FriendList : "+pullBean.getFriendList().size();
 					}else{
 						result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid token");
-						res = mapper.writeValueAsString(result);
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 		}
 		
 		logModel.setRequestData(req);
