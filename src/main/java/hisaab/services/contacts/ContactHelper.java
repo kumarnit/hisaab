@@ -325,7 +325,8 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 							frndsc.setCreatedTime(System.currentTimeMillis());
 							frndsc.setFrndId(""+user.getUserId());
 							frndsc.setId(frndlist.getIdCount()+1);
-							frndsc.setTransactionDocId(transDoc.getIdString());
+							if(transDoc!=null)
+								frndsc.setTransactionDocId(transDoc.getIdString());
 							frndsc.setFrndStatus(0);
 							frndlist.setFriends(Arrays.asList(frndsc));
 							frndlist.setIdCount(frndlist.getIdCount()+1);

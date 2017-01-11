@@ -85,6 +85,7 @@ public class OpeningBalService {
 										obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 										obrBean.setMsg("Added Request");
 										result = obrBean;
+										
 										}else{
 											result = ServiceResponse.getResponse(501, "AllReady have pending Request.");
 										}
@@ -97,6 +98,7 @@ public class OpeningBalService {
 							}else{
 								result = ServiceResponse.getResponse(501, "Opening Balance Amount cannot be null or Zero.");
 								}
+								
 						}else if(frnd.getFrndStatus() != 5){
 							if(TransactionDao.updateOpeningBalTransactionDoc(user, obrBean.getOpeningBalRequest(), frnd.getFrndStatus())){
 								obrBean.setStatus(Constants.SUCCESS_RESPONSE);
