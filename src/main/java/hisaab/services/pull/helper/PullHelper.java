@@ -31,7 +31,7 @@ import hisaab.util.Constants;
 
 public class PullHelper {
 	
-	public static PullBean getUserData(long pullTime, UserMaster user) throws JsonGenerationException, JsonMappingException, IOException{
+	public static PullBean getUserData(long pullTime, UserMaster user) {
 //		FriendContact frndCon = null;
 		List<Transaction> listtran = new ArrayList<Transaction>();
 //		HashMap<String,FriendContact> usr = new HashMap<String,FriendContact>();
@@ -74,7 +74,12 @@ public class PullHelper {
 		pullBean.setPrivateuser(PrivateUserDao.getPrivateUser(user, pullTime));
 		pullBean.setModificationRequest(ModificationRequestDao.pullModificationRequest(user,pullTime));
 		pullBean.setListOfDeletedStaffTransaction(DeletedStaffTransactionDao.pullDeletedTransactionId(""+user.getUserId(),pullTime,true));
-		System.out.println(mapper.writeValueAsString(pullBean.getUserIds()));
+		
+		try {
+			System.out.println(mapper.writeValueAsString(pullBean.getUserIds()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		pullBean.setUserProfileList(UserDao.pullUsersByUserIds(user,pullBean.getUserIds(),pullTime));
 		/**added staff transaction
 		 * */
@@ -97,7 +102,7 @@ public class PullHelper {
 	/**
 	 * pull data for staff users
 	 **/
-	public static PullStaffBean getUserDataForStaffUser(long pullTime, StaffUser user) throws JsonGenerationException, JsonMappingException, IOException{
+	public static PullStaffBean getUserDataForStaffUser(long pullTime, StaffUser user){
 		FriendContact frndCon = null;
 		
 		HashMap<String,FriendContact> usr = new HashMap<String,FriendContact>();
@@ -122,7 +127,12 @@ public class PullHelper {
 		}
 		pullBean.setListOfDeletedStaffTransaction(DeletedStaffTransactionDao.pullDeletedTransactionId(""+ownerUser.getUserId(),pullTime,false));
 		pullBean.setPrivateuser(PrivateUserDao.getPrivateUser(ownerUser, pullTime));
-		System.out.println(mapper.writeValueAsString(pullBean.getUserIds()));
+		try {
+			System.out.println(mapper.writeValueAsString(pullBean.getUserIds()));
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		} 
 		pullBean.setUserProfileList(UserDao.pullUsersByUserIds(ownerUser,pullBean.getUserIds(),pullTime));
 		
 		for (UserProfile uf : pullBean.getUserProfileList()){

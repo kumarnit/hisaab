@@ -25,8 +25,14 @@ public class DeviceInfoService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addDeviceInfo(@HeaderParam("authToken") String authToken,
-			DeviceInfoBean deviceInfoBean){
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+			@HeaderParam("authId") String authId, DeviceInfoBean deviceInfoBean){
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		Object result = null;
 		if(user.getUserId() > 0){
 			
