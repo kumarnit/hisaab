@@ -2,6 +2,7 @@ package hisaab.services.transaction.openingbalance.webservice;
 
 import hisaab.services.Logs.LogHelper;
 import hisaab.services.Logs.LogModel;
+import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
@@ -85,6 +86,7 @@ public class OpeningBalService {
 										obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 										obrBean.setMsg("Added Request");
 										result = obrBean;
+										ContactHelper.checkAndAddAssociate(frnd, user, obrBean.getOpeningBalRequest().getForUserId(), null);
 										}else{
 											result = ServiceResponse.getResponse(501, "AllReady have pending Request.");
 										}
