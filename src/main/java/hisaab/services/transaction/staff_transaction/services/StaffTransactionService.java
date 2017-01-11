@@ -48,7 +48,7 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addTransaction(@HeaderParam("authToken") String authToken,
-			TransactionBean transBean){
+			@HeaderParam("authId") String authId,TransactionBean transBean){
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<Transaction> rejected = new ArrayList<Transaction>();
@@ -67,7 +67,13 @@ public class StaffTransactionService {
 		Object result = null;
 		StaffTransactionDoc transDoc = new StaffTransactionDoc();
 		long epoch = System.currentTimeMillis();
-		StaffUser staffUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		StaffUser staffUser = null;
+		if(Constants.AUTH_USERID){
+			staffUser = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			staffUser = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
 		if(staffUser.getsId()>0){
 			logModel.setUser(staffUser.getStaffId()+"_"+staffUser.getStaffProfile().getUserName());
 			List<String> frnds = new ArrayList<String>();
@@ -149,7 +155,7 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response approveTransaction(@HeaderParam("authToken") String authToken, 
-	 	         ApprovalBean rBean){
+			@HeaderParam("authId") String authId, ApprovalBean rBean){
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -169,7 +175,13 @@ public class StaffTransactionService {
 		List<String> failed = new ArrayList<String>();
 		List<Transaction> transac = new ArrayList<Transaction>();
 		long epoch = System.currentTimeMillis();
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			boolean aFlag = false;
@@ -219,7 +231,7 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response updateMultipleTransactions(@HeaderParam("authToken") String authToken, 
-	 	         TransactionBean transBean){
+			@HeaderParam("authId") String authId, TransactionBean transBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transaction :";
@@ -234,7 +246,13 @@ public class StaffTransactionService {
 		logModel.setUserToken(authToken);
 		
 		Object result = null;
-		StaffUser user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		StaffUser user = null;
+		if(Constants.AUTH_USERID){
+			user = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
 		if(user.getsId()>0){
 			 logModel.setUser(user.getStaffId()+"_"+user.getStaffProfile().getUserName());
 			 StaffTransactionDao.update(transBean.getTransactions(),user);
@@ -267,7 +285,7 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response deleteTransactionByStaff(@HeaderParam("authToken") String authToken, 
-	 	         @HeaderParam("transactionId") String transactionId){
+			@HeaderParam("authId") String authId,@HeaderParam("transactionId") String transactionId){
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -278,7 +296,13 @@ public class StaffTransactionService {
 		logModel.setUserToken(authToken);
 		
 		Object result = null;
-		StaffUser user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		StaffUser user = null;
+		if(Constants.AUTH_USERID){
+			user = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
 		if(user.getsId()>0){
 			logModel.setUser(user.getStaffId()+"_"+user.getStaffProfile().getUserName());
 			
@@ -314,7 +338,8 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response deleteTransactionByUser(@HeaderParam("authToken") String authToken, 
-	 	         @HeaderParam("transactionId") String transactionId, @PathParam("staffId") String staffId){
+			@HeaderParam("authId") String authId, @HeaderParam("transactionId") String transactionId
+			, @PathParam("staffId") String staffId){
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -325,7 +350,13 @@ public class StaffTransactionService {
 		logModel.setUserToken(authToken);
 		
 		Object result = null;
-		UserMaster user = UserDao.getUserFromAuthToken(authToken);
+		UserMaster user = null;
+		if(Constants.AUTH_USERID){
+			user = UserDao.getUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = UserDao.getUserFromAuthToken(authToken);
+		}
 		if(user.getUserId()>0){
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			 
@@ -361,7 +392,7 @@ public class StaffTransactionService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response getStaffTransactionsById(@HeaderParam("authToken") String authToken, 
-	 	         ReadBean rBean){
+			@HeaderParam("authId") String authId,ReadBean rBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transaction :";
@@ -376,7 +407,13 @@ public class StaffTransactionService {
 		logModel.setUserToken(authToken);
 		
 		Object result = null;
-		StaffUser user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		StaffUser user = null;
+		if(Constants.AUTH_USERID){
+			user = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
+		}
+		else{
+			user = StaffUserDao.getStaffUserFromAuthToken(authToken);
+		}
 		if(user.getsId()>0){
 			 logModel.setUser(user.getStaffId()+"_"+user.getStaffProfile().getUserName());
 			 if(rBean.getTransIds() != null && !rBean.getTransIds().isEmpty()){

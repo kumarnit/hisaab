@@ -70,7 +70,7 @@ public enum MongoResource {
 						
 					}
 
-				
+			
 				
 				
 
@@ -78,22 +78,23 @@ public enum MongoResource {
 				
 
 				this.db = db;
-*/
+
+	*/
 				
 //				mongoConnection = new MongoConnection(mongoClient, db);
 			}else{
-				 mongoClient = new MongoClient(System.getenv("OPENSHIFT_MONGODB_DB_HOST"),Integer.parseInt(System.getenv("OPENSHIFT_MONGODB_DB_PORT")));
+				 mongoClient = new MongoClient(Constants.MONGO_URL,27017);
 				 db = mongoClient.getDB( "hisaab" );
-				 String pass = "1iNHMtL1mjVG";
+				 String pass = Constants.MONGO_PASS;
 				 char[] password = pass.toCharArray();
 				
 				 System.out.println(db);
-					if (db.authenticate("admin", password)) {
+					if (db.authenticate(Constants.MONGO_USER, password)) {
 						this.db = db;
 //						   System.out.println("Successfully logged in to MongoDB!");
 //						mongoConnection = new MongoConnection(mongoClient, db);
 					} else {
-						
+						System.err.println("Mongo db auth fail");
 					}
 				 
 			}
@@ -137,10 +138,10 @@ public enum MongoResource {
 		
 		if(Constants.DEV_MODE){
 //			mongoClient = new MongoClient( "localhost" , 27017 );
-			 String pass = "tacktile2014";
+			 String pass = "";
 			 char[] password = pass.toCharArray();
 			 
-			 getDB().authenticate("tacktile", password);
+			 getDB().authenticate("", password);
 				System.out.println(getMongoClientSeted()+getDB().getName());
 				if(getDB().isAuthenticated()){
 					System.out.println("yes data base is authenticate");
@@ -159,11 +160,11 @@ public enum MongoResource {
 //			 DB db = Mongo.connect(new DBAddress(System.getenv("OPENSHIFT_MONGODB_DB_HOST"),
 //					 Integer.parseInt(System.getenv("OPENSHIFT_MONGODB_DB_PORT")),"productionapp"));
 			DB db = this.db;
-			 String pass = "1iNHMtL1mjVG";
+			 String pass = Constants.MONGO_PASS;
 			 char[] password = pass.toCharArray();
 			 
 //			System.out.println(db);
-			if (this.db.authenticate("admin", password)) {
+			if (this.db.authenticate(Constants.MONGO_USER, password)) {
 				System.out.println("Successfully logged in to MongoDB!");
 //				mongoClient.getDB("productionapp").authenticate("admin", password);
 				
