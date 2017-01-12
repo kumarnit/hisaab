@@ -4,8 +4,13 @@ import hisaab.config.hibernate.HibernateUtil;
 import hisaab.config.morphia.MorphiaDatastoreTrasaction;
 import hisaab.services.contacts.modal.ContactList;
 import hisaab.services.contacts.modal.FriendList;
+import hisaab.services.device.modal.DeviceInfo;
+import hisaab.services.device.modal.DeviceInfoDoc;
+import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.transaction.modal.TransactionDoc;
+import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
 import hisaab.services.transaction.staff_transaction.modal.StaffTransactionDoc;
+import hisaab.services.user.dao.UserDao;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -35,6 +40,7 @@ public class DeleteDB {
 				 Query query10 = session.createSQLQuery("truncate table modification_request");
 				 Query query11 = session.createSQLQuery("truncate table del_staff_trans");
 				 Query query12 = session.createSQLQuery("truncate table user_staff_mapping");
+				 Query query13 = session.createSQLQuery("truncate table opening_bal_request");
 				 
 				 query.executeUpdate();
 				 query1.executeUpdate();
@@ -49,6 +55,7 @@ public class DeleteDB {
 				 query10.executeUpdate();
 				 query11.executeUpdate();
 				 query12.executeUpdate();
+				 query13.executeUpdate();
 				 tx.commit();
 		} catch (Exception e) {
 			System.out.println("Exception = " + e.getMessage());
@@ -67,6 +74,10 @@ public class DeleteDB {
 		datastore.delete(datastore2.createQuery(FriendList.class));
 		Datastore datastore3 = MorphiaDatastoreTrasaction.getDatastore(ContactList.class);
 		datastore.delete(datastore3.createQuery(ContactList.class));
+		Datastore datastore4 = MorphiaDatastoreTrasaction.getDatastore(DeviceInfoDoc.class);
+		datastore.delete(datastore4.createQuery(DeviceInfoDoc.class));
+		UserDao.setUserMasterInHashMap();
+    	StaffUserDao.setStaffUserInHashMap();
 		flag= true;
 	}catch(Exception e){
 		e.printStackTrace();

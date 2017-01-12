@@ -14,13 +14,11 @@ public  class SMSTest {
 		
 	
 	
-		String username = "HisaabApp";
-	
-		
-		String apikey = "qBIWRYSsvAndXIsbvw2v";
+
 	
 		// Replace with the destination mobile Number to which you want to send sms
 		String mobile = "8087611301";
+
 	
 		// Replace if you have your own Sender ID, else donot change
 		String senderid = "LENDEN";
@@ -30,7 +28,9 @@ public  class SMSTest {
 	
 		// For Plain Text, use "txt" ; for Unicode symbols or regional Languages like hindi/tamil/kannada use "uni"
 		String type="txt";
-	
+        
+		String username="HisaabApp";
+		String apikey = "";
 		//Prepare Url
 		URLConnection myURLConnection=null;
 		URL myURL=null;

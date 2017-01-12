@@ -192,6 +192,7 @@ public class StaffUserDao {
 					userB = null;
 					if(Constants.SMS_PACK_ACTIVE){
 						String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
+
 						String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 						SmsTable sms = new SmsTable();
 						sms.setContactNo(conta.getContactNo());

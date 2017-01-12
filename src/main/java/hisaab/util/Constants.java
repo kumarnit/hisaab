@@ -183,11 +183,10 @@ public class Constants {
 	
 	public static final String SMS_PROMO_USERNAME = "HisaabApp";
 	
-	public static final String SMS_PROMO_APIKEY = "9EXWRd0Xbcqu2E0gpAa8";
+	public static final String SMS_PROMO_APIKEY = "qBIWRYSsvAndXIsbvw2v";
 	
-	public static final String SMS_PROMO_SENDERID = "promo_id";
-	
-	
+	public static final String SMS_PROMO_SENDERID = "LENDEN";
+
 	public static final String SMS_TRANS_USERNAME = "HisaabAppTran";
 	
 	public static final String SMS_TRANS_APIKEY = "AkMhx409w0qaQSP14YSr";

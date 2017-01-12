@@ -103,8 +103,9 @@ public class OpeningBalService {
 								}
 								
 						}else if(frnd.getFrndStatus() != 5){
+							obrBean.getOpeningBalRequest().setRequesterUserId(user.getUserId()+"");
 							if(TransactionDao.updateOpeningBalTransactionDoc(user, obrBean.getOpeningBalRequest(), frnd.getFrndStatus())){
-								obrBean.getOpeningBalRequest().setRequesterUserId(user.getUserId()+"");
+								
 								obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 								 obrBean.setMsg("Updated the opening Bal.");
 								 result = obrBean;
