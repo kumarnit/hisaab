@@ -14,19 +14,19 @@ public  class SMSTest {
 		
 	
 	
-	String username = "ashutoshc";
+	String username = "HisaabApp";
 
 	// Replace with your API KEY (We have sent API KEY on activation email, also available on panel)
-	String apikey = "8H2EEC3ryQxpSAIj3uCT";
+	String apikey = "qBIWRYSsvAndXIsbvw2v";
 
 	// Replace with the destination mobile Number to which you want to send sms
-	String mobile = "+918087611301";
+	String mobile = "+918698574743";
 
 	// Replace if you have your own Sender ID, else donot change
-	String senderid = "757147";
+	String senderid = "MYTEXT";
 
 	// Replace with your Message content
-	String message = "Test sms API 667573";
+	String message = "Hi 8698574743, (9835354535) has invited you as a staff on Hisaab app.To be a staff join hisaab app.";
 
 	// For Plain Text, use "txt" ; for Unicode symbols or regional Languages like hindi/tamil/kannada use "uni"
 	String type="txt";
@@ -59,10 +59,10 @@ public  class SMSTest {
 	{
 	    //prepare connection
 	    myURL = new URL(mainUrl);
-	/*    myURLConnection = myURL.openConnection();
+	    myURLConnection = myURL.openConnection();
 	    myURLConnection.connect();
 	    reader= new BufferedReader(new InputStreamReader(myURLConnection.getInputStream()));
-	*/    //reading response 
+	    //reading response 
 	    String response;
 	    if(reader != null){
 	    while ((response = reader.readLine()) != null) 

@@ -275,32 +275,36 @@ public class TransactionDao {
 				
 				List<Long> userli = tempUser.getValueMsgBy();
 				if(userli.isEmpty()){
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+//					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
 					sms.setContactNo(tempUser.getContactNo());
-					sms.setMsgId(id);
+//					sms.setMsgId(id);
 					sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
 					sms.setSenderId(user.getUserId());
 					sms.setReceiverId(tempUser.getUserId());
 					sms.setStatus("");
+					System.out.println("FIRst Time sending");
 					SmsDao.addNewUserRequest(sms);
 					
-				}else
+				}else{
 					System.out.println(" --->"+userli.contains(user.getUserId()));
-				if( !userli.contains(user.getUserId())){
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+				
+				if( !tempUser.getValueMsgBy().contains(user.getUserId())){
+//					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
 					sms.setContactNo(tempUser.getContactNo());
-					sms.setMsgId(id);
+//					sms.setMsgId(id);
 					sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
 					sms.setSenderId(user.getUserId());
 					sms.setReceiverId(tempUser.getUserId());
 					sms.setStatus("");
+					System.out.println("SECond Time sending");
 					SmsDao.addNewUserRequest(sms);
+				}
 				}
 			}
 

@@ -101,7 +101,7 @@ public class RequestDao {
 				queryUp.executeUpdate();
 				tx.commit();
 				
-				if(!Constants.DEV_MODE && Constants.SMS_PACK_ACTIVE){
+				if(Constants.DEV_MODE && Constants.SMS_PACK_ACTIVE){
 					String strMsg = SMSHelper.generateTransactionalCodeMessage(userRequest.getSecurityCode());
 					SmsTable sms = new SmsTable();
 					sms.setContactNo(userRequest.getContactNo());

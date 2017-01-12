@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Constants {
 	
-	public static boolean DEV_MODE = false;
+	public static boolean DEV_MODE = true;
 	
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		
@@ -180,9 +180,9 @@ public class Constants {
 	
 	public static final String SMS_PROMO_USERNAME = "HisaabApp";
 	
-	public static final String SMS_PROMO_APIKEY = "9EXWRd0Xbcqu2E0gpAa8";
+	public static final String SMS_PROMO_APIKEY = "qBIWRYSsvAndXIsbvw2v";
 	
-	public static final String SMS_PROMO_SENDERID = "MYTEXT";
+	public static final String SMS_PROMO_SENDERID = "LENDEN";
 	
 	
 	public static final String SMS_TRANS_USERNAME = "HisaabAppTran";
@@ -201,7 +201,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = false; 
+	public static final boolean SMS_PACK_ACTIVE = true; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 
