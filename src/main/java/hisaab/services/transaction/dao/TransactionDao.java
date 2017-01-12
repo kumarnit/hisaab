@@ -275,7 +275,7 @@ public class TransactionDao {
 				
 				List<Long> userli = tempUser.getValueMsgBy();
 				if(userli.isEmpty()){
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
@@ -290,7 +290,7 @@ public class TransactionDao {
 				}else
 					System.out.println(" --->"+userli.contains(user.getUserId()));
 				if( !userli.contains(user.getUserId())){
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
@@ -2843,7 +2843,7 @@ public class TransactionDao {
 		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
 		boolean updateResultFlag = false;
 		TransactionDoc transDoc = new TransactionDoc();
-		transDoc.setUser1(obr.getForUserId());
+		transDoc.setUser1(obr.getRequesterUserId());
 		transDoc.setUser2(""+user.getUserId());
 		transDoc.setDocType(docType);
 		transDoc = TransactionDao.getTransactionDoc(transDoc);

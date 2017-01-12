@@ -113,19 +113,20 @@ public class UserHelper {
 					requesterTransDoc = TransactionDao.getTransactionDoc(requesterTransDoc);
 					
 					if(transDoc.getOpeningBalAmt() != 0){
-						if(transDoc.getOpeningBalBy().equals(user.getUserId()+"")){
-							opbr.setForUserId(tpfc.getFriendContact().getFrndId());
-							opbr.setRequesterUserId(user.getUserId()+"");
+						opbr = new OpeningBalRequest();
+						if(transDoc.getUser1().equals(user.getUserId()+"")){
+							opbr.setForUserId(user.getUserId()+"");
+							opbr.setRequesterUserId(tpfc.getFriendContact().getFrndId());
 							if(transDoc.getOpeningBalAmt() > 0){
-								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setPaymentStatus(Constants.TO_GIVE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
 							}else{
-								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setPaymentStatus(Constants.TO_TAKE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
 							}
 						}else{
-							opbr.setForUserId(tpfc.getFriendContact().getFrndId());
-							opbr.setRequesterUserId(user.getUserId()+"");
+							opbr.setForUserId(user.getUserId()+"");
+							opbr.setRequesterUserId(tpfc.getFriendContact().getFrndId());
 							if(transDoc.getOpeningBalAmt() > 0){
 								opbr.setPaymentStatus(Constants.TO_TAKE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
@@ -136,7 +137,10 @@ public class UserHelper {
 						}
 					}
 										
-					
+					if(opbr!= null){
+						TransactionDao.updateOpeningBalTransactionDoc(user, opbr, Constants.PRIVATE_USER);
+					}
+					opbr = null;
 					transferTransactionsToPrivateDoc(user, tpfc.getFriendContact().getFrndId(), 
 							transDoc.getTransactions(), requesterTransDoc);
 					tpfc.getFriendContact().setTransactionDocId(requesterTransDoc.getIdString());
@@ -151,7 +155,37 @@ public class UserHelper {
 					targetTransDoc = TransactionDao.getTransactionDoc(targetTransDoc);
 					UserMaster  fUser = new UserMaster();
 					fUser.setUserId(Long.parseLong(frndId));
-					transDoc = TransactionDao.getTransactionDoc(transDoc);
+//					transDoc = TransactionDao.getTransactionDoc(transDoc);
+					
+					if(transDoc.getOpeningBalAmt() != 0){
+						opbr = new OpeningBalRequest();
+						if(transDoc.getUser1().equals(fUser.getUserId()+"")){
+							opbr.setForUserId(fUser.getUserId()+"");
+							opbr.setRequesterUserId(rpfc.getFriendContact().getFrndId());
+							if(transDoc.getOpeningBalAmt() > 0){
+								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
+							}else{
+								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+							}
+						}else{
+							opbr.setForUserId(fUser.getUserId()+"");
+							opbr.setRequesterUserId(rpfc.getFriendContact().getFrndId());
+							if(transDoc.getOpeningBalAmt() > 0){
+								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
+							}else{
+								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+							}
+						}
+					}
+					
+					
+					if(opbr!= null){
+						TransactionDao.updateOpeningBalTransactionDoc(fUser, opbr, Constants.PRIVATE_USER);
+					}
 					
 					transferTransactionsToPrivateDoc(fUser, rpfc.getFriendContact().getFrndId(), 
 							transDoc.getTransactions(), targetTransDoc);

@@ -2,6 +2,7 @@ package hisaab.services.transaction.openingbalance.webservice;
 
 import hisaab.services.Logs.LogHelper;
 import hisaab.services.Logs.LogModel;
+import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
@@ -82,10 +83,12 @@ public class OpeningBalService {
 									if(obrBean.getOpeningBalRequest().getPaymentStatus() == 1
 											|| obrBean.getOpeningBalRequest().getPaymentStatus() == 2){
 										if(OpeningBalDao.addOpeningBalRequest(user, obrBean.getOpeningBalRequest())){
+											obrBean.getOpeningBalRequest().setRequesterUserId(user.getUserId()+"");
 										obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 										obrBean.setMsg("Added Request");
 										result = obrBean;
-										
+										ContactHelper.checkAndAddAssociate(frnd, user, obrBean.getOpeningBalRequest().getForUserId(), null);
+
 										}else{
 											result = ServiceResponse.getResponse(501, "AllReady have pending Request.");
 										}
@@ -101,6 +104,7 @@ public class OpeningBalService {
 								
 						}else if(frnd.getFrndStatus() != 5){
 							if(TransactionDao.updateOpeningBalTransactionDoc(user, obrBean.getOpeningBalRequest(), frnd.getFrndStatus())){
+								obrBean.getOpeningBalRequest().setRequesterUserId(user.getUserId()+"");
 								obrBean.setStatus(Constants.SUCCESS_RESPONSE);
 								 obrBean.setMsg("Updated the opening Bal.");
 								 result = obrBean;

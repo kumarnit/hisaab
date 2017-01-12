@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class Constants {
 	
-	public static boolean DEV_MODE = true;
+	public static boolean DEV_MODE = false;
 	
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		
@@ -16,6 +16,9 @@ public class Constants {
 	public static boolean RECORD_LOGS = true;
 	
 	public static boolean AUTH_USERID = false;
+	
+	
+	public static String USER_IMAGES_FOLDER = "/root";
 	
 	public static String USER_IMAGES_SMALL = "/hisaab/user_images";
 	
@@ -182,7 +185,7 @@ public class Constants {
 	
 	public static final String SMS_PROMO_APIKEY = "9EXWRd0Xbcqu2E0gpAa8";
 	
-	public static final String SMS_PROMO_SENDERID = "MYTEXT";
+	public static final String SMS_PROMO_SENDERID = "promo_id";
 	
 	
 	public static final String SMS_TRANS_USERNAME = "HisaabAppTran";
@@ -201,7 +204,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = false; 
+	public static final boolean SMS_PACK_ACTIVE = true; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 
