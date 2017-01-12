@@ -18,7 +18,7 @@ public class Constants {
 	public static boolean AUTH_USERID = false;
 	
 	
-	public static String USER_IMAGES_FOLDER = "/root";
+	public static String USER_IMAGES_FOLDER = "/home/nitish";
 	
 	public static String USER_IMAGES_SMALL = "/hisaab/user_images";
 	
@@ -204,7 +204,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = true; 
+	public static final boolean SMS_PACK_ACTIVE = false; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 

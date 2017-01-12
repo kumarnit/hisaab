@@ -257,8 +257,11 @@ public class UserHelper {
 						trans.setTo(prUser);
 					}else{
 						trans.setFrom(prUser);
-						trans.setCreatedBy(prUser);
 					}
+					
+					if(!trans.getCreatedBy().equals(usr.getUserId()+""))
+						trans.setCreatedBy(prUser);
+					
 					
 					trans.setUpdatedTime(epoch);
 					trans.setSrNo(count);
