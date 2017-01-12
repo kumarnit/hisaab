@@ -275,12 +275,13 @@ public class TransactionDao {
 				
 				List<Long> userli = tempUser.getValueMsgBy();
 				if(userli.isEmpty()){
-//					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
 					sms.setContactNo(tempUser.getContactNo());
-//					sms.setMsgId(id);
+					sms.setMsgId(id);
 					sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
 					sms.setSenderId(user.getUserId());
 					sms.setReceiverId(tempUser.getUserId());
@@ -292,12 +293,14 @@ public class TransactionDao {
 					System.out.println(" --->"+userli.contains(user.getUserId()));
 				
 				if( !tempUser.getValueMsgBy().contains(user.getUserId())){
-//					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, 1);
+
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
 					sms.setContactNo(tempUser.getContactNo());
-//					sms.setMsgId(id);
+					sms.setMsgId(id);
 					sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
 					sms.setSenderId(user.getUserId());
 					sms.setReceiverId(tempUser.getUserId());
@@ -1688,6 +1691,7 @@ public class TransactionDao {
 			op.disableValidation();
 			transaction.setAction(Constants.TRANSACTION_DELETE);
 			transaction.setModReqId(modReq.getId());
+			transaction.setUpdatedTime(epoch);
 			transaction.setLastEditedBy(""+user.getUserId());
 			transaction.setTransactionStatus(Constants.TRANS_NEED_TO_APROOVE);
 
@@ -2848,7 +2852,7 @@ public class TransactionDao {
 		boolean updateResultFlag = false;
 		TransactionDoc transDoc = new TransactionDoc();
 		transDoc.setUser1(obr.getRequesterUserId());
-		transDoc.setUser2(""+user.getUserId());
+		transDoc.setUser2(obr.getForUserId());
 		transDoc.setDocType(docType);
 		transDoc = TransactionDao.getTransactionDoc(transDoc);
 		/*query.or(

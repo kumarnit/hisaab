@@ -49,12 +49,12 @@ public class UserImageServices {
 		Object result = null;
 		if (user.getUserId() > 0) {
 			String uploadedFileLocation = "";
-//			if (Constants.DEV_MODE)
+			if (Constants.DEV_MODE)
 				uploadedFileLocation = servletContext.getRealPath("/");
-			/*else {
-				System.out.println(System.getenv("OPENSHIFT_DATA_DIR"));
-				uploadedFileLocation = System.getenv("OPENSHIFT_DATA_DIR");
-			}*/
+			else {
+				
+				uploadedFileLocation = servletContext.getRealPath("/");
+			}
 			System.out.println("context path :" + uploadedFileLocation);
 			String imgName = ImageHelper
 					.getNewImgName(fileDetail.getFileName());
@@ -109,12 +109,43 @@ public class UserImageServices {
 
 		String contxPath = "";
 		try {
-//			if(Constants.DEV_MODE){
+			if(Constants.DEV_MODE){
 				contxPath = servletContext.getRealPath("/");
-			/*}
+			}
 			else{
-				contxPath = System.getenv("OPENSHIFT_DATA_DIR");
-			}*/
+				contxPath = servletContext.getRealPath("/");
+			}
+			contentType = "image/png";
+			imageByteArray = ImageHelper.getImage(contxPath + Constants.USER_IMAGES_SMALL +"/"+ objectKey);
+			result = imageByteArray;
+		} catch (Exception e) {
+			contentType = "application/json";
+			result = ServiceResponse.getResponse(Constants.FAILURE,
+					"Something went wrong");
+		}
+
+		return Response.status(200).type(contentType).entity(result).build();
+	}
+
+	
+	@GET
+	@Path("/test/{objectKey}")
+	public Response downloadTest(@HeaderParam("authToken") String authToken,
+			@PathParam("objectKey") String objectKey,
+			@Context ServletContext servletContext) {
+		String directory = "";
+		Object result = null;
+		String contentType = "application/json";
+		byte[] imageByteArray = null;
+
+		String contxPath = "";
+		try {
+			if(Constants.DEV_MODE){
+				contxPath = servletContext.getRealPath("/");
+			}
+			else{
+				contxPath = "/home/nitish/hisaab";
+			}
 			contentType = "image/png";
 			imageByteArray = ImageHelper.getImage(contxPath + Constants.USER_IMAGES_SMALL +"/"+ objectKey);
 			result = imageByteArray;

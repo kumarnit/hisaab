@@ -129,7 +129,6 @@ public class StaffUserDao {
 							
 							if(Constants.SMS_PACK_ACTIVE){
 								String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
-								System.out.println("no :: "+conta.getContactNo()+"msg :: "+strMsg);
 								String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 								SmsTable sms = new SmsTable();
 								sms.setContactNo(conta.getContactNo());
@@ -193,8 +192,8 @@ public class StaffUserDao {
 					userB = null;
 					if(Constants.SMS_PACK_ACTIVE){
 						String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
-						System.out.println("no :: "+conta.getContactNo()+"msg :: "+strMsg);
-						String id1 =  SMSHelper.sendSms("+91"+conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+
+						String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 						SmsTable sms = new SmsTable();
 						sms.setContactNo(conta.getContactNo());
 						sms.setMsgId(id1);

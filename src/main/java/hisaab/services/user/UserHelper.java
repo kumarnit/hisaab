@@ -2,13 +2,11 @@ package hisaab.services.user;
 
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.List;
 
-
 import hisaab.services.contacts.dao.FriendsDao;
-
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.PrivateUserBean;
@@ -47,6 +45,8 @@ public class UserHelper {
 			if(transDoc.getUser1().equals(""+user.getUserId())){
 				frnd.setPaymentStatus(transDoc.getPaymentStatus());
 				frnd.setFrndId(transDoc.getUser2());
+				frnd.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+				frnd.setOpeningBalDate(transDoc.getOpeningBalDate());
 				try {
 					fuser = UserDao.getUserForWeb(Long.parseLong(transDoc.getUser2()));	
 				} catch (Exception e) {
@@ -54,6 +54,10 @@ public class UserHelper {
 				}
 			}
 			else{
+				
+				frnd.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+				frnd.setOpeningBalDate(transDoc.getOpeningBalDate());
+				
 				if(transDoc.getPaymentStatus() == Constants.TO_GIVE)
 					frnd.setPaymentStatus(Constants.TO_TAKE);
 				else
@@ -102,7 +106,11 @@ public class UserHelper {
 			TransDocBean transDocBean = TransactionDao.updateTransactionDocsAsBlocked(user, frndId);
 			if(transDocBean.getStatus() == 1){
 				System.out.println("IN transDocBean...");
-				TransactionDoc transDoc = transDocBean.getTransDoc(); 
+				 
+						
+				TransactionDoc transDoc = transDocBean.getTransDoc();
+				/*ArrayList<Transaction> oldTrans = (ArrayList<Transaction>) transDoc.getTransactions();
+				List<Transaction> oldTrans1 = (List<Transaction>) oldTrans.clone();*/
 				OpeningBalRequest opbr = null;	
 				if(tpfc!=null){
 					System.out.println("IN tpfc....");
@@ -113,19 +121,21 @@ public class UserHelper {
 					requesterTransDoc = TransactionDao.getTransactionDoc(requesterTransDoc);
 					
 					if(transDoc.getOpeningBalAmt() != 0){
-						if(transDoc.getOpeningBalBy().equals(user.getUserId()+"")){
-							opbr.setForUserId(tpfc.getFriendContact().getFrndId());
-							opbr.setRequesterUserId(user.getUserId()+"");
+						opbr = new OpeningBalRequest();
+						opbr.setOpeningBalDate(transDoc.getOpeningBalDate());
+						if(transDoc.getUser1().equals(user.getUserId()+"")){
+							opbr.setForUserId(user.getUserId()+"");
+							opbr.setRequesterUserId(tpfc.getFriendContact().getFrndId());
 							if(transDoc.getOpeningBalAmt() > 0){
-								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setPaymentStatus(Constants.TO_GIVE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
 							}else{
-								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setPaymentStatus(Constants.TO_TAKE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
 							}
 						}else{
-							opbr.setForUserId(tpfc.getFriendContact().getFrndId());
-							opbr.setRequesterUserId(user.getUserId()+"");
+							opbr.setForUserId(user.getUserId()+"");
+							opbr.setRequesterUserId(tpfc.getFriendContact().getFrndId());
 							if(transDoc.getOpeningBalAmt() > 0){
 								opbr.setPaymentStatus(Constants.TO_TAKE);
 								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
@@ -136,7 +146,10 @@ public class UserHelper {
 						}
 					}
 										
-					
+					if(opbr!= null){
+						TransactionDao.updateOpeningBalTransactionDoc(user, opbr, Constants.PRIVATE_USER);
+					}
+					opbr = null;
 					transferTransactionsToPrivateDoc(user, tpfc.getFriendContact().getFrndId(), 
 							transDoc.getTransactions(), requesterTransDoc);
 					tpfc.getFriendContact().setTransactionDocId(requesterTransDoc.getIdString());
@@ -152,6 +165,37 @@ public class UserHelper {
 					UserMaster  fUser = new UserMaster();
 					fUser.setUserId(Long.parseLong(frndId));
 					transDoc = TransactionDao.getTransactionDoc(transDoc);
+					
+					if(transDoc.getOpeningBalAmt() != 0){
+						opbr = new OpeningBalRequest();
+						opbr.setOpeningBalDate(transDoc.getOpeningBalDate());
+						if(transDoc.getUser1().equals(fUser.getUserId()+"")){
+							opbr.setForUserId(fUser.getUserId()+"");
+							opbr.setRequesterUserId(rpfc.getFriendContact().getFrndId());
+							if(transDoc.getOpeningBalAmt() > 0){
+								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
+							}else{
+								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+							}
+						}else{
+							opbr.setForUserId(fUser.getUserId()+"");
+							opbr.setRequesterUserId(rpfc.getFriendContact().getFrndId());
+							if(transDoc.getOpeningBalAmt() > 0){
+								opbr.setPaymentStatus(Constants.TO_TAKE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt());
+							}else{
+								opbr.setPaymentStatus(Constants.TO_GIVE);
+								opbr.setOpeningBalAmt(transDoc.getOpeningBalAmt()*(-1));
+							}
+						}
+					}
+					
+					
+					if(opbr!= null){
+						TransactionDao.updateOpeningBalTransactionDoc(fUser, opbr, Constants.PRIVATE_USER);
+					}
 					
 					transferTransactionsToPrivateDoc(fUser, rpfc.getFriendContact().getFrndId(), 
 							transDoc.getTransactions(), targetTransDoc);
