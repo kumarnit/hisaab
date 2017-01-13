@@ -103,7 +103,7 @@ public class TransactionService {
 						transDoc.setUser1(""+user.getUserId());
 						transDoc.setUser2(""+uid);
 						if(frnd.getFrndStatus() == Constants.NOT_REGISTERED_USER || 
-								frnd.getFrndStatus() == Constants.PRIVATE_USER)
+								frnd.getFrndStatus() == Constants.PRIVATE_USER || frnd.getFrndStatus() == Constants.STAFF_USER)
 							transDoc.setDocType(frnd.getFrndStatus());
 						transDoc = TransactionDao.getTransactionDoc(transDoc);
 						if(frnd.getFrndStatus() == 0)
