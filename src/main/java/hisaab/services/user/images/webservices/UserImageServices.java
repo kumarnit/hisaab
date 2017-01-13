@@ -53,7 +53,7 @@ public class UserImageServices {
 				uploadedFileLocation = servletContext.getRealPath("/");
 			else {
 				
-				uploadedFileLocation = servletContext.getRealPath("/");
+				uploadedFileLocation =Constants.USER_IMAGES_FOLDER;
 			}
 			System.out.println("context path :" + uploadedFileLocation);
 			String imgName = ImageHelper
@@ -113,7 +113,7 @@ public class UserImageServices {
 				contxPath = servletContext.getRealPath("/");
 			}
 			else{
-				contxPath = servletContext.getRealPath("/");
+				contxPath = Constants.USER_IMAGES_FOLDER;
 			}
 			contentType = "image/png";
 			imageByteArray = ImageHelper.getImage(contxPath + Constants.USER_IMAGES_SMALL +"/"+ objectKey);

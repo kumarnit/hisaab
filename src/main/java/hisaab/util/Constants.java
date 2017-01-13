@@ -18,7 +18,7 @@ public class Constants {
 	public static boolean AUTH_USERID = false;
 	
 	
-	public static String USER_IMAGES_FOLDER = "/root";
+	public static String USER_IMAGES_FOLDER = "/home/nitish";
 	
 	public static String USER_IMAGES_SMALL = "/hisaab/user_images";
 	

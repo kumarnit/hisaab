@@ -17,6 +17,7 @@ import hisaab.services.notification.NotificationHelper;
 import hisaab.services.notification.PushNotificationControler;
 import hisaab.services.notification.TransactionNotification;
 import hisaab.services.notification.TransactionReadNotification;
+import hisaab.services.pull.modal.ReadTransaction;
 import hisaab.services.sms.SMSHelper;
 import hisaab.services.sms.dao.SmsDao;
 import hisaab.services.sms.modal.SmsTable;
@@ -1260,9 +1261,10 @@ public class TransactionDao {
 	public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
 //		disputeTransaction(null, new UserMaster());
 		UserMaster user = new UserMaster();
-		user.setUserId(2);
-		user.setOwnerId(4);
-		deleteTransactionSqlOnBlock("1",user) ;
+		user.setUserId(4);
+		user.setOwnerId(0);
+		pullReadTransactions(user,0);
+//		deleteTransactionSqlOnBlock("1",user) ;
 //		calculateAmt("57ea2153438db5d9b3b6e1ef");
 //		getTransactionListForWeb(Arrays.asList("1_2_1", "2_3_1","1_2_2"));
 		
@@ -2430,12 +2432,14 @@ public class TransactionDao {
 					if(userResponse == Constants.TRANSACTION_READ){
 						op.set("transactions.$.readStatus", Constants.TRANSACTION_READ);
 						op.set("transactions.$.readTime", epoch);
+						
 					}
 					else{
 						op.set("transactions.$.readStatus", Constants.TRANSACTION_RECIEVED);
 						op.set("transactions.$.receivedTime", epoch);
+						op.set("transactions.$.readTime", epoch);
 					}
-					op.set("transactions.$.updatedTime", epoch);
+//					op.set("transactions.$.updatedTime", epoch);
 					op.enableValidation();
 		//			       datastore.getCollection(StaffTransactionDoc.class).updateMulti(query, op);
 					UpdateResults ur = datastore.update(query,op);
@@ -3254,6 +3258,63 @@ public class TransactionDao {
 				 return flist;
 	}
 
+	 
+	 
+	 public static List<ReadTransaction> pullReadTransactions(UserMaster user, long pullTime){
+		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		 List<ReadTransaction> flist = new ArrayList<ReadTransaction>();
+			//	 DBObject match2 = new BasicDBObject("$match", new BasicDBObject("_id",new ObjectId())); 
+				  
+				 BasicDBList idList = new BasicDBList();
+				 idList.add(new BasicDBObject("user1",""+user.getUserId()));
+				 idList.add(new BasicDBObject("user2",""+user.getUserId()));
+				 DBObject match2 = new BasicDBObject("$match", new BasicDBObject("$or", idList));
+				 ReadTransaction readTransaction = null; 
+				 
+				 
+				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("transactions.readTime",new BasicDBObject("$gt",pullTime)));
+				 
+				  DBObject gdb1 = new BasicDBObject();
+				  gdb1.put("_id","$_id");
+				  gdb1.put("transactions",new BasicDBObject("$push","$transactions"));
+				  DBObject group = new BasicDBObject("$group", gdb1);
+				  DBObject project = new BasicDBObject("$unwind", "$transactions");
+				  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match2,project,match1, group);
+				  System.out.println("i m in");
+				  try {
+				   ObjectMapper mapper = new ObjectMapper();
+				   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+				   List objList =  (List) output.getCommandResult().get("result") ;
+				   if(!objList.isEmpty()){
+			//		  System.out.println(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")));
+					  Gson gson = new Gson();
+					  
+					  for(BasicDBObject objArr : (List<BasicDBObject>) objList){
+						  List<Transaction> tempList =  gson.fromJson(gson.toJson(objArr.get("transactions")),List.class);
+
+						  Iterator<Transaction> iterator = tempList.iterator();
+						  while(iterator.hasNext()){
+							Transaction transaction = gson.fromJson(gson.toJson(iterator.next()), Transaction.class);
+							System.out.println(transaction.getTransactionId());
+							readTransaction = new ReadTransaction();
+							readTransaction.setReadStatus(transaction.getReadStatus());
+							readTransaction.setReadTime(transaction.getReadTime());
+							readTransaction.setReceivedTime(transaction.getReceivedTime());
+							readTransaction.setTransactionId(transaction.getTransactionId());
+							flist.add(readTransaction);
+						  }
+					  }
+			//		  flist = (List<Transaction>) mapper.readValue(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")), List.class);
+				   }
+				   
+				  } catch (Exception e) {
+				   e.printStackTrace();
+				  }
+				 
+				 return flist;
+	}
+
+	 
 
 	public static void deleteTransactionSqlOnBlock(String frndId,
 			UserMaster usermaster) {
