@@ -15,8 +15,7 @@ public class Constants {
 	
 	public static boolean RECORD_LOGS = true;
 	
-	public static boolean AUTH_USERID = false;
-	
+	public static boolean AUTH_USERID = true;
 	
 	public static String USER_IMAGES_FOLDER = "/home/nitish";
 	
@@ -203,7 +202,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = false; 
+	public static final boolean SMS_PACK_ACTIVE = true; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 

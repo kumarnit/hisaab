@@ -95,6 +95,7 @@ public class PullHelper {
 			  }
 		pullBean.setUserProfileList(userpro);*/
 		pullBean.setOpeningBalance(OpeningBalDao.pullOpeningBalance(user,pullTime));
+		pullBean.setUserIds(new ArrayList<String>());
 		return pullBean;
 	}
 	
