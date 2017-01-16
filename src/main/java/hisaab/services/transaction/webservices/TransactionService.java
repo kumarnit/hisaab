@@ -779,8 +779,8 @@ public class TransactionService {
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
-	@GET
-	@Path("/delete/Database")
+	/*@GET
+	@Path("/delete/DatabaseOnlyMe")
 	@Produces("application/json")
 	public Response DeleteDatabase(){
 		
@@ -809,7 +809,7 @@ public class TransactionService {
 			LogHelper.addLogHelper(logModel);
 		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
-	}
+	}*/
 	
 	
 	@POST

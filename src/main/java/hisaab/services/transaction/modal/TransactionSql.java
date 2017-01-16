@@ -39,7 +39,7 @@ public class TransactionSql {
 	@Column(name="type_", length=2)
 	private int type;
 	
-	@Column(name="comment_", length=100)
+	@Column(name="comment_",columnDefinition="TEXT")
 	private String comment;
 	
 	@Column(name="transaction_date", length=14)

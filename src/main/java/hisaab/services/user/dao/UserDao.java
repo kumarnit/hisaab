@@ -76,18 +76,20 @@ public class UserDao {
 					user.getUserProfile().setUserType(0);
 					tx = session.beginTransaction();
 					
-					String updateUser = "update UserMaster set userType = :type, updatedTime = :time where userId = :id";
+					String updateUser = "update UserMaster set userType = :type, updatedTime = :time, createdTime = :createtime where userId = :id";
 					Query upq = session.createQuery(updateUser);
 					upq.setParameter("type", 0);
 					upq.setParameter("time", epoch);
+					upq.setParameter("createtime", epoch);
 					upq.setParameter("id", user.getUserId());
 					upq.executeUpdate();
 					
-					updateUser = "update UserProfile set userType = :type, updatedTime = :time where userId = :id";
+					updateUser = "update UserProfile set userType = :type, updatedTime = :time, createdTime = :createtime where userId = :id";
 					upq = session.createQuery(updateUser);
 					upq.setParameter("type", 0);
 					upq.setParameter("time", epoch);
 					upq.setParameter("id", user.getUserId());
+					upq.setParameter("createtime", epoch);
 					upq.executeUpdate();
 		
 					tx.commit();
