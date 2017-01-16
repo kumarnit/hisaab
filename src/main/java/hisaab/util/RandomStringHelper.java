@@ -7,7 +7,8 @@ import java.util.Random;
 public class RandomStringHelper {
 
 	public static  String getCodeRandomString() {
-		String allowedChars = "abcdefghijklmnopqrstuvwxyz";
+//		String allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+		String allowedChars = "0123456789";
 		int length = 6;
 		if (allowedChars == null || allowedChars.trim().length() == 0
 				|| length <= 0) {
@@ -37,7 +38,7 @@ public class RandomStringHelper {
 	}
 	
 	public static void main(String [] r){
-		System.out.println(getCodeRandomAlphaNumeric());
+		System.out.println(getCodeRandomString());
 	}
 	
 }

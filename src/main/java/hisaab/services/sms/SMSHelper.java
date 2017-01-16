@@ -83,8 +83,7 @@ public class SMSHelper {
 	   
 	   String str = "";
 	   
-	   str = "Hi, \n"
-	   		+ "Welcome to LenaDena App. Your OTP :"+code+".\n"
+	   str = "Welcome to LenaDena App. Your OTP :"+code+" .\n"
 	   				+ "Your OTP will expire in 3 Hrs.";
 	   return str;
    }
@@ -93,10 +92,9 @@ public class SMSHelper {
 	   String name = "";
 	   if(user.getUserProfile().getUserName() != null)
 		   name = user.getUserProfile().getUserName();
-	   String str = "Hi "+contactNo+", \n"
-	   		+ " "+name+" ("+user.getContactNo()+") is adding transactions with you on LenaDena App."
+	   String str = name+" ("+user.getContactNo()+") has added transactions with you on LenaDena App. "
 	   				+ "To view the transactions join LenaDena App.\n"
-	   				+ "https://play.google.com/store/apps/details?id=tacktile.hisaab";
+	   				+ "http://tinyurl.com/lenadena";
 	   return str;
    }
    
@@ -104,10 +102,9 @@ public class SMSHelper {
 	   String name = "";
 	   if(user.getUserProfile().getUserName() != null)
 		   name = user.getUserProfile().getUserName();
-	   String str = "Hi "+contactNo+", \n"
-	   		+ " "+name+" ("+user.getContactNo()+") has invited you as a staff on LenaDena App."
-	   				+ "To be a staff join LenaDena App.\n"
-	   				+ "https://play.google.com/store/apps/details?id=tacktile.hisaab";
+	   String str = name+" ("+user.getContactNo()+") has invited you as a staff on LenaDena App. "
+	   				+ "To proceed please join LenaDena App.\n"
+	   				+ "http://tinyurl.com/lenadena";
 	   return str;
    }
 

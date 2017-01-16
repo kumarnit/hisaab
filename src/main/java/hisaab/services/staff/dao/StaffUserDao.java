@@ -129,12 +129,12 @@ public class StaffUserDao {
 							
 							if(Constants.SMS_PACK_ACTIVE){
 								String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
-								String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+								String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 								SmsTable sms = new SmsTable();
 								sms.setContactNo(conta.getContactNo());
 								sms.setMsgId(id1);
 								sms.setSenderId(user1.getUserId());
-								sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
+								sms.setType(Constants.SMS_TYPE_TRANSACTIONAL);
 								sms.setStatus("");
 								SmsDao.addNewUserRequest(sms);
 							}
