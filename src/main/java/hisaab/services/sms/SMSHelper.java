@@ -84,7 +84,7 @@ public class SMSHelper {
 	   String str = "";
 	   
 	   str = "Hi, \n"
-	   		+ "Welcome to LenaDena App. Your OTP : "+code+".\n"
+	   		+ "Welcome to LenaDena App. Your OTP :"+code+".\n"
 	   				+ "Your OTP will expire in 3 Hrs.";
 	   return str;
    }
