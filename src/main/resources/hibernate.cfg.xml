@@ -17,7 +17,9 @@
 		<property name="hibernate.c3p0.timeout">120</property>
 		<property name="hibernate.c3p0.max_statements">10</property>
 		
-		
+		<!-- Database Scheme Auto Update -->
+        <property name="hbm2ddl.auto">update</property>   
+        
 		<property name="hibernate.connection.useUnicode">true</property>
 		<property name="hibernate.connection.characterEncoding">UTF-8</property>
 		<property name="hibernate.connection.charSet">UTF-8</property>

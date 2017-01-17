@@ -651,10 +651,11 @@ public class UserDao {
 					
 			try {
 				session = HibernateUtil.getSessionFactory().openSession();
-				String hql = "from UserMaster where contactNo = :contactNo AND delFlag = :delete ";
+				String hql = "from UserMaster where contactNo = :contactNo AND delFlag = :delete AND userType =:usertype";
 				Query query = session.createQuery(hql);
 				query.setParameter("contactNo", contactNo);
 				query.setParameter("delete", 0);
+				query.setParameter("usertype", 0);
 				if(!query.list().isEmpty()){
 					userList = (UserMaster)query.list().get(0);
 				}

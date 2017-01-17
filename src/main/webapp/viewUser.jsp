@@ -22,14 +22,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>LenaDena</title>
 <link href="css/style.css" rel="stylesheet">
-<link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
+<!-- <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">  -->
 <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />
-<link rel="stylesheet"
-	href="resources/bootstrap/css/bootstrap-theme.min.css" />
-<script type="text/javascript" src="js/jquery.js"></script>
-<link href="resources/datatable/css/jquery.dataTables.css" rel="stylesheet" />
+<!-- <link rel="stylesheet"
+	href="resources/bootstrap/css/bootstrap-theme.min.css" />-->
+<script type="text/javascript" src="js/jquery.js"></script> 
+ <link href="resources/datatable/css/jquery.dataTables.css" rel="stylesheet" /> 
 <script type="text/javascript" charset="utf-8" src="resources/datatable/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="css/style.css" />
+<!--<link rel="stylesheet" type="text/css" href="css/style.css" /> -->
 </head>
 <body>
 <%-- <%@include file="loader.jsp" %> --%>

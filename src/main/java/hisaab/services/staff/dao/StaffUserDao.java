@@ -44,7 +44,9 @@ public class StaffUserDao {
 		UserStaffMapping staffUsermap =null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
+			
 			for(Contact conta : contact){
+				UserMaster userforSendingNotification = UserDao.getUserByContactNo(conta.getContactNo());
 			String hql = "from UserStaffMapping  where contactNo = :contact AND Status = :stat";
 //			String hql = "from StaffUserRequest where contactNo = :contact_no AND Status <> :stat";
 //			+" AND Status = :stat ";
@@ -118,16 +120,16 @@ public class StaffUserDao {
 							/***
 							 * Sending text message to invite staff user.
 							 ***/
-							UserMaster userB = UserDao.getUserByContactNo(conta.getContactNo());
-							if(userB != null){
+							
+							if(userforSendingNotification != null){
 								String msg = new StringBuffer(user1.getContactNo())
 											.append(" has sent you Staff Invite.").toString();
 								
-								NotificationHelper.buildAndSendStaffInviteNotification(user1,userB, staffUser, msg, false);
+								NotificationHelper.buildAndSendStaffInviteNotification(user1,userforSendingNotification, staffUser, msg, false);
 							}
-							userB = null;
 							
-							if(Constants.SMS_PACK_ACTIVE){
+							
+							if(userforSendingNotification == null && Constants.SMS_PACK_ACTIVE){
 								String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
 								String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
 								SmsTable sms = new SmsTable();
@@ -182,15 +184,15 @@ public class StaffUserDao {
 					/***
 					 *Sending text message to invite staff user.
 					 ***/
-					UserMaster userB = UserDao.getUserByContactNo(conta.getContactNo());
-					if(userB != null){
+					
+					if(userforSendingNotification != null){
 						String msg = new StringBuffer(user1.getContactNo())
 									.append(" has sent you Staff Invite.").toString();
 						
-						NotificationHelper.buildAndSendStaffInviteNotification(user1, userB, staffUser, msg, false);
+						NotificationHelper.buildAndSendStaffInviteNotification(user1, userforSendingNotification, staffUser, msg, false);
 					}
-					userB = null;
-					if(Constants.SMS_PACK_ACTIVE){
+					
+					if(userforSendingNotification == null && Constants.SMS_PACK_ACTIVE){
 						String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
 
 						String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
