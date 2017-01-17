@@ -165,7 +165,6 @@ public class TransactionService {
 						if(prUser != null)
 							flb.setPrivateUser(prUser);
 						result = flb;
-						
 					}
 						
 				}else{
