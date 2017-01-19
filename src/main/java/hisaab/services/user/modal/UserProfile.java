@@ -63,7 +63,9 @@ public class UserProfile {
 	@OneToOne
     @PrimaryKeyJoinColumn
 	    private UserMaster user;
-
+	
+	@Column(name="transaction_count", length=20 , columnDefinition="int default '0'")
+	private long transactionCount;
 	
 	@JsonIgnore
 	public UserMaster getUser() {
@@ -76,6 +78,15 @@ public class UserProfile {
 	}
 
 	
+	public long getTransactionCount() {
+		return transactionCount;
+	}
+
+
+	public void setTransactionCount(long transactionCount) {
+		this.transactionCount = transactionCount;
+	}
+
 
 	public int getUserType() {
 		return userType;

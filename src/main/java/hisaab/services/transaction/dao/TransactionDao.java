@@ -3360,4 +3360,28 @@ public class TransactionDao {
 		return transDoc;
 	}
 
+	public static Object getTransactionCount(){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		
+		BasicDBList ifno = new BasicDBList();
+	
+		DBObject gdb1 = new BasicDBObject();
+		gdb1.put("_id",Integer.parseInt("1"));
+		gdb1.put("user1",Integer.parseInt("1") );
+		gdb1.put("user2", Integer.parseInt("1"));
+		gdb1.put("count",new BasicDBObject("$size",new BasicDBObject("$ifNull",Arrays.asList("$transactions", new ArrayList()))));
+		DBObject project = new BasicDBObject("$project", gdb1);
+		
+		AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(project);
+		System.out.println("i m in");
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			System.out.println("== : "+mapper.writeValueAsString(output.getCommandResult().get("result")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Object result = null;
+		result = output.getCommandResult().get("result");
+		return result;
+	}
 }

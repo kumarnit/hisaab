@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import hisaab.config.hibernate.HibernateUtil;
 import hisaab.config.morphia.MorphiaDatastoreTrasaction;
@@ -984,4 +985,35 @@ public class UserDao {
 		  }
 //		  return user;
 		 }
+
+
+	public static void setTransactionCount(Entry pair) {
+		Session session = null;
+		Transaction tx = null;
+		
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			String hql = "Update UserProfile set transactionCount = :transactioncount"
+					        + " where userId = :userId ";
+			Query query = session.createQuery(hql);
+			query.setParameter("userId", pair.getKey());
+			query.setParameter("transactioncount", pair.getValue());
+			int i = query.executeUpdate();
+			if(i>0){
+				
+			}
+			tx.commit();	
+		}
+		catch (Exception e) {
+			System.out.println("Exception = "+e.getMessage());
+			if(tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		}finally{
+			session.close();
+		}
+		
+		
+	}
 }
