@@ -12,22 +12,77 @@
 </head>
 <body>
 
-<div class="container home-wrapper">
+<!-- <div class="container home-wrapper">
 
 		<button class="button" id="viewuser" style="vertical-align:middle">View User</button>
 
-</div>
+</div> -->
+<div class="container home-wrapper">
+<div id="status" align="center">&nbsp;</div>
 
+<div class="top-buttons col-sm-12">
+<div class="col-sm-6 left-div">
+          <button class="btn btn-primary" id="viewuser" >View User</button>
+          
+</div>
+<div class="col-sm-6 right-div">
+          <button class="btn btn-primary" id="viewalluser" >View All user</button>
+          
+</div>
+<div class="col-sm-6 left-div">
+          <button class="btn btn-primary" id="setCount" >Set Transaction Count</button>
+          
+</div>
+<div class="col-sm-6 right-div">
+          <button class="btn btn-primary" id="viewUserTransCount" >View Transaction Count</button>
+          
+</div>
+</div>
+</div>
 </body>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">
 /* $(document).ready(function () { */
-
+$(document).ready(function () {
 $('#viewuser').click(function() {
     window.location.href = 'viewUser.jsp';
     return false;
 });
+$('#viewalluser').click(function() {
+    window.location.href = 'viewAllUser.jsp';
+    return false;
+});
+$('#viewUserTransCount').click(function() {
+    window.location.href = 'viewUserTransCount.jsp';
+    return false;
+});
+$('#setCount').click(function () {
+    $.ajax({          
+    url: 'rest/v1/viewlogs/set/transactionCount',
+    type: 'GET',
+    success:function(){
+    	console.log(" successfully Archived");
+    	$("#status").html("<b style='color: green;'>Sucessfully Archived!</b>");
+    	hideStatus();
+    },
+    error:function(){
+    	console.log("error");
+    }
+});
 
+})
+
+function hideStatus(){
+	
+	setTimeout(function(){ $("#status").html("&nbsp;"); }, 5000);
+}
+
+})
+ 
+/* $('#setCount').click(function() {
+    window.location.href = 'rest/v1/viewlogs/set/transactionCount';
+    return false;
+}); */
 /* $('#invUsers').click(function() {
     window.location.href = 'http://invoicelogs-tacktilesys.rhcloud.com/input.jsp';
     return false;

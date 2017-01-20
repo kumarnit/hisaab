@@ -46,7 +46,7 @@
 
 	 %>
 	
-	<h3 align="center"> All User list </h3>
+	<h3 align="center"> All Active user List </h3>
 
 	<br />
 	
@@ -112,7 +112,7 @@
 		        "pagingType": "full",
 		        "dom": '<"top"iflp<"clear">>rt<"bottom"iflp<"clear">>',
 		        "ajax": {
-		            url: "rest/v1/viewlogs/get/userdetailAll",
+		            url: "rest/v1/viewlogs/get/activeUserdetail",
 		            type: 'GET'
 		            
 		        }

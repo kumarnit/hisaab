@@ -1,5 +1,7 @@
 package hisaab.services.staff.webservice;
 
+import hisaab.services.Logs.LogHelper;
+import hisaab.services.Logs.LogModel;
 import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.ContactsDao;
 import hisaab.services.contacts.dao.FriendsDao;
@@ -157,6 +159,13 @@ public class StaffServices {
 			@HeaderParam("authId") String authId, StaffUserBean userBean){
 		
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		StaffUser user = null;
 		long epoch = System.currentTimeMillis();
 		try {
@@ -182,6 +191,12 @@ public class StaffServices {
 						
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "PushToken updated successfully.");
 						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}else{
 							
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, "Unable to store into the database");
@@ -190,6 +205,18 @@ public class StaffServices {
 					
 					result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 				}
+		
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName(" staff update push");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : Staff update push Service \n"+e.getMessage());
+		}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Exception in Update Staff push token Service : \n"+e.getMessage());
@@ -208,6 +235,13 @@ public class StaffServices {
 			@HeaderParam("authId") String authId,StaffUserBean userBean){
 		
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		StaffUser requestingUser =null;
 		try{
 			if(Constants.AUTH_USERID){
@@ -224,6 +258,11 @@ public class StaffServices {
 							userBean.setMsg("Successfuly Updated.");
 						result = userBean;
 						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}else{
 						String msg = "Something went wrong.";
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, msg);
@@ -237,11 +276,23 @@ public class StaffServices {
 				String msg = "Invalid Login";
 				result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 			}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update staff profile");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : update staff profile services \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Update Staff Profile : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 
+		
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -254,6 +305,13 @@ public class StaffServices {
 	public Response removeStaff(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,@PathParam("ownerId") long ownerId ){
 		StaffUser requestingUser = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		if(Constants.AUTH_USERID){
 			requestingUser = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
 		}
@@ -273,12 +331,23 @@ public class StaffServices {
 			
 			}else
 				result =ServiceResponse.getResponse(401, "Invalid AuthToken");
+				
+			
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("remove staff services");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : remove staff Service \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Leave owner : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}		
-			
-
+		}
+		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

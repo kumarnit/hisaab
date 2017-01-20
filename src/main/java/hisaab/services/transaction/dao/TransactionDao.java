@@ -17,6 +17,7 @@ import hisaab.services.notification.NotificationHelper;
 import hisaab.services.notification.PushNotificationControler;
 import hisaab.services.notification.TransactionNotification;
 import hisaab.services.notification.TransactionReadNotification;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.pull.modal.ReadTransaction;
 import hisaab.services.sms.SMSHelper;
 import hisaab.services.sms.dao.SmsDao;
@@ -225,7 +226,12 @@ public class TransactionDao {
 				}
 				if(transactionDoc.getTransactions().size()>1)
 					tn.setPullFlag(1);
-*/				/**
+*/				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+userB.getUserId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDocDao.addTransaction(transactionDoc,pullDoc);
+				
+				/**
 				 * Notification message
 				 **/
 				FriendContact frnd = null; 
@@ -1790,8 +1796,15 @@ public class TransactionDao {
 						tn.setPaymentStatus(Constants.TO_GIVE);
 				}
 				if(transactionDoc.getTransactions().size()>1)
-					tn.setPullFlag(1);
-*/				/**
+					tn.setPullFlag(1);				
+*/	
+				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+userB.getUserId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				TransactionDoc transDoc = new TransactionDoc();
+				transDoc.setTransactions(Arrays.asList(transaction));
+				PullDocDao.addModifiedTransaction(transDoc,pullDoc);
+				/**
 				 * Notification message
 				 **/
 				FriendContact frnd = null; 

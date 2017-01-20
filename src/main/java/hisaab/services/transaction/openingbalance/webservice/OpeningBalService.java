@@ -46,7 +46,7 @@ public class OpeningBalService {
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", transactionBean : ";
+		String req = "token : "+authToken+", transactionBean : "+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(obrBean);
 		} catch (Exception e) {
@@ -164,7 +164,7 @@ public class OpeningBalService {
 		ObjectMapper mapper = new ObjectMapper();
 		 OpeningBalBean obrBean = new OpeningBalBean();
 		String req1 = "token : "+authToken+", requestId : "+reqId+
-						", response :"+userResponse;
+						", response :"+userResponse+", authId : "+authId;
 		String res = "";
 		LogModel logModel = new LogModel();
 		logModel.setUserToken(authToken);

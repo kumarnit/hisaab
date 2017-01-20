@@ -53,7 +53,7 @@ public class StaffTransactionService {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Transaction> rejected = new ArrayList<Transaction>();
 		
-		String req = "token : "+authToken+", transaction : ";
+		String req = "token : "+authToken+", transaction : "+", authId :"+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -159,7 +159,7 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", ApprovalBean : "+rBean;
+		String req = "token : "+authToken+", ApprovalBean : "+rBean+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(rBean);
 		} catch (Exception e) {
@@ -234,7 +234,7 @@ public class StaffTransactionService {
 			@HeaderParam("authId") String authId, TransactionBean transBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transaction :";
+		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -289,7 +289,7 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transactionId : "+transactionId;
+		String req = "token : "+authToken+", transactionId : "+transactionId+", authId : "+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -343,7 +343,8 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transactionId : "+transactionId+", staffId : "+staffId;
+		String req = "token : "+authToken+", transactionId : "+transactionId+", staffId : "
+				+ ""+staffId+", authId : "+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -395,7 +396,7 @@ public class StaffTransactionService {
 			@HeaderParam("authId") String authId,ReadBean rBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transaction :";
+		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(rBean);
 		} catch (Exception e) {

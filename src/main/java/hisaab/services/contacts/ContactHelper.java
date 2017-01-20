@@ -15,6 +15,7 @@ import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType;
@@ -127,7 +132,7 @@ public class ContactHelper {
 	
 	
 	public static List<Contact> validateContactNoList2(List<Contact> clist){
-		
+		ObjectMapper mapper = new ObjectMapper();
 		List<Contact> cont = new ArrayList<Contact>(); 
 		Contact conta = null;
 		for(Contact contact : clist){
@@ -136,7 +141,8 @@ public class ContactHelper {
 					String defaultCountryCode = "91";
 					String defaultCountryNationalPrefix = "0";
 					// strip any non-significant characters
-					String number = originalNumber.replaceAll("[^0-9+]", ""); 
+					String number1 = originalNumber.replaceAll("[^0-9+]", ""); 
+					String number = number1.replace("+", "");
 					// check for prefixes
 						PhoneNumber pnum = validatePhoneNumber(number);
 						if(pnum != null){
@@ -149,7 +155,6 @@ public class ContactHelper {
 					}
 				
 			
-		
 		return cont;
 	}
 	              
@@ -215,7 +220,10 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 			ids.add(i+1);
 		}
 		*/
-		System.out.println("=="+validatePhoneNumber("7276603191"));
+		Contact conta  = new Contact();
+		conta.setContactNo("+15127365104");
+		conta.setName("nitish");
+		System.out.println("=="+validateContactNoList2(Arrays.asList(conta)));
 		
 		/*ids.remove(3);
 		

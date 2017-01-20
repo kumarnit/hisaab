@@ -69,7 +69,7 @@ public class TransactionService {
 //		try{
 			ObjectMapper mapper = new ObjectMapper();
 			
-			String req = "token : "+authToken+", userId : "+uid+", transaction : ";
+			String req = "token : "+authToken+", userId : "+uid+", authId :"+authId;
 			try {
 				req += mapper.writeValueAsString(transBean);
 			} catch (Exception e) {
@@ -180,14 +180,17 @@ public class TransactionService {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-	
+	try{
 			logModel.setRequestData(req);
 			logModel.setResponseData(res);
 			logModel.setRequestName("Add transaction");
 			if(Constants.RECORD_LOGS)
 				LogHelper.addLogHelper(logModel);
+	}catch(Exception e){
+		System.out.println("Exception in Add Log Record , in add Transaction: "+e);
+	}
 		/*}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in add Transaction : \n"+e.getMessage());
 			   result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		*/
@@ -203,6 +206,11 @@ public class TransactionService {
 	public Response updateTransactionAsRead(@HeaderParam("authToken") String authToken,
 			    @HeaderParam("authId")String authId, ReadBean rBean ){
 		Object result = null;
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId :"+authId +" transID"+rBean;
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authToken);
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
@@ -222,8 +230,17 @@ public class TransactionService {
 			}else{
 				result = ServiceResponse.getResponse(401, "Invalid Auth Token");
 			}
+			try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update transaction as Read");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Exception in Add Log Record , update transaction aS rEAD : "+e);
+			}
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in Read transaction   : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 			   }
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -239,6 +256,13 @@ public class TransactionService {
 				@HeaderParam("authId") String authId, @PathParam("readStatus") int readStatus,
 			     ReadBean rBean ){
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId :"+authId +" transID"+rBean;
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authToken);
+		
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
@@ -266,8 +290,19 @@ public class TransactionService {
 				else{
 				result = ServiceResponse.getResponse(401, "Invalid Auth Token");
 			}
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("update transaction as Read");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+				}catch(Exception e){
+					System.out.println("Exception in Add Log Record , update transaction aS rEAD 2 : "+e);
+				}
+			
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in Read transaction 2 : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -284,7 +319,7 @@ public class TransactionService {
 		try{
 			ObjectMapper mapper = new ObjectMapper();
 	
-			String req = "token : "+authToken+", disputeTransaction : ";
+			String req = "token : "+authToken+", disputeTransaction : "+", authId :"+authId;
 			try {
 				req += mapper.writeValueAsString(transDispBean);
 			} catch (Exception e) {
@@ -335,7 +370,7 @@ public class TransactionService {
 				LogHelper.addLogHelper(logModel);
 		}catch(Exception e)
 		{
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in Request dispute transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		
@@ -354,7 +389,8 @@ public class TransactionService {
 		Object result = null;
 		try{
 			ObjectMapper mapper = new ObjectMapper();
-			String req = "token : "+authToken+", transacDocId : "+transacDocId+", transacId :"+transacId;
+			String req = "token : "+authToken+", transacDocId : "+transacDocId+", transacId :"
+					+ ""+transacId+", authId :"+authId;
 			
 			String res = "";
 			LogModel logModel = new LogModel();
@@ -414,14 +450,18 @@ public class TransactionService {
 				e.printStackTrace();
 			}
 	
-			logModel.setRequestData(req);
-			logModel.setResponseData(res);
-			logModel.setRequestName("delete transaction");
-			if(Constants.RECORD_LOGS)
-				LogHelper.addLogHelper(logModel);
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("delete transaction");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+				}catch(Exception e){
+					System.out.println("Exception in Add Log Record , delete transaction : "+e);
+				}
 		
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in delete transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		
@@ -438,6 +478,13 @@ public class TransactionService {
 	 	         TransactionBean transBean, @PathParam("userId") String uid,
 	 	         @HeaderParam("authId") String authId){
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId :"+authId +" userId : "+uid;
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authToken);
+		
 		try{
 		TransactionDoc transDoc = new TransactionDoc();
 		long epoch = System.currentTimeMillis();
@@ -471,8 +518,19 @@ public class TransactionService {
 		}else{
 			result = ServiceResponse.getResponse(401, "Invalid Auth Token");
 		}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("Add private user transaction");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Exception in Add Log Record , Add private user transaction : "+e);
+			}
+		
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in Add private user transaction: \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -487,7 +545,7 @@ public class TransactionService {
 		Object result = null;
 //		try{
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", transactionBean : ";
+		String req = "token : "+authToken+", transactionBean : "+", authId :"+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -549,13 +607,17 @@ public class TransactionService {
 			e.printStackTrace();
 		}
 
-		logModel.setRequestData(req);
-		logModel.setResponseData(res);
-		logModel.setRequestName("update transaction");
-		if(Constants.RECORD_LOGS)
-			LogHelper.addLogHelper(logModel);
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update transaction");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Exception in Add Log Record , update transaction : "+e);
+			}
 		/*}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in update transaction Service : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}*/
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -576,7 +638,7 @@ public class TransactionService {
 		try{
 		ObjectMapper mapper = new ObjectMapper();
 		String req1 = "token : "+authToken+", transacDocId : "+transacDocId+", transactionId :"+transacId+
-				", action :"+action+", response :"+userResponse;
+				", action :"+action+", response :"+userResponse+", authId :"+authId;
 		String res = "";
 		LogModel logModel = new LogModel();
 		logModel.setUserToken(authToken);
@@ -707,14 +769,18 @@ public class TransactionService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		logModel.setRequestData(req1);
-		logModel.setResponseData(res);
-		logModel.setRequestName("transaction Action Response");
-		if(Constants.RECORD_LOGS)
-			LogHelper.addLogHelper(logModel);
+		
+		try{
+			logModel.setRequestData(req1);
+			logModel.setResponseData(res);
+			logModel.setRequestName("transaction Action Response");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Exception in Add Log Record , transaction Action Response : "+e);
+			}
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in transaction action services : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -731,7 +797,7 @@ public class TransactionService {
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", transactionBean : ";
+		String req = "token : "+authToken+", transactionBean : "+", authId :"+authId+", authId :"+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -764,15 +830,19 @@ public class TransactionService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		logModel.setRequestData(req);
-		logModel.setResponseData(res);
-		logModel.setRequestName("sync update transaction");
-		if(Constants.RECORD_LOGS)
-			LogHelper.addLogHelper(logModel);
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update mutiple transaction");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Exception in Add Log Record , update mutiple transaction : "+e);
+			}
 		
 		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			System.out.println("Exception in update mutiple transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
@@ -818,6 +888,13 @@ public class TransactionService {
 	public Response getUpdateTransactionBackup(@HeaderParam("authToken") String authToken,
 			     @HeaderParam("authId") String authId, ReadBean rBean ){
 		Object result = null;
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId :"+authId;
+		
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authToken);
+		
 		try{
 			TransactionDoc transDoc = new TransactionDoc();
 			long epoch = System.currentTimeMillis();
@@ -845,20 +922,23 @@ public class TransactionService {
 			}
 			
 
-			/*try {
+			try {
 				result = mapper.writeValueAsString(result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
-			logModel.setRequestData(req);
-			logModel.setResponseData(res);
-			logModel.setRequestName("update transaction");
-			if(Constants.RECORD_LOGS)
-				LogHelper.addLogHelper(logModel);*/
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("get update transaction backup");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+				}catch(Exception e){
+					System.out.println("Exception in Add Log Record , get update transaction backup : "+e);
+				}
 		
 		}catch(Exception e){
-				System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+				System.out.println("Exception in get update transaction backup: \n"+e.getMessage());
 			    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 			}
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();

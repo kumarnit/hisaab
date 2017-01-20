@@ -1,5 +1,7 @@
 package hisaab.services.user.images.webservices;
 
+import hisaab.services.Logs.LogHelper;
+import hisaab.services.Logs.LogModel;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.images.dao.UserImageDao;
 import hisaab.services.user.images.modal.UserImage;
@@ -38,8 +40,14 @@ public class UserImageServices {
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@Context ServletContext servletContext,
 			@HeaderParam("authToken") String authToken,
-			@HeaderParam("authToken") String authId) {
+			@HeaderParam("authId") String authId) {
 		UserMaster user = null;
+		String req = "token : "+authToken+", authId :"+authId;
+		
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authToken);
+		
 		if(Constants.AUTH_USERID){
 			user = UserDao.getUserFromAuthToken1(authToken,authId);
 		}
@@ -93,6 +101,15 @@ public class UserImageServices {
 					Constants.AUTH_FAILURE, msg);
 			result = serv;
 		}
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update push");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : update push Service \n"+e.getMessage());
+		}
 		return Response.status(200).entity(result).build();
 	}
 
@@ -100,8 +117,10 @@ public class UserImageServices {
 	@GET
 	@Path("/{objectKey}")
 	public Response download(@HeaderParam("authToken") String authToken,
+			@HeaderParam("authId") String authId,
 			@PathParam("objectKey") String objectKey,
 			@Context ServletContext servletContext) {
+		
 		String directory = "";
 		Object result = null;
 		String contentType = "application/json";

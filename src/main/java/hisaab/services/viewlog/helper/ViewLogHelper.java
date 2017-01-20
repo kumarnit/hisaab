@@ -56,4 +56,59 @@ public class ViewLogHelper {
 		 
 		 return str;
 	}
+
+	public static void manageResponseAll(List<UserProfile> userprofile,
+			PageRequest resp) {
+		int count = 1;
+		for(UserProfile userpro : userprofile){
+			List<String> i = new ArrayList<String>();
+			
+			i.add((resp.getStart()+count)+"");
+			i.add(userpro.getUserName());
+			i.add(userpro.getContactNo());
+			i.add(convertToISTWithoutYear(userpro.getCreatedTime()));
+			i.add(""+userpro.getTransactionCount());
+			if(userpro.getUserType() == 0){
+				i.add("<html><font color=\"green\">Registered</font></html>");
+			}else {
+				i.add("<html><font color=\"red\">Un Registered</font></html>");
+			}
+			
+			resp.getData().add(i);
+			
+			count++;
+			
+		}
+		
+		resp.setRecordsTotal(UserLogDao.getCountUserDetailAll());
+		resp.setRecordsFiltered(resp.getRecordsTotal());
+	}
+
+	public static void manageResponseTransCount(List<UserProfile> userprofile,
+			PageRequest resp) {
+		int count = 1;
+		for(UserProfile userpro : userprofile){
+			List<String> i = new ArrayList<String>();
+			
+			i.add((resp.getStart()+count)+"");
+			i.add(userpro.getUserName());
+			i.add(userpro.getContactNo());
+			i.add(convertToISTWithoutYear(userpro.getCreatedTime()));
+			i.add(""+userpro.getTransactionCount());
+			if(userpro.getUserType() == 0){
+				i.add("<html><font color=\"green\">Registered</font></html>");
+			}else {
+				i.add("<html><font color=\"red\">Un Registered</font></html>");
+			}
+			
+			resp.getData().add(i);
+			
+			count++;
+			
+		}
+		
+		resp.setRecordsTotal(UserLogDao.getCountUserDetailTransCount());
+		resp.setRecordsFiltered(resp.getRecordsTotal());
+		
+	}
 }

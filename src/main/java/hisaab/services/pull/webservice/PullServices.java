@@ -37,12 +37,11 @@ public class PullServices {
 	public Response pullUserData(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @HeaderParam("pullTime") long pullTime){
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", pullTime : "+pullTime;
+		String req = "token : "+authToken+", pullTime : "+pullTime+", authId :"+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
 		logModel.setUserToken(authToken);
-		
 		Object result = null;
 		UserMaster user = null;
  		long epoch = System.currentTimeMillis();
@@ -81,13 +80,15 @@ public class PullServices {
 			}
 		}
 		
-
+		try{
 		logModel.setRequestData(req);
 		logModel.setResponseData(res);
 		logModel.setRequestName("pull user data");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		}catch(Exception e){
+			System.out.println(e);
+		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -97,7 +98,7 @@ public class PullServices {
 	public Response pushTransactions(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("pullTime") long pullTime, @HeaderParam("authId") String authId) {
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", pullTime : "+pullTime;
+		String req = "token : "+authToken+", pullTime : "+pullTime+", authId :"+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -134,12 +135,15 @@ public class PullServices {
 							e.printStackTrace();
 						}
 		}
-		
+		try{
 		logModel.setRequestData(req);
 		logModel.setResponseData(res);
 		logModel.setRequestName("pull staff data");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println(e);
+		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -150,7 +154,7 @@ public class PullServices {
 	public Response pullReadTransactions(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @HeaderParam("readPullTime") long readPullTime){
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", readPullTime : "+readPullTime;
+		String req = "token : "+authToken+", readPullTime : "+readPullTime+", authId :"+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -188,12 +192,15 @@ public class PullServices {
 				e.printStackTrace();
 			}
 		}
+		try{
 		logModel.setRequestData(req);
 		logModel.setResponseData(res);
 		logModel.setRequestName("pull user data");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		}catch(Exception e){
+			System.out.println(e);
+		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 

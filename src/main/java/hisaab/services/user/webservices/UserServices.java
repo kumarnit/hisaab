@@ -212,6 +212,12 @@ public class UserServices {
 			@HeaderParam("authId") String authId){
 		
 		Object result = null;
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		long epoch = System.currentTimeMillis();
 		try {
 				UserMaster user = null;
@@ -237,7 +243,11 @@ public class UserServices {
 					if(UserDao.updatePushToken(user)){
 						
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "PushToken updated successfully.");
-						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}else{
 							
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, "Unable to store into the database");
@@ -246,6 +256,17 @@ public class UserServices {
 					
 					result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 				}
+				
+				try{
+					logModel.setRequestData(req);
+					logModel.setResponseData(res);
+					logModel.setRequestName("update push");
+					if(Constants.RECORD_LOGS)
+						LogHelper.addLogHelper(logModel);
+				}catch(Exception e){
+					System.out.println("Unable to add log records for : update push Service \n"+e.getMessage());
+				}
+				
 		}catch(Exception e){
 			System.out.println("Exception in Update User push Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -264,8 +285,15 @@ public class UserServices {
 			@HeaderParam("authId") String authId, UserBean userBean){
 		
 		Object result = null;
-		try{
 		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
+		try{
+			
 			UserMaster requestingUser = null;
 			if(Constants.AUTH_USERID){
 				requestingUser = UserDao.getUserFromAuthToken1(authToken,authId);
@@ -281,6 +309,12 @@ public class UserServices {
 							userBean.setMsg("Successfuly Updated.");
 						result = userBean;
 						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}else{
 						String msg = "Something went wrong.";
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, msg);
@@ -294,6 +328,17 @@ public class UserServices {
 				String msg = "Invalid Login";
 				result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 			}
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("update profile");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : update user profile Service \n"+e.getMessage());
+			}
+			
 		}catch(Exception e){
 			System.out.println("Exception in Update User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -309,6 +354,7 @@ public class UserServices {
 		
 		UserprofileBean userbeanRes = new UserprofileBean();
 		Object result = null;
+		
 		try{
 			List<Long> userlist1 = new  ArrayList<Long>();
 			List<String> userlist = userbean.getUserlist();
@@ -341,6 +387,12 @@ public class UserServices {
 			@HeaderParam("authToken") String authToken, @HeaderParam("authId")String authId ) {
 //		HashMap<Long,FriendContact> frndhash = new HashMap<Long,FriendContact>();
 		ObjectMapper mapper = new ObjectMapper();
+		
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		Gson gson = new Gson();
 		Gson gson1 = new Gson();
 		
@@ -414,6 +466,8 @@ public class UserServices {
                   userbeanRes.setStatus(Constants.SUCCESS_RESPONSE);
                   
 			result=userbeanRes;
+				res = "size of user profile : "+userbeanRes.getList2().size();
+			
             }else{
             	result=ServiceResponse.getResponse(Constants.FAILURE, "UserLsit is Not Associated with User");
             }
@@ -439,6 +493,17 @@ public class UserServices {
 				*/
 			}else
 				result = ServiceResponse.getResponse(Constants.FAILURE,"Invalid authtoken" );
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("get user profile list");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : get user profile list Service \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Request UserProfileList Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -502,6 +567,13 @@ public class UserServices {
 	public Response adNewuser(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, Contact contact){
 		UserMaster user1= null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		if(Constants.AUTH_USERID){
 			user1 = UserDao.getUserFromAuthToken1(authToken,authId);
 		}
@@ -568,6 +640,12 @@ public class UserServices {
 				frnBean.setList(hash);
 				frnBean.setStatus(Constants.SUCCESS_RESPONSE);
 				result= frnBean;
+				
+				try {
+					res = mapper.writeValueAsString(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			}catch(Exception e){
 
@@ -579,6 +657,17 @@ public class UserServices {
 			result =ServiceResponse.getResponse(401, "Invalid AuthToken");
 		}else
 		    result = ServiceResponse.getResponse(402, "Invalid Contact No");          	
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("add new user");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add logs for Add Staff Service \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Request add Unmanaged User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -595,7 +684,7 @@ public class UserServices {
 			@HeaderParam("authId") String authId, ContactBean contact){
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String req = "token : "+authToken+", contactBean : ";
+		String req = "token : "+authToken+", contactBean : "+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(contact);
 		} catch (Exception e) {
@@ -667,7 +756,11 @@ public class UserServices {
 							
 								result =contact;
 							
-						
+								try {
+									res = mapper.writeValueAsString(result);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 					}
 			}else
 				result =ServiceResponse.getResponse(401, "Invalid AuthToken");
@@ -704,6 +797,13 @@ public class UserServices {
 	public Response removeStaff(@HeaderParam("authToken") String authToken, @PathParam("staffId") String staffId,
 						@HeaderParam("authId") String authId){
 		UserMaster user1=null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		if(Constants.AUTH_USERID){
 			user1 = UserDao.getUserFromAuthToken1(authToken,authId);
 		}
@@ -719,6 +819,13 @@ public class UserServices {
 				{
 					if(StaffUserDao.removeStaffUser(user1.getUserId(),userstaff.getContactNo(), staffId, 4)>0){
 						result =ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "User Removed Successfully");
+
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}
 					else{
 						result =ServiceResponse.getResponse(402, "unable to remove staff");
@@ -729,6 +836,17 @@ public class UserServices {
 				}
 			}else
 				result =ServiceResponse.getResponse(401, "Invalid AuthToken");
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("remove staff user");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : remove staff user Service \n"+e.getMessage());
+			}
+			
 		}catch(Exception e){
 				System.out.println("Exception in Remove staff User Service : \n"+e.getMessage());
 				result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -771,6 +889,13 @@ public class UserServices {
 	public Response cancelRequestForStaffUser(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @PathParam("requestId") long reqId){
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		try{
 			UserMaster usermaster = null;
 			if(Constants.AUTH_USERID){
@@ -783,6 +908,13 @@ public class UserServices {
 				    StaffUserRequest st =StaffUserDao.getStaffRequestsByReqId(reqId);
 					if(StaffUserDao.cancelStaffUserRequest(usermaster,reqId,4,st)){
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE,"Request Cancelled" );
+					
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					
 					}
 					else
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE,"database failure" );
@@ -790,6 +922,17 @@ public class UserServices {
 				}else{
 					result = ServiceResponse.getResponse(Constants.FAILURE,"Invalid authToken" );
 				}
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("cancel request for staff user");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : cancel request for staff user Service \n"+e.getMessage());
+			}
+			
 		}catch(Exception e){
 			System.out.println("Exception in Cancel Staff Request Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -805,6 +948,13 @@ public class UserServices {
 			@HeaderParam("authId") String authId, Contact contact){
 		Object result = null;
 		FriendList frndlist = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		try{
 			UserMaster user=null;
 			
@@ -826,6 +976,13 @@ public class UserServices {
 						frnBean.setStatus(Constants.SUCCESS_RESPONSE);
 						frnBean.setFriendContact(frndlist.getFriends().get(0));
 						result= frnBean;
+						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}else{
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE,"Private not added to friendContact");
 					}
@@ -842,6 +999,16 @@ public class UserServices {
 			}else
 				result =ServiceResponse.getResponse(401, "Invalid AuthToken");
 		
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("add private user");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : add private user Service \n"+e.getMessage());
+			}
+			
 		}catch(Exception e){
 			System.out.println("Exception in Add Private User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -858,6 +1025,13 @@ public class UserServices {
 				@HeaderParam("authId") String authId, @PathParam("privateUserId") String privateUserId){
 
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		try{
 			UserMaster usermaster = null;
 			if(Constants.AUTH_USERID){
@@ -869,7 +1043,11 @@ public class UserServices {
 			if(usermaster != null){
 					if(PrivateUserDao.getPrivateUserById(privateUserId,usermaster)){
 						if(PrivateUserDao.deletePrivateUser(privateUserId,usermaster))
-							result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE,"Deleted Successfully" );
+						{	result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE,"Deleted Successfully" );
+						
+						
+						
+						}
 						else 
 							result =ServiceResponse.getResponse(Constants.DB_FAILURE,"Database failure" );
 					}
@@ -879,6 +1057,23 @@ public class UserServices {
 				}else{
 					result = ServiceResponse.getResponse(Constants.AUTH_FAILURE,"Invalid authToken" );
 				}
+			
+			try {
+				res = mapper.writeValueAsString(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("delete private user");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : delete private user Service \n"+e.getMessage());
+			}
+			
 		}catch(Exception e){
 			System.out.println("Exception in Delete Private User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -892,10 +1087,23 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response blockUser(@HeaderParam("authToken") String authToken,
-						@PathParam("frndId") String frndId){
+			@HeaderParam("authId") String authId,@PathParam("frndId") String frndId){
 		Object result = null;
-//		try{
-			UserMaster usermaster = UserDao.getUserFromAuthToken(authToken);
+		UserMaster usermaster = null;
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
+		try{
+			if(Constants.AUTH_USERID){
+				usermaster = UserDao.getUserFromAuthToken1(authToken,authId);
+			}
+			else{
+				usermaster = UserDao.getUserFromAuthToken(authToken);
+			}
+			
 			if(usermaster != null){
 					PrivateUserBean pub = UserHelper.blockUser(frndId, usermaster);
 					if(pub.getFriendContact() != null){
@@ -905,7 +1113,7 @@ public class UserServices {
 						pub.setStatus(Constants.SUCCESS_RESPONSE);
 						pub.setMsg("User Blocked!");
 						result = pub;
-						
+							
 					}
 					else
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE,"Failure! Unable to block this user" );
@@ -913,10 +1121,27 @@ public class UserServices {
 				}else{
 					result = ServiceResponse.getResponse(Constants.AUTH_FAILURE,"Invalid authToken" );
 				}
-//		}catch(Exception e){
-//			System.out.println("Exception in Block associate Service : \n"+e.getMessage());
-//			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-//		}
+			
+				try {
+					res = mapper.writeValueAsString(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			
+			try{
+				logModel.setRequestData(req);
+				logModel.setResponseData(res);
+				logModel.setRequestName("block user");
+				if(Constants.RECORD_LOGS)
+					LogHelper.addLogHelper(logModel);
+			}catch(Exception e){
+				System.out.println("Unable to add log records for : block user Service \n"+e.getMessage());
+			}
+			
+		}catch(Exception e){
+			System.out.println("Exception in Block associate Service : \n"+e.getMessage());
+			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -929,6 +1154,13 @@ public class UserServices {
 			@HeaderParam("authToken") String authToken, @HeaderParam("authId") String authId){
 		TransactionDoc transDoc = null;
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		try{
 		UserMaster user = null;
 		
@@ -955,6 +1187,9 @@ public class UserServices {
 			    	responsebean.setStatus(200);
 			    	responsebean.setTransactionDoc(transDoc);
 			    	result = responsebean;
+			    	
+			    	
+			    	
 			    }
 			    else
 			    {
@@ -969,7 +1204,24 @@ public class UserServices {
 				result = ServiceResponse.getResponse(Constants.FAILURE, "Associate Doesn't exist");
 			
 		}else
-			result = ServiceResponse.getResponse(Constants.AUTH_FAILURE,"Invalid authToken" );
+			result = ServiceResponse.getResponse(Constants.AUTH_FAILURE,"Invalid authToken");
+		
+		try {
+			res = mapper.writeValueAsString(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("get Doc and associated friend");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : get Doc and associated friend Service \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 
 			System.out.println("Exception in Block associate Service : \n"+e.getMessage());

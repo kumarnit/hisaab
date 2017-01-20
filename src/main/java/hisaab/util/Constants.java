@@ -202,7 +202,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = true; 
+	public static final boolean SMS_PACK_ACTIVE = false; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 

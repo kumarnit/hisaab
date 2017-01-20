@@ -65,7 +65,7 @@ public class UserProfile {
 	    private UserMaster user;
 	
 	@Column(name="transaction_count", length=20 , columnDefinition="int default '0'")
-	private long transactionCount;
+	private long transactionCount = 0;
 	
 	@JsonIgnore
 	public UserMaster getUser() {

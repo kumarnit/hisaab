@@ -2,6 +2,8 @@ package hisaab.services.device.webservices;
 
 import java.util.Arrays;
 
+import hisaab.services.Logs.LogHelper;
+import hisaab.services.Logs.LogModel;
 import hisaab.services.device.dao.DeviceInfoDao;
 import hisaab.services.device.modal.DeviceInfoDoc;
 import hisaab.services.device.webservices.bean.DeviceInfoBean;
@@ -27,13 +29,19 @@ public class DeviceInfoService {
 	public Response addDeviceInfo(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, DeviceInfoBean deviceInfoBean){
 		UserMaster user = null;
+		Object result=null;
+		
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
 		if(Constants.AUTH_USERID){
 			user = UserDao.getUserFromAuthToken1(authToken,authId);
 		}
 		else{
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
-		Object result = null;
+		
 		if(user.getUserId() > 0){
 			
 			DeviceInfoDoc deviceInfodoc = DeviceInfoDao.getDeviceInfoDoc(user);
@@ -52,6 +60,15 @@ public class DeviceInfoService {
 		}else
 			result = ServiceResponse.getResponse(401, "Invalid auth Token");
 		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("Device Info");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : Device Info Service \n"+e.getMessage());
+		}
 		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}

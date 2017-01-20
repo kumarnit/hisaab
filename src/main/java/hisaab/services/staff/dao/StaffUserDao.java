@@ -254,7 +254,7 @@ public class StaffUserDao {
 				query.setParameter("displayName", staffUser.getDisplayName());
 				query.setParameter("id", staffUserlocal.getId());
 				query.executeUpdate();
-				
+				staffUser.setId(staffUserlocal.getId());
 			}else{
 				session.save(staffUser);
 			}
