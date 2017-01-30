@@ -42,10 +42,30 @@ public class StaffUserRequest {
 	@Column(name="display_name", length=50)
 	private String displayName;
 
+	@Column(name="owner_name", length=100)
+	private String ownerName;
+	
+	@Column(name="owner_contactNo", length=10)
+	private String ownerContactNo;
 	
 	
+	
+	public String getOwnerName() {
+		return ownerName;
+	}
 
-	
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
+	}
+
+	public String getOwnerContactNo() {
+		return ownerContactNo;
+	}
+
+	public void setOwnerContactNo(String ownerContactNo) {
+		this.ownerContactNo = ownerContactNo;
+	}
+
 	public String getCountryCode() {
 		return countryCode;
 	}

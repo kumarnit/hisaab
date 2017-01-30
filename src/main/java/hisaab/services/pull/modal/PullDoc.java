@@ -12,8 +12,9 @@ import hisaab.services.user.modal.UserProfile;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-
+@Entity("pull_doc")
 public class PullDoc {
 	
     @Id

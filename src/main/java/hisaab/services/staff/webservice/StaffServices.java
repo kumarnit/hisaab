@@ -10,6 +10,8 @@ import hisaab.services.contacts.modal.ContactList;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.ContactBean;
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.staff.modal.StaffProfile;
 import hisaab.services.staff.dao.UserStaffMappingDao;
@@ -73,6 +75,20 @@ public class StaffServices {
 			contact.setName("");
 			StaffUserRequest st = StaffUserDao.verifyStaffUserCode( contactNo,reqId, status);
 			if(st != null){
+				/**
+				 * Adding to pull Doc
+				 * */
+				UserMaster userStaff = UserDao.getUserByContactNo(contact.getContactNo());
+				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+st.getOwnerId());
+//				pullDoc = PullDocDao.getPullDoc(pullDoc);
+//				PullDoc pullDoc1 = new PullDoc();
+//				if(userStaff != null){
+//					
+//					pullDoc1.setUserId(""+userStaff.getUserId());
+//					pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
+//				}
+				
 				if(status == Constants.STAFFUSER_REQ_ACCEPTED){
 					StaffUser user = StaffUserDao.staffUserLogin(st,contact, TokenModal.generateToken(), Constants.STAFF_USER, st.getOwnerId(),status);
 					if(user != null)
@@ -96,6 +112,9 @@ public class StaffServices {
 					ubean.setStatus(Constants.SUCCESS_RESPONSE);
 					ubean.setMsg("success");
 					result = ubean;
+//					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+//					if(pullDoc1 != null)
+//					PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}else if(status == 2){
 					UserMaster user = new UserMaster();       
 					user = UserDao.getUserForWeb(st.getOwnerId());
@@ -105,6 +124,9 @@ public class StaffServices {
 					}else{
 						result = ServiceResponse.getResponse(Constants.FAILURE, "Request rejection Failed");
 					}
+//					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+//					if(pullDoc1 != null)
+//						PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}	
 				else{
 					result = ServiceResponse.getResponse(401, "Invalid Response Type");

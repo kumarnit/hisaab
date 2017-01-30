@@ -17,6 +17,7 @@ import hisaab.services.notification.NotificationHelper;
 import hisaab.services.notification.PushNotificationControler;
 import hisaab.services.notification.TransactionNotification;
 import hisaab.services.notification.TransactionReadNotification;
+import hisaab.services.pull.helper.PullDocDao;
 import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.pull.modal.ReadTransaction;
 import hisaab.services.sms.SMSHelper;
@@ -228,8 +229,8 @@ public class TransactionDao {
 					tn.setPullFlag(1);
 */				PullDoc pullDoc = new PullDoc();
 				pullDoc.setUserId(""+userB.getUserId());
-				pullDoc = PullDocDao.getPullDoc(pullDoc);
-				PullDocDao.addTransaction(transactionDoc,pullDoc);
+//				pullDoc = PullDocDao.getPullDoc(pullDoc);
+//				PullDocDao.addTransaction(transactionDoc,pullDoc);
 				
 				/**
 				 * Notification message
@@ -283,7 +284,7 @@ public class TransactionDao {
 				List<Long> userli = tempUser.getValueMsgBy();
 				if(userli.isEmpty()){
 
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
@@ -301,7 +302,7 @@ public class TransactionDao {
 				
 				if( !tempUser.getValueMsgBy().contains(user.getUserId())){
 
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
@@ -712,6 +713,20 @@ public class TransactionDao {
 								else
 									tn.setPaymentStatus(Constants.TO_GIVE);
 							}*/
+							
+							PullDoc pullDoc = new PullDoc();
+							pullDoc.setUserId(""+userB.getUserId());
+//							pullDoc = PullDocDao.getPullDoc(pullDoc);
+//							TransactionDoc pullTransDoc = new TransactionDoc();
+//							pullTransDoc.setTransactions(Arrays.asList(transaction));
+//							PullDocDao.addModifiedTransaction(pullTransDoc,pullDoc);
+////							
+//							modReq.setCreatedBy(user.getUserId());
+//							modReq.setCreatedTime(epoch);
+//							modReq.setUpdatedTime(epoch);
+//							
+//							PullDocDao.addModificationRequest(modReq,pullDoc);
+							
 							/**
 							 * Notification message
 							 **/
@@ -925,7 +940,20 @@ public class TransactionDao {
 										tn.setPaymentStatus(Constants.TO_GIVE);
 	
 									}
-	*/								/**
+	*/		
+								PullDoc pullDoc = new PullDoc();
+								pullDoc.setUserId(""+userB.getUserId());
+//								pullDoc = PullDocDao.getPullDoc(pullDoc);
+//								TransactionDoc pullTransDoc = new TransactionDoc();
+//								pullTransDoc.setTransactions(Arrays.asList(transaction));
+//								PullDocDao.addModifiedTransaction(pullTransDoc,pullDoc);
+//								
+//								modReq.setCreatedBy(user.getUserId());
+//								modReq.setCreatedTime(epoch);
+//								modReq.setUpdatedTime(epoch);
+//								
+//								PullDocDao.addModificationRequest(modReq,pullDoc);
+									/**
 									 * Notification message
 									 **/
 									FriendContact frnd = null; 
@@ -1269,10 +1297,11 @@ public class TransactionDao {
 		UserMaster user = new UserMaster();
 		user.setUserId(4);
 		user.setOwnerId(0);
-		pullReadTransactions(user,0);
+//		pullReadTransactions(user,0);
 //		deleteTransactionSqlOnBlock("1",user) ;
 //		calculateAmt("57ea2153438db5d9b3b6e1ef");
-//		getTransactionListForWeb(Arrays.asList("1_2_1", "2_3_1","1_2_2"));
+//		getTransactionListForWeb(Arrays.asList("2_4_1", "2_3_1","1_2_2"));
+		getPendingTransaction(Arrays.asList("2_4_1"));
 		
 //		getTransactionForWeb("4_14_3", "57f342b0fe1db01b503840fw", user);
 		
@@ -1670,6 +1699,7 @@ public class TransactionDao {
 		quer.field("_id").equal(new ObjectId(transacDocId));
 //		quer.field("transactions.createdBy").equal(""+user.getUserId());
 		quer.filter("transactions.transactionId",transacId);
+		ModificationRequest modReq = new ModificationRequest();
 		
 
 		if(!quer.asList().isEmpty())
@@ -1681,7 +1711,7 @@ public class TransactionDao {
 		{
 		if(transactionDoc != null && transactionDoc.getDocType() == 0){
 			
-			ModificationRequest modReq = new ModificationRequest();
+			
 			modReq.setAction(Constants.TRANSACTION_DELETE);
 			modReq.setTransactionId(transaction.getTransactionId());
 			String user1 = quer.asList().get(0).getUser1();
@@ -1800,10 +1830,16 @@ public class TransactionDao {
 */	
 				PullDoc pullDoc = new PullDoc();
 				pullDoc.setUserId(""+userB.getUserId());
-				pullDoc = PullDocDao.getPullDoc(pullDoc);
-				TransactionDoc transDoc = new TransactionDoc();
-				transDoc.setTransactions(Arrays.asList(transaction));
-				PullDocDao.addModifiedTransaction(transDoc,pullDoc);
+//				pullDoc = PullDocDao.getPullDoc(pullDoc);
+//				TransactionDoc transDoc = new TransactionDoc();
+//				transDoc.setTransactions(Arrays.asList(transaction));
+//				PullDocDao.addModifiedTransaction(transDoc,pullDoc);
+//				
+//				modReq.setCreatedBy(user.getUserId());
+//				modReq.setCreatedTime(epoch);
+//				modReq.setUpdatedTime(epoch);
+//				
+//				PullDocDao.addModificationRequest(modReq,pullDoc);
 				/**
 				 * Notification message
 				 **/
@@ -2024,7 +2060,21 @@ public class TransactionDao {
 									tn.setPaymentStatus(Constants.TO_GIVE);
 							}
 */							
-
+							PullDoc pullDoc = new PullDoc();
+							pullDoc.setUserId(""+userB.getUserId());
+//							pullDoc = PullDocDao.getPullDoc(pullDoc);
+//							TransactionDoc pullTransDoc = new TransactionDoc();
+//							pullTransDoc.setTransactions(Arrays.asList(t));
+//							if(userResponse == Constants.ACTION_APPROVED){
+//								PullDocDao.addUpdateApproval(pullTransDoc,pullDoc,user);
+//							}else
+//								PullDocDao.addUpdateReject(pullTransDoc,pullDoc,user);
+//							req.setCreatedBy(user.getUserId());
+//							req.setCreatedTime(epoch);
+//							req.setUpdatedTime(epoch);
+//							
+//							PullDocDao.addModificationRequest(req,pullDoc);
+							
 							/**
 							 * Notification message
 							 **/
@@ -2105,9 +2155,10 @@ public class TransactionDao {
 	/**
 	 * for processing 
 	 * user Response on transaction update approval
+	 * @param autoApproval 
 	 **/
 	public static int processResponseForTransactionDelete(String transactionId, String transactionDocId, UserMaster user, 
-					int userResponse, ModificationRequest req){
+					int userResponse, ModificationRequest req, boolean autoApproval){
 		ObjectMapper mapper = new ObjectMapper();
 		int res = 0;
 		
@@ -2232,6 +2283,20 @@ public class TransactionDao {
 							else
 								tn.setPaymentStatus(Constants.TO_GIVE);
 						}*/
+						
+						PullDoc pullDoc = new PullDoc();
+						pullDoc.setUserId(""+userB.getUserId());
+//						pullDoc = PullDocDao.getPullDoc(pullDoc);
+//						TransactionDoc pullTransDoc = new TransactionDoc();
+//						pullTransDoc.setTransactions(Arrays.asList(t));
+//						PullDocDao.addDeleteTransaction(pullTransDoc,pullDoc,user,userResponse);
+//						
+//						req.setCreatedBy(user.getUserId());
+//						req.setCreatedTime(epoch);
+//						req.setUpdatedTime(epoch);
+//						
+//						PullDocDao.addModificationRequest(req,pullDoc);
+						
 						/**
 						 * Notification message
 						 **/
@@ -2263,6 +2328,16 @@ public class TransactionDao {
 						NotificationHelper.buildAndSendTransactionNotification(user, userB, t, transDoc, flag, msg, Constants.NOTIFICATION_TRANS_DELETE);
 						/*PushNotificationControler.sendNotificationsToUser(Arrays.asList(userB.getUserId()), null,
 										tn, msg);*/
+						if(autoApproval){
+							
+							String msg1;
+							msg1 =" Your Pending Request is approved Automatically.";
+					       
+							System.out.println("==///=="+msg);
+							
+							NotificationHelper.buildAndSendTransactionNotification(user, user, t, transDoc, flag, msg1, Constants.NOTIFICATION_TRANS_DELETE);
+							
+						}
 					}
 				}
 			
@@ -2615,6 +2690,7 @@ public class TransactionDao {
 		  try {
 		   
 		   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+//		   System.out.println("44 : "+mapper.writeValueAsString(output));
 		   List objList =  (List) output.getCommandResult().get("result") ;
 		   List<Transaction> flist = null;
 		   
@@ -3396,5 +3472,50 @@ public class TransactionDao {
 		Object result = null;
 		result = output.getCommandResult().get("result");
 		return result;
+	}
+
+
+	public static List<Transaction> getPendingTransaction(List<String> pendingTransId) {
+		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		 List<Transaction> flist = new ArrayList<Transaction>();
+			
+				  
+				  BasicDBList paramList = new BasicDBList();
+				  DBObject match = new BasicDBObject("$match", new BasicDBObject("modifiedTransactions.transactionId", 
+						     new BasicDBObject("$in",pendingTransId )));
+//				  paramList.add(new BasicDBObject("transactions.createdTime", new BasicDBObject("$gt",pullTime)));
+//				  paramList.add(new BasicDBObject("transactions.transactionStatus", Constants.TRANS_APROOVED));
+//				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("$and", paramList));
+//				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("transactions.transactionId", new BasicDBObject("$gt",pullTime)));
+				  DBObject gdb1 = new BasicDBObject();
+				  gdb1.put("_id","$_id");
+				  gdb1.put("modifiedTransactions",new BasicDBObject("$push","$modifiedTransactions"));
+				  DBObject group = new BasicDBObject("$group", gdb1);
+				  DBObject project = new BasicDBObject("$unwind", "$modifiedTransactions");
+				  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(project,match,group);
+				  System.out.println("i m in");
+				  try {
+				   ObjectMapper mapper = new ObjectMapper();
+				   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+				   List objList =  (List) output.getCommandResult().get("result") ;
+				   if(!objList.isEmpty()){
+			//		  System.out.println(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")));
+					  Gson gson = new Gson();
+					  for(BasicDBObject objArr : (List<BasicDBObject>) objList){
+						  List<Transaction> tempList =  gson.fromJson(gson.toJson(objArr.get("modifiedTransactions")),List.class);
+
+						  Iterator<Transaction> iterator = tempList.iterator();
+						  while(iterator.hasNext()){
+							 flist.add(gson.fromJson(gson.toJson(iterator.next()), Transaction.class));
+						  }
+					  }
+			//		  flist = (List<Transaction>) mapper.readValue(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")), List.class);
+				   }
+				   
+				  } catch (Exception e) {
+				   e.printStackTrace();
+				  }
+				 
+				 return flist;
 	}
 }

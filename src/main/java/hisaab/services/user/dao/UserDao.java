@@ -1016,4 +1016,31 @@ public class UserDao {
 		
 		
 	}
+
+
+	public static UserMaster getUserByContactNoForAddPullDoc(String contactNo) {
+		
+		Session session = null;
+		Transaction tx = null;
+		
+		UserMaster userList = null;
+				
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String hql = "from UserMaster where contactNo = :contactNo AND delFlag = :delete ";
+			Query query = session.createQuery(hql);
+			query.setParameter("contactNo", contactNo);
+			query.setParameter("delete", 0);
+//			query.setParameter("usertype", 0);
+			if(!query.list().isEmpty()){
+				userList = (UserMaster)query.list().get(0);
+			}
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return userList;
+	}
 }

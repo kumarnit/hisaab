@@ -1,4 +1,5 @@
-package hisaab.services.transaction.dao;
+package hisaab.services.pull.helper;
+
 
 import java.util.Arrays;
 
@@ -9,6 +10,7 @@ import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.transaction.openingbalance.dao.OpeningBalDao;
 import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
+import hisaab.services.transaction.request.modal.ModificationRequest;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
 
@@ -26,6 +28,22 @@ public class PullDocDao {
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
 		Query<PullDoc> query = datastore.createQuery(PullDoc.class);
 		query.field("userId").equal(pullDoc.getUserId());
+		if(query.get() != null){
+			
+			pullDoc = query.get();
+		}
+		else{
+			
+			datastore.save(pullDoc);
+		}
+		return pullDoc;
+	}
+	
+	public static PullDoc getPullDocForSync(long userId ){
+		PullDoc pullDoc = null;
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
+		Query<PullDoc> query = datastore.createQuery(PullDoc.class);
+		query.field("userId").equal(""+userId);
 		if(query.get() != null){
 			
 			pullDoc = query.get();
@@ -357,12 +375,42 @@ public class PullDocDao {
         	query1.field("userId").equal(pullDoc.getUserId());
         	UpdateOperations<PullDoc> op1 = datastore.createUpdateOperations(PullDoc.class);
         	op1.addAll("staffRequests", Arrays.asList(st),false);
+        	
         	UpdateResults ur = datastore.update(query1,op1 );
         	if(ur != null)
     			stat = ur.getUpdatedCount();
     		}
 
         
+		
+	}
+
+	public static void addModificationRequest(ModificationRequest modReq,
+			PullDoc pullDoc) {
+		
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
+		Query<PullDoc> query = datastore.createQuery(PullDoc.class);
+		query.field("userId").equal(pullDoc.getUserId());
+		query.filter("modificationRequest.id", modReq.getId());
+		UpdateOperations<PullDoc> op = datastore.createUpdateOperations(PullDoc.class);
+		if(!query.asList().isEmpty()){
+			op.disableValidation();
+        	op.set("modificationRequest.$.ownerId",modReq.getAction());
+        	op.set("modificationRequest.$.contactNo",modReq.getCreatedBy());
+			op.set("modificationRequest.$.staffUserId", modReq.getCreatedTime());
+			op.set("modificationRequest.$.createdTime", modReq.getEditedBy());
+			op.set("modificationRequest.$.updatedTime", modReq.getForUser());
+			op.set("modificationRequest.$.Status", modReq.getStatus());
+			op.set("modificationRequest.$.securityCode", modReq.getTransactionId());
+			op.set("modificationRequest.$.displayName", modReq.getUpdatedTime());
+			op.enableValidation();
+		}else{
+			op.addAll("modificationRequest", Arrays.asList(modReq),false);
+		}UpdateResults ur = datastore.update(query,op );
+    	int stat = 0;
+    	if(ur != null)
+			stat = ur.getUpdatedCount();
+		
 		
 	}
 	

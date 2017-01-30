@@ -10,8 +10,13 @@ import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 
 public class NotificationHelper {
@@ -252,7 +257,23 @@ public class NotificationHelper {
 		};
 		thrd.start();
 	}
-	
+	public static void buildAndSendAutoDeleteNotification(final List<Long> users, final AutoDeleteNotification msg, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+														
+				     ObjectMapper mapper = new ObjectMapper();
+					 PushNotificationControler.sendNotificationsToUser(users, null, msg, notificationText);
+				 try {
+					System.out.println("]]"+mapper.writeValueAsString(msg));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+		};
+		thrd.start();
+	}
 	public static void main(String[] args) {
 		System.out.println("in main....");
 		SendSimpleMessageAsThread("First");

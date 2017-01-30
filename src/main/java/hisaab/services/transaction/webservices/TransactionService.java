@@ -22,6 +22,7 @@ import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.transaction.request.dao.ModificationRequestDao;
 import hisaab.services.transaction.request.modal.ModificationRequest;
+import hisaab.services.transaction.request.webservices.ModificaltionBean;
 import hisaab.services.transaction.webservices.bean.ReadBean;
 import hisaab.services.transaction.webservices.bean.TransDocBean;
 import hisaab.services.transaction.webservices.bean.TransactionBean;
@@ -700,7 +701,7 @@ public class TransactionService {
 							{
 							try {
 								i =	TransactionDao.processResponseForTransactionDelete(transacId, transacDocId,
-										user, userResponse, req);
+										user, userResponse, req,false);
 							} catch (Exception e) {
 								System.out.println("Exception :2 "+e.getMessage());
 								System.out.println("in approve transaction action.");
@@ -752,7 +753,15 @@ public class TransactionService {
 							result = ServiceResponse.getResponse(402, "transaction Id or transaction Doc Id cannot be null or invalid");
 					}
 				}
-				else{ 
+				else{
+					ModificationRequest modReq = ModificationRequestDao.getModificationRequest1(transacId, user,reqId);
+					ModificaltionBean modBean = new ModificaltionBean();	
+					if(modReq != null){
+						modBean.setModRequest(modReq);
+						modBean.setMsg("Request is aprroved already ");
+						modBean.setStatus(205);
+						result = modBean;
+					}else
 					result = ServiceResponse.getResponse(501, "No action Request Found for this transaction id.");
 				}
 			}else{

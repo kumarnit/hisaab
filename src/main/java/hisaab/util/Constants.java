@@ -169,6 +169,8 @@ public class Constants {
 	
 	public static final int NOTIFICATION_SERVER_MIGRATE = 16;
 	
+	public static final int NOTIFICATION_AUTO_DELETE_TRANSACTION = 19;
+	
 	/**
 	 * System update Notification 
 	 **/
@@ -202,7 +204,7 @@ public class Constants {
 	
 	public static final int SMS_TYPE_TRANSACTIONAL = 2;
 	
-	public static final boolean SMS_PACK_ACTIVE = false; 
+	public static final boolean SMS_PACK_ACTIVE = true; 
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 

@@ -60,8 +60,8 @@ public class UserImageServices {
 			if (Constants.DEV_MODE)
 				uploadedFileLocation = servletContext.getRealPath("/");
 			else {
-				
-				uploadedFileLocation =Constants.USER_IMAGES_FOLDER;
+//				System.out.println(System.getenv("OPENSHIFT_DATA_DIR"));
+				uploadedFileLocation = Constants.USER_IMAGES_FOLDER;
 			}
 			System.out.println("context path :" + uploadedFileLocation);
 			String imgName = ImageHelper

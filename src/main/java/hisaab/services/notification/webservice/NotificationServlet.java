@@ -54,7 +54,7 @@ public class NotificationServlet extends HttpServlet {
 		sub.getUpdate().setStopSupportForVersion(stop);
 		sub.getUpdate().setNewFeatures(features);
 		sub.getUpdate().setNotificationType(Constants.NOTIFICATION_SYSTEM_NOTIFICATION);
-		NotificationHelper.buildAndSendUpdateSystemNotification(sub.getUpdate(),"New Update Availble");
+		NotificationHelper.buildAndSendUpdateSystemNotification(sub.getUpdate(),"New Update Available");
 		PrintWriter out = response.getWriter();
 		out.print("<html>sucess</html>");
 		response.sendRedirect("updateNotification.jsp");
