@@ -10,21 +10,22 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import hisaab.config.hibernate.HibernateUtil;
-import hisaab.config.morphia.MorphiaDatastoreTrasaction;
+
 import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.Contact;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.user.UserHelper;
+
 import hisaab.services.user.modal.UserMaster;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.user.token.TokenModal;
-import hisaab.services.user.webservices.bean.ContactUserprofileBean;
+
 import hisaab.services.user.webservices.bean.UserProfileFriendBean;
-import hisaab.services.user.webservices.bean.UserprofileMainBean;
+
 import hisaab.util.Constants;
-import hisaab.util.ServiceResponse;
+
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -65,7 +66,6 @@ public class UserDao {
 			Query query = session.createQuery(hql);
 			query.setParameter("contact", contact);
 			query.setParameter("delFlag", 0);
-			
 			
 			if(query.list().size()>0){
 				
@@ -297,7 +297,9 @@ public class UserDao {
 //		UserMaster user = new UserMaster();
 //		user.setUserId(2);
 //		updateSmsCount(user);
-		deleteUserRequest();
+//		deleteUserRequest();
+		
+		updateLastSyncTime(Long.parseLong("2"), System.currentTimeMillis());
 	}
 	
 	public static boolean updateUserOnBoardingFlag(Long userId){
@@ -594,6 +596,15 @@ public class UserDao {
 		} finally {
 			session.close();
 		}
+		/**
+		 * testing for cache of contact
+		 * ***/
+		/*UserCache usercache = new UserCache();
+		usercache.setContactno(user.getContactNo());
+		usercache.setUserId(user.getUserId());
+		usercache.setUserType(user.getUserType());
+		Constants.cache.put(user.getContactNo(), usercache);*/
+		
 		return user;
 	}
 	public static List<UserMaster> userLoginForStaffUser(List<String> contact) {
@@ -683,12 +694,12 @@ public class UserDao {
 		tx = session.beginTransaction();
 			
 			String hql = "update UserMaster set smsCount = smsCount+1, "
-					+ " updatedTime = :time, msgByuser = :msg, dateOfMsg = :date WHERE userId = :userId ";
+					+ " updatedTime = :time WHERE userId = :userId ";
 			Query query = session.createQuery(hql);
 			query.setParameter("time", System.currentTimeMillis());
 			query.setParameter("userId", user.getUserId());
-			query.setParameter("msg",user.setValueMsgBy(sender.getUserId()));
-			query.setParameter("date",user.setValueDateOfMsg());
+//			query.setParameter("msg",user.setValueMsgBy(sender.getUserId()));
+//			query.setParameter("date",user.setValueDateOfMsg());
 			if(query.executeUpdate() > 0){
 				
 				flag = true;
@@ -902,8 +913,7 @@ public class UserDao {
 	
 	public static void setUserMasterInHashMap() {
 		Session session = null;
-		Transaction tx = null;
-		String str = "";
+		
 		
 		UserMaster useritr = null;
 		
@@ -924,15 +934,47 @@ public class UserDao {
 			
 		} catch (Exception e) {
 			System.out.println("Exception = " + e.getMessage());
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
+			
 			
 		} finally {
 			session.close();
 		}
 		
 	}
+	/*public static void setUserMasterInCacheMap() {
+		Session session = null;
+		
+		List<UserCache> userlist = null; 
+		UserMaster useritr = null;
+		
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			String hql = "from UserMaster where delFlag = :delFlag";
+			Query query = session.createQuery(hql);
+			query.setParameter("delFlag", 0);
+			Iterator<UserMaster> itr = null;
+			if(query.list().size()>0){
+				UserCache temp = null;
+				itr = query.list().iterator();
+				while(itr.hasNext()){
+					temp = new UserCache();
+					useritr = itr.next();
+					temp.setUserId(useritr.getUserId());
+					temp.setUserType(useritr.getUserType());
+					temp.setContactno(useritr.getContactNo());
+					Constants.cache.put(temp.getContactno(), temp);
+				}
+			}
+			
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			
+			
+		} finally {
+			session.close();
+		}
+		
+	}*/
 	public static void test(Contact contact, int userType) {
 		  Session session = null;
 		  Transaction tx = null;
@@ -1043,4 +1085,103 @@ public class UserDao {
 		}
 		return userList;
 	}
+
+
+	public static boolean setAppVersion(UserMaster user, int appVersion) {
+		Session session = null;
+		Transaction tx = null;
+		long epoch = System.currentTimeMillis();
+		boolean flag = false;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			String hql = "Update UserMaster set appVersion = :appversion, updatedTime = :updatedDate "
+					+ "where userId = :userId ";
+			Query query = session.createQuery(hql);
+			query.setParameter("userId", user.getUserId());
+			query.setParameter("appversion", ""+appVersion);
+			query.setParameter("updatedDate", epoch);
+			int i = query.executeUpdate();
+			if(i>0){
+				flag = true;
+			}
+			tx.commit();	
+		}
+		catch (Exception e) {
+			System.out.println("Exception = "+e.getMessage());
+			if(tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		}finally{
+			session.close();
+		}
+		return flag;
+	}
+	
+	
+	public static boolean updateLastSyncTime(long userId, long epoch){
+		boolean flag = false;
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			
+			String hql = "update UserProfile set lastSyncTime = :time"
+					+ "  WHERE userId = :userId";
+			
+			Query query = session.createQuery(hql);
+			query.setParameter("time", epoch);
+			query.setParameter("userId", userId);
+			System.out.println(query);
+			System.out.println("user id : "+userId);
+			System.out.println("time : "+epoch);
+			if(query.executeUpdate() > 0){
+				flag = true;
+			}
+			
+			tx.commit();
+			
+		} catch (Exception e) {
+			flag = false;
+			e.printStackTrace();
+		}finally{
+			session.close();
+		}
+		
+		return flag;
+	}
+	
+	
+	public static boolean updateTransActivityTime(long userId, long epoch){
+		boolean flag = false;
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			
+			String hql = "update UserProfile set lastActivity = :time"
+					+ "  WHERE userId = :userId";
+			
+			Query query = session.createQuery(hql);
+			query.setParameter("time", epoch);
+			query.setParameter("userId", userId);
+			
+			if(query.executeUpdate() > 0){
+				flag = true;
+			}
+			
+			tx.commit();
+			
+		} catch (Exception e) {
+			flag = false;
+			e.printStackTrace();
+		}finally{
+			session.close();
+		}
+		
+		return flag;
+	}
+
 }

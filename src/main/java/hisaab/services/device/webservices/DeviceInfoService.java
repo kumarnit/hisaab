@@ -43,7 +43,7 @@ public class DeviceInfoService {
 		}
 		
 		if(user.getUserId() > 0){
-			
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			DeviceInfoDoc deviceInfodoc = DeviceInfoDao.getDeviceInfoDoc(user);
 			deviceInfodoc.setDevice(Arrays.asList(deviceInfoBean.getDeviceInfo()));
 			if(!DeviceInfoDao.checkAndUpdateForDeviceId(deviceInfodoc))

@@ -14,6 +14,16 @@ public class SystemUpdateNotification {
 	
 	private String stopSupportForVersion;
 	
+	private long lastDate;
+	
+	public long getLastDate() {
+		return lastDate;
+	}
+
+	public void setLastDate(long lastDate) {
+		this.lastDate = lastDate;
+	}
+
 	private List<String> newFeatures = new ArrayList<String>();
 	
 

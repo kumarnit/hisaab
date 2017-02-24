@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import hisaab.config.morphia.MorphiaDatastoreTrasaction;
 import hisaab.services.contacts.modal.FriendList;
@@ -151,10 +152,11 @@ public class Test {
 //		UserMaster u = new UserMaster();
 //		u.setUserId(1);
 //		getTransactionForWebByTransactionList(Arrays.asList("1_2_2","1_2_5","1_4_2","4_8_4"), "", u);
-		
-		getTransactionCount();
-		
-		
+//		long l1 = Long.parseLong("1484320838317");
+//		long l2 = Long.parseLong("1484840298127");
+//		System.out.println(TimeUnit.MILLISECONDS.toDays(l1 - l2));
+		int a=0, b=0;
+		System.out.println(a/b);
 	}
 	
 	public static Object getTransactionCount(){

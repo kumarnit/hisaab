@@ -1,5 +1,8 @@
+<%@page import="hisaab.util.RandomStringHelper"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+   <%@ page import="hisaab.util.Constants,org.codehaus.jackson.map.ObjectMapper" %>
+  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,42 +10,38 @@
 <title>Insert title here</title>
 <link href="css/style.css" rel="stylesheet">
 <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
-
-
 </head>
-<body>
+<br>
+<form action="RespSer" method="post">
+<input type="submit" value="Logout" >
+</form>
 
-<!-- <div class="container home-wrapper">
+<%
+String userName = null;
+Cookie[] cookies = request.getCookies();
+/* ObjectMapper mapper = new ObjectMapper();
+HttpSession str = request.getSession();
+out.print(request.getSession().getId()); */	
+if(cookies !=null){
+for(Cookie cookie : cookies){
+	if(cookie.getName().equals("user")) {userName = cookie.getValue();
+		if(userName.equalsIgnoreCase("admin")){
+	
+	 out.print("<div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div></div></div>");
+		}
+	 }
+}
+}
+if(userName == null) response.sendRedirect("main.jsp");
+%>
+<%-- <h3>Hi <%=userName %>, Login successful.</h3> --%>
 
-		<button class="button" id="viewuser" style="vertical-align:middle">View User</button>
 
-</div> -->
-<div class="container home-wrapper">
-<div id="status" align="center">&nbsp;</div>
 
-<div class="top-buttons col-sm-12">
-<div class="col-sm-6 left-div">
-          <button class="btn btn-primary" id="viewuser" >View User</button>
-          
-</div>
-<div class="col-sm-6 right-div">
-          <button class="btn btn-primary" id="viewalluser" >View All user</button>
-          
-</div>
-<div class="col-sm-6 left-div">
-          <button class="btn btn-primary" id="setCount" >Set Transaction Count</button>
-          
-</div>
-<div class="col-sm-6 right-div">
-          <button class="btn btn-primary" id="viewUserTransCount" >View Transaction Count</button>
-          
-</div>
-</div>
-</div>
-</body>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">
 /* $(document).ready(function () { */
+	
 $(document).ready(function () {
 $('#viewuser').click(function() {
     window.location.href = 'viewUser.jsp';

@@ -21,6 +21,8 @@ import hisaab.services.staff.dao.UserStaffMappingDao;
 import hisaab.services.staff.modal.StaffUser;
 import hisaab.services.staff.modal.StaffUserRequest;
 import hisaab.services.staff.modal.UserStaffMapping;
+import hisaab.services.transaction.clear_transaction.dao.ClearTransactionRequestDao;
+import hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest;
 import hisaab.services.transaction.dao.TransactionDao;
 import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.transaction.openingbalance.dao.OpeningBalDao;
@@ -31,6 +33,7 @@ import hisaab.services.user.dao.PrivateUserDao;
 import hisaab.services.user.dao.RequestDao;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.PrivateUser;
+import hisaab.services.user.modal.UserCache;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.user.modal.UserRequest;
@@ -158,6 +161,20 @@ public class UserServices {
 					UserMaster user = UserDao.userLogin(contactNo, serverToken, userReq.getCountryCode(),appVersion);
 					if(user != null && user.getUserId() > 0){
 							Constants.userMaster.put(""+user.getUserId(), user);
+							/**
+							 * testing for cache of contact
+							 * ***/
+							
+							/*UserCache usercache = new UserCache();
+							usercache.setContactno(user.getContactNo());
+							usercache.setUserId(user.getUserId());
+							usercache.setUserType(user.getUserType());
+							if( Constants.cache.get(user.getContactNo()) != null){
+								
+								Constants.cache.replace(user.getContactNo(), Constants.cache.get(user.getContactNo()), usercache);
+							}else
+								Constants.cache.put(user.getContactNo(), usercache);*/
+							
 						}
 					UserBean ubean = new UserBean();
 					ubean.setUser(user);
@@ -241,6 +258,19 @@ public class UserServices {
 					user.setUserId(userId);
 //					user.setOnboarding(Constants.ONBOARDING_COMPLETED);
 					if(UserDao.updatePushToken(user)){
+							
+							
+							UserMaster tempUser = null;
+							UserMaster newTemp = new UserMaster();
+							tempUser = Constants.userMaster.get(user.getUserId()+"");
+							if(tempUser != null){
+								newTemp = tempUser;
+								newTemp.setPushId(user.getPushId());
+								newTemp.setUpdatedTime(epoch);
+								newTemp.setDeviceType(user.getDeviceType());
+								newTemp.getUserProfile().setPubStatus(userBean.getUser().getUserProfile().getPubStatus());
+								Constants.userMaster.put(user.getUserId()+"",  newTemp);
+							}
 						
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "PushToken updated successfully.");
 						try {
@@ -285,7 +315,7 @@ public class UserServices {
 			@HeaderParam("authId") String authId, UserBean userBean){
 		
 		Object result = null;
-		
+		long epoch = System.currentTimeMillis();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", authId : "+authId;	
 		String res = "";
@@ -302,9 +332,25 @@ public class UserServices {
 				requestingUser = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(requestingUser.getUserId()>0){
+				UserDao.updateTransActivityTime(requestingUser.getUserId(), System.currentTimeMillis());
 				userBean.getUser().getUserProfile().setUserId(requestingUser.getUserId());
 				if(UserProfile.validateProfileUpdate(userBean.getUser().getUserProfile())){
 					if(UserDao.updateProfile(userBean.getUser().getUserProfile())){
+						
+						UserMaster tempUser = null;
+						UserMaster newTemp = new UserMaster();
+						tempUser = Constants.userMaster.get(requestingUser.getUserId()+"");
+						if(tempUser != null){
+							newTemp = tempUser;
+							newTemp.getUserProfile().setUserName(userBean.getUser().getUserProfile().getUserName());
+							newTemp.getUserProfile().setDisplayName(userBean.getUser().getUserProfile().getDisplayName());
+							newTemp.getUserProfile().setPubStatus(userBean.getUser().getUserProfile().getPubStatus());
+							newTemp.getUserProfile().setUpdatedTime(epoch);
+							newTemp.getUserProfile().setOrgName(userBean.getUser().getUserProfile().getOrgName());
+							newTemp.getUserProfile().setImageKey(userBean.getUser().getUserProfile().getImageKey());
+							Constants.userMaster.put(userBean.getUser().getUserId()+"", newTemp);
+						}
+					
 						userBean.setStatus(Constants.SUCCESS_RESPONSE);
 							userBean.setMsg("Successfuly Updated.");
 						result = userBean;
@@ -593,6 +639,7 @@ public class UserServices {
 			contact.setCountryCode(phnNum.getCountryCode()+"");
 			
 		if(user1.getUserId()>0){
+			UserDao.updateTransActivityTime(user1.getUserId(), System.currentTimeMillis());
 			try
 			{
 				UserMaster user = UserDao.userLogin2(contact,TokenModal.generateToken(), Constants.NOT_REGISTERED_USER, 0);
@@ -705,7 +752,7 @@ public class UserServices {
 				user1 = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user1.getUserId()>0){
-			
+				UserDao.updateTransActivityTime(user1.getUserId(), System.currentTimeMillis());
 				List<String> contact1 = new ArrayList<String>();
 				Contact con1 = null;
 				int flag = 0;
@@ -814,6 +861,7 @@ public class UserServices {
 		
 		try{	
 			if(user1.getUserId()>0){
+				UserDao.updateTransActivityTime(user1.getUserId(), System.currentTimeMillis());
 				StaffUser userstaff = StaffUserDao.getStaffUserByStaffIdForWeb(staffId);
 				if(userstaff != null)
 				{
@@ -905,6 +953,7 @@ public class UserServices {
 				usermaster = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(usermaster != null){
+				UserDao.updateTransActivityTime(usermaster.getUserId(), System.currentTimeMillis());
 				    StaffUserRequest st =StaffUserDao.getStaffRequestsByReqId(reqId);
 					if(StaffUserDao.cancelStaffUserRequest(usermaster,reqId,4,st)){
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE,"Request Cancelled" );
@@ -965,6 +1014,7 @@ public class UserServices {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				try
 				{
 					PrivateUser unmanUser = PrivateUserDao.addPrivateuser(user,contact);
@@ -1041,6 +1091,7 @@ public class UserServices {
 				usermaster = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(usermaster != null){
+				UserDao.updateTransActivityTime(usermaster.getUserId(), System.currentTimeMillis());
 					if(PrivateUserDao.getPrivateUserById(privateUserId,usermaster)){
 						if(PrivateUserDao.deletePrivateUser(privateUserId,usermaster))
 						{	result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE,"Deleted Successfully" );
@@ -1105,6 +1156,7 @@ public class UserServices {
 			}
 			
 			if(usermaster != null){
+				UserDao.updateTransActivityTime(usermaster.getUserId(), System.currentTimeMillis());
 					PrivateUserBean pub = UserHelper.blockUser(frndId, usermaster);
 					if(pub.getFriendContact() != null){
 						ModificationRequestDao.deleteModificationRequestOnBlock(frndId, usermaster);
@@ -1174,6 +1226,7 @@ public class UserServices {
 		TransactionDocFriendBean responsebean = new TransactionDocFriendBean();
 		if(user.getUserId()>0)
 		{   
+			UserDao.updateLastSyncTime(user.getUserId(), System.currentTimeMillis());
 			FriendContact frnd = FriendsDao.getFriendForWeb(associateId, 0, user);
 			if(frnd != null){
 			    TransactionDoc  transactionDoc = new TransactionDoc();
@@ -1181,15 +1234,16 @@ public class UserServices {
 			    transactionDoc.setUser2(""+user.getUserId());
 			    transactionDoc.setDocType(frnd.getFrndStatus());
 			    transDoc = TransactionDao.getTransactionDocForUser(transactionDoc);
+			    List<ClearTransactionRequest> ctr =  ClearTransactionRequestDao
+			    		.pullAllClearTransactionRequestForusers(user.getUserId()+"", associateId);
+			    
 			    if(transDoc != null){
 			    	responsebean.setFriend(frnd);
 			    	responsebean.setMsg("success");
 			    	responsebean.setStatus(200);
 			    	responsebean.setTransactionDoc(transDoc);
+			    	responsebean.setClearTransRequestList(ctr);
 			    	result = responsebean;
-			    	
-			    	
-			    	
 			    }
 			    else
 			    {
@@ -1197,6 +1251,7 @@ public class UserServices {
 			    	responsebean.setStatus(Constants.SUCCESS_RESPONSE);
 			    	responsebean.setMsg("Transaction Doc Doesn't exist");
 			    	responsebean.setTransactionDoc(null);
+			    	responsebean.setClearTransRequestList(ctr);
 			    	result = responsebean;
 			    }
 			}

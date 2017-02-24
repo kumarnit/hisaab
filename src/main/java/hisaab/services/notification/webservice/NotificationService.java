@@ -1,8 +1,10 @@
 package hisaab.services.notification.webservice;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import hisaab.services.notification.DeepLinkNotification;
 import hisaab.services.notification.NotificationHelper;
 import hisaab.services.notification.ServerMigrateNotification;
 import hisaab.services.notification.webservice.bean.SystemUpdateBean;
@@ -20,6 +22,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -78,6 +84,33 @@ public class NotificationService {
 			NotificationHelper.buildAndSendServerMigrateSystemNotification(sermigrate,"Server Migrate");
 //			String newToken = RequestDao.addNewUserRequest();
 //			result =  "{ " + "\"status\" : 200, " +  "\"serverToken\" : \""+newToken+ "\", \"msg\": \"New token\"}";
+		}catch(Exception e){
+			System.out.println("Exception in Update System Notification Service : \n"+e.getMessage());
+			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+		}
+		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
+	}
+	
+	@POST
+	@Path("/deepLink")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public Response sendDeepLinkNotification(DeepLinkNotification deepLink){
+		Object result = null;
+		try{
+			
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				System.out.println(mapper.writeValueAsString(deepLink));
+			} catch ( Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			deepLink.setNotificationType(Constants.NOTIFICATION_DEEP_LINK);
+			NotificationHelper.buildAndSendDeepLinkNoti(deepLink,"Deep Links");
+//			String newToken = RequestDao.addNewUserRequest();
+			result =  ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "success");
+//			result = "success";
 		}catch(Exception e){
 			System.out.println("Exception in Update System Notification Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");

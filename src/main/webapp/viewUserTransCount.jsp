@@ -9,7 +9,7 @@
 <%@page import="iapp.com.invoice.app.invoice.modal.InvLogDetail"%> --%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-
+<%@ page import="hisaab.util.*" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%@page import="java.util.ArrayList" %>
@@ -31,48 +31,38 @@
 <script type="text/javascript" charset="utf-8" src="resources/datatable/js/jquery.dataTables.min.js"></script>
 <!--<link rel="stylesheet" type="text/css" href="css/style.css" /> -->
 </head>
-<body>
-<%-- <%@include file="loader.jsp" %> --%>
-	
-	<%
+
+<%
+String userName = null;
+Cookie[] cookies = request.getCookies();
+
+if(cookies !=null){
+for(Cookie cookie : cookies){
+	if(cookie.getName().equals("user")) {userName = cookie.getValue();
+		if(userName.equalsIgnoreCase("admin")){
 		
-	Calendar calendar = new GregorianCalendar();
-	
+			out.print("<body><h3 align=\"center\"> All Active user List </h3><table id=\"itemExpiryTable\" class=\"display\" cellspacing=\"0\" width=\"75%\"><thead><tr><th>Id</th><th align=\"center\">User Name</th><th align=\"center\">Contact No</th><th align=\"center\">Created On</th><th align=\"center\">Transaction Count</th><th align=\"center\">Status</th></tr></thead><tbody></tbody></table></body>");
+		}
+	 }
+}
+}
+if(userName == null) response.sendRedirect("main.jsp");
+%>
+<%-- <h3>Hi <%=userName %>, Login successful.</h3> --%>
+<br>
+<form action="RespSer" method="post">
+<input type="submit" value="Logout" >
+</form>
 
-	DateFormat formatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
 
-	
-	
 
-	 %>
-	
+<!-- <body>
+
 	<h3 align="center"> All Active user List </h3>
 
 	<br />
 	
-	<!--  <div class="">
-	<div class="col-sm-3">
-			<div class="form-group selectdevice">
-			  <label for="sel1">Select Device:</label>
-			  <select class="form-control" id="sel1">
-					    <option value="1"> IOS</option>
-					    <option value="2">Android</option>					 
-			  </select>
-			</div>
-		</div>
-		
-		<div class="col-sm-offset-6 col-sm-3 search-field">
-			<label>Search :</label>
-			<div class="col-sm-12">
-			<div class="col-sm-9">			
-				<input type="text" id="searchTxt" name="" class="form-control" >
-			</div>
-		    <div class="col-sm-3">
-				<button type="button" id="searchbtn">Search</button>
-			</div>
-			</div>
-		</div>
-	</div> -->
+	
 
 	<table id="itemExpiryTable" class="display" cellspacing="0" width="75%">
 		
@@ -89,7 +79,8 @@
 		<tbody>
 				</tbody>
 		
-	</table>
+	</table> 
+	</body>-->
 	
 
 	
@@ -143,5 +134,5 @@
 		}); */
 	</script>
 
-</body>
+
 </html>

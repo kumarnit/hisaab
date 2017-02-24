@@ -91,6 +91,7 @@ public class TransactionService {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				FriendList frndList = FriendsDao.getAssociatedUserDoc(user);
 				FriendContact frnd = null;
@@ -223,6 +224,7 @@ public class TransactionService {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				if(TransactionDao.markTransactionsAsReadInSql(rBean.getTransIds(), user, 1)){
 					result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "transactions marked as read.");
 				}
@@ -275,6 +277,7 @@ public class TransactionService {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				List<String> failed = new ArrayList<String>();
 				if(!rBean.getTransIds().isEmpty())
 				{
@@ -341,6 +344,7 @@ public class TransactionService {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				if(ObjectId.isValid(transDispBean.getTransactionDocId()))
 					transDoc = TransactionDao.disputeTransaction(transDispBean, user);
@@ -411,27 +415,38 @@ public class TransactionService {
 				user = UserDao.getUserFromAuthToken(authToken);
 			}
 			if(user.getUserId()>0){
+				UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 				logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 				if(transacDocId != null && transacId != null && ObjectId.isValid(transacDocId)){
 					TransactionDoc trndocs = TransactionDao.getTransactionDocByDocId(transacDocId);
 					if(trndocs != null && trndocs.getDocType() != 5){
-						if(TransactionDao.deleteTransaction(transacId, transacDocId, user)){
-							trndocs = TransactionDao.getTransactionDocByDocId(transacDocId);
-							if(trndocs.getDocType() != 0){
-								trndocs.setBackedUptransactions(null);
-								trndocs.setModifiedTransactions(null);
-								trndocs.setTransactions(null);
-								
-								trnsDocBean.setMsg(" successfull");
-								trnsDocBean.setStatus(Constants.SUCCESS_RESPONSE);
-								trnsDocBean.setTransDoc(trndocs);
-								result = trnsDocBean;
+						ModificationRequest modReq = ModificationRequestDao.getModificationRequestFor(transacId);
+						if(modReq == null)
+						{
+							if(TransactionDao.deleteTransaction(transacId, transacDocId, user)){
+								trndocs = TransactionDao.getTransactionDocByDocId(transacDocId);
+								if(trndocs.getDocType() != 0){
+									trndocs.setBackedUptransactions(null);
+									trndocs.setModifiedTransactions(null);
+									trndocs.setTransactions(null);
+									
+									trnsDocBean.setMsg(" successfull");
+									trnsDocBean.setStatus(Constants.SUCCESS_RESPONSE);
+									trnsDocBean.setTransDoc(trndocs);
+									result = trnsDocBean;
+								}
+								else
+								result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "transaction deleted successfull");
 							}
-							else
-							result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "transaction deleted successfull");
-						}
-						else{
-							result = ServiceResponse.getResponse(501, "Delete operation Failed");
+							else{
+								result = ServiceResponse.getResponse(501, "Delete operation Failed");
+							}
+						}else{
+							ModificaltionBean modBean = new ModificaltionBean();
+							modBean.setModRequest(modReq);
+							modBean.setMsg("Already have Pending Request");
+							modBean.setStatus(205);
+							result = modBean;
 						}
 					}else{
 						result = ServiceResponse.getResponse(406, "Blocked User Transaction");
@@ -497,6 +512,7 @@ public class TransactionService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			transDoc.setUser1(""+user.getUserId());
 			transDoc.setUser2(""+uid);
 			transDoc.setDocType(Constants.NOT_REGISTERED_USER);
@@ -571,26 +587,35 @@ public class TransactionService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			if(transBean.getTransactions().getTransactionDocId()!= null
 					&& ObjectId.isValid(transBean.getTransactions().getTransactionDocId())){
-			
-				trnsDoc = TransactionDao.updateTransaction2(transBean.getTransactions(),user);
-				
-				if(trnsDoc!=null)
-				{
-					if(trnsDoc.getModifiedTransactions().get(0).getSyncFlag() == 2){
-						result = ServiceResponse.getResponse(406, "Blocked User Transaction");
-					}else{
-						transBean1.setTransDoc(trnsDoc);
-						transBean1.setStatus(Constants.SUCCESS_RESPONSE);
-						transBean1.setMsg("Success");
-						result=transBean1;
-					}
+				ModificationRequest modReq = ModificationRequestDao.getModificationRequestFor(transBean.getTransactions().getTransactionId());
+			    if(modReq == null){
+					trnsDoc = TransactionDao.updateTransaction2(transBean.getTransactions(),user);
 					
-				}
-				else{
-					result = ServiceResponse.getResponse(Constants.DB_FAILURE, "DataBase updation failed");
+					if(trnsDoc!=null)
+					{
+						if(trnsDoc.getModifiedTransactions().get(0).getSyncFlag() == 2){
+							result = ServiceResponse.getResponse(406, "Blocked User Transaction");
+						}else{
+							transBean1.setTransDoc(trnsDoc);
+							transBean1.setStatus(Constants.SUCCESS_RESPONSE);
+							transBean1.setMsg("Success");
+							result=transBean1;
+						}
+						
+					}
+					else{
+						result = ServiceResponse.getResponse(Constants.DB_FAILURE, "DataBase updation failed");
+					}
+				}else{
+					ModificaltionBean modBean = new ModificaltionBean();
+					modBean.setModRequest(modReq);
+					modBean.setMsg("Already have Pending Request");
+					modBean.setStatus(205);
+					result = modBean;
 				}
 			}
 			else{
@@ -657,6 +682,7 @@ public class TransactionService {
 		}
 //		TransactionDoc transDoc = null;
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			if(transacDocId != null && transacId != null){
 			
@@ -671,7 +697,7 @@ public class TransactionService {
 							{
 							try {
 								i =	TransactionDao.processResponseForTransactionUpdate(transacId, transacDocId,
-										user, userResponse, req);
+										user, userResponse, req,false);
 								
 							} catch (Exception e) {
 								System.out.println("Exception :1 "+e.getMessage());
@@ -825,6 +851,7 @@ public class TransactionService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			 TransactionDao.syncUpdate(transBean.getTransactions(),user);
 			 transBean.setStatus(Constants.SUCCESS_RESPONSE);

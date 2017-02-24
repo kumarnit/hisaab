@@ -81,13 +81,13 @@ public class StaffServices {
 				UserMaster userStaff = UserDao.getUserByContactNo(contact.getContactNo());
 				PullDoc pullDoc = new PullDoc();
 				pullDoc.setUserId(""+st.getOwnerId());
-//				pullDoc = PullDocDao.getPullDoc(pullDoc);
-//				PullDoc pullDoc1 = new PullDoc();
-//				if(userStaff != null){
-//					
-//					pullDoc1.setUserId(""+userStaff.getUserId());
-//					pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
-//				}
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDoc pullDoc1 = new PullDoc();
+				if(userStaff != null){
+					
+					pullDoc1.setUserId(""+userStaff.getUserId());
+					pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
+				}
 				
 				if(status == Constants.STAFFUSER_REQ_ACCEPTED){
 					StaffUser user = StaffUserDao.staffUserLogin(st,contact, TokenModal.generateToken(), Constants.STAFF_USER, st.getOwnerId(),status);
@@ -112,9 +112,9 @@ public class StaffServices {
 					ubean.setStatus(Constants.SUCCESS_RESPONSE);
 					ubean.setMsg("success");
 					result = ubean;
-//					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
-//					if(pullDoc1 != null)
-//					PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
+					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+					if(pullDoc1 != null)
+					PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}else if(status == 2){
 					UserMaster user = new UserMaster();       
 					user = UserDao.getUserForWeb(st.getOwnerId());
@@ -124,9 +124,9 @@ public class StaffServices {
 					}else{
 						result = ServiceResponse.getResponse(Constants.FAILURE, "Request rejection Failed");
 					}
-//					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
-//					if(pullDoc1 != null)
-//						PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
+					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+					if(pullDoc1 != null)
+						PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}	
 				else{
 					result = ServiceResponse.getResponse(401, "Invalid Response Type");

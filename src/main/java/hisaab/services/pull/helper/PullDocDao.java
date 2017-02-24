@@ -4,6 +4,7 @@ package hisaab.services.pull.helper;
 import java.util.Arrays;
 
 import hisaab.config.morphia.MorphiaDatastoreTrasaction;
+import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.staff.modal.StaffUserRequest;
 import hisaab.services.transaction.modal.Transaction;
@@ -11,6 +12,7 @@ import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.transaction.openingbalance.dao.OpeningBalDao;
 import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
 import hisaab.services.transaction.request.modal.ModificationRequest;
+import hisaab.services.transaction.staff_transaction.modal.StaffTransactionDoc;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
 
@@ -48,10 +50,10 @@ public class PullDocDao {
 			
 			pullDoc = query.get();
 		}
-		else{
+		/*else{
 			
 			datastore.save(pullDoc);
-		}
+		}*/
 		return pullDoc;
 	}
 	
@@ -312,6 +314,7 @@ public class PullDocDao {
         	op.disableValidation();
         	op.set("staffRequestsForYou.$.ownerId",staffUser.getOwnerId());
         	op.set("staffRequestsForYou.$.contactNo",staffUser.getContactNo());
+        	if(staffUser.getStaffUserId() != null)
 			op.set("staffRequestsForYou.$.staffUserId", staffUser.getStaffUserId());
 			op.set("staffRequestsForYou.$.createdTime", staffUser.getCreatedTime());
 			op.set("staffRequestsForYou.$.updatedTime", staffUser.getUpdatedTime());
@@ -355,6 +358,7 @@ public class PullDocDao {
         	op.disableValidation();
         	op.set("staffRequests.$.ownerId",st.getOwnerId());
         	op.set("staffRequests.$.contactNo",st.getContactNo());
+        	if(st.getStaffUserId() != null)
 			op.set("staffRequests.$.staffUserId", st.getStaffUserId());
 			op.set("staffRequests.$.createdTime", st.getCreatedTime());
 			op.set("staffRequests.$.updatedTime", st.getUpdatedTime());
@@ -411,6 +415,12 @@ public class PullDocDao {
     	if(ur != null)
 			stat = ur.getUpdatedCount();
 		
+		
+	}
+
+	public static void clearPullDoc(UserMaster user) {
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
+		datastore.delete(datastore.createQuery(PullDoc.class).filter("userId", ""+user.getUserId()));
 		
 	}
 	

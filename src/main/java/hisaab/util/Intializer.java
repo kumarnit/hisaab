@@ -32,6 +32,7 @@ public class Intializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent arg0)  { 
     	UserDao.setUserMasterInHashMap();
     	StaffUserDao.setStaffUserInHashMap();
+//    	UserDao.setUserMasterInCacheMap();
          // TODO Auto-generated method stub
     }
 	

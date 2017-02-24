@@ -2,6 +2,7 @@ package hisaab.quartz;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+import hisaab.util.DateHelper;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -17,7 +18,7 @@ public class QuartzListener1 implements ServletContextListener {
 	Scheduler scheduler = null;
 
 	 public void contextInitialized(ServletContextEvent servletContext) {
-         System.out.println("Context Initialized");
+         System.out.println("Context Initialized 1 Time : "+DateHelper.getDateInString());
             
          try {
                  // Setup the Job class and the Job group
@@ -25,7 +26,7 @@ public class QuartzListener1 implements ServletContextListener {
         	 JobDetail logJob1 = newJob(AutoApprovalJob.class).withIdentity("auto_approval","Group2").build();
              Trigger trigger3 = newTrigger()
             		 .withIdentity("trig3","Group2")
-            		 .withSchedule(CronScheduleBuilder.cronSchedule("0 0 21 1/1 * ? *"))
+            		 .withSchedule(CronScheduleBuilder.cronSchedule("0 30 9 1/1 * ? *"))
             		 .build();
              
              

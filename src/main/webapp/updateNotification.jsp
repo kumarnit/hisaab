@@ -5,10 +5,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>System Update Notification</title>
-<link href="resources/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-
+<link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <script src="js/jquery.js" type="text/javascript"></script>
-<script src="resources/bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="resources/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 <style>
 .entry:not(:first-of-type)
 {
@@ -81,6 +80,10 @@
     <label for="stop">Stop Support Version</label>
     <input type="text" id="stop" name="stop" />
   </div>
+  <div class="formcol">
+  <label for="date">Last Date</label>
+    <input type="text" id="date" name="date" size="22" />
+</div>
   <input type="submit" value="Submit">
 </form>
 </div>

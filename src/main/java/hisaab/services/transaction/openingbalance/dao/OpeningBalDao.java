@@ -97,8 +97,8 @@ public class OpeningBalDao {
 				
 				PullDoc pullDoc = new PullDoc();
 				pullDoc.setUserId(frnd.getFrndId());
-//				pullDoc = PullDocDao.getPullDoc(pullDoc);
-//				PullDocDao.addAndUpadteOpeningBalanceRequest(obr,pullDoc);
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDocDao.addAndUpadteOpeningBalanceRequest(obr,pullDoc);
 				
 				
 				if(frnd.getContactName() != null && !frnd.getContactName().isEmpty())
@@ -189,12 +189,12 @@ public class OpeningBalDao {
 				if(resFlag){
 					PullDoc pullDoc = new PullDoc();
 					pullDoc.setUserId(""+userB.getUserId());
-//					pullDoc = PullDocDao.getPullDoc(pullDoc);
-//					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
-//					PullDoc pullDoc2 = new PullDoc();
-//					pullDoc2.setUserId(""+user.getUserId());
-//					pullDoc2 = PullDocDao.getPullDoc(pullDoc2);
-//					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
+					pullDoc = PullDocDao.getPullDoc(pullDoc);
+					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
+					PullDoc pullDoc2 = new PullDoc();
+					pullDoc2.setUserId(""+user.getUserId());
+					pullDoc2 = PullDocDao.getPullDoc(pullDoc2);
+					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
 								
 					}
 				

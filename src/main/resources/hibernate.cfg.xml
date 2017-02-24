@@ -52,7 +52,9 @@
 	    <mapping class="hisaab.services.transaction.staff_transaction.modal.DeletedStaffTransaction"/> 
 	    <mapping class="hisaab.services.staff.modal.UserStaffMapping"/>
 	    <mapping class="hisaab.services.transaction.openingbalance.modal.OpeningBalRequest"/>
-	    
+	    <mapping class="hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest"/>
+	    <mapping class="hisaab.services.appVersion.modal.AppVersion"/>
+		<mapping class="hisaab.services.sms.modal.SmsCountTable"/>
 	    
 	    		
 	</session-factory>

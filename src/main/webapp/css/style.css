@@ -130,12 +130,14 @@ input[type='file']{
 .home-wrapper button{
     width: 400px;
     padding: 20px;
+   
     margin-bottom: 10px;
     font-size: 30px;
 }
 .home-wrapper button1{
     width: 800px;
     padding: 20px;
+    
     margin-bottom: 10px;
     font-size: 30px;
 }

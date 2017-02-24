@@ -250,6 +250,35 @@ public class ModificationRequestDao {
 		
 	}
 
+/**
+ * delete transactions by transaction ids
+ **/	
+	public static void deleteModificationRequestByTransId(List<String> transIds){
+		
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			org.hibernate.Transaction tx=null;
+			tx = session.beginTransaction();
+		
+			org.hibernate.Query query=session.createQuery("DELETE from ModificationRequest where transactionId in (:transIds) ");
+			query.setParameterList("transIds", transIds);
+			query.executeUpdate();
+			
+			tx.commit();
+						
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}
+		
+	}
+
+	
 	public static void main(String [] arg){
 //		deleteModificationRequest();
 		UserMaster user = new UserMaster();
@@ -397,7 +426,7 @@ public class ModificationRequestDao {
 		long epoch = System.currentTimeMillis();
 		try {
 			Calendar endTime = Calendar.getInstance();
-			endTime.add(Calendar.DAY_OF_YEAR, -4);
+			endTime.add(Calendar.DAY_OF_YEAR, -6);
 			Calendar startTime = Calendar.getInstance();
 			startTime.add(Calendar.DAY_OF_YEAR, -1);
 			System.out.println("End Time : "+endTime.getTimeInMillis());
@@ -462,6 +491,36 @@ public class ModificationRequestDao {
 						
 						break;
 					}
+					case 4 :{
+						System.out.println("in 1");
+						List<String> modreq3 = null;
+						modreq3 = pendingMod.get(String.valueOf(4));
+						if(modreq3 != null && !modreq3.isEmpty()){
+							modreq3.add(modReq.getForUser());
+							pendingMod.put("4", modreq3);
+						}else{
+							modreq3 = new ArrayList<String>();
+							modreq3.add(modReq.getForUser());
+							pendingMod.put("4", (modreq3));
+						}
+						
+						break;
+					}
+					case 5 :{
+						System.out.println("in 1");
+						List<String> modreq3 = null;
+						modreq3 = pendingMod.get(String.valueOf(5));
+						if(modreq3 != null && !modreq3.isEmpty()){
+							modreq3.add(modReq.getForUser());
+							pendingMod.put("5", modreq3);
+						}else{
+							modreq3 = new ArrayList<String>();
+							modreq3.add(modReq.getForUser());
+							pendingMod.put("5", (modreq3));
+						}
+						
+						break;
+					}
 					default :{
 						break;
 					}
@@ -491,7 +550,7 @@ public class ModificationRequestDao {
 		long epoch = System.currentTimeMillis();
 		try {
 			Calendar endTime = Calendar.getInstance();
-			endTime.add(Calendar.DAY_OF_YEAR, -5);
+			endTime.add(Calendar.DAY_OF_YEAR, -6);
 			Calendar startTime = Calendar.getInstance();
 			startTime.add(Calendar.DAY_OF_YEAR, -1);
 			System.out.println("End Time : "+endTime.getTimeInMillis());
@@ -571,6 +630,21 @@ public class ModificationRequestDao {
 						
 						break;
 					}
+					case 5 :{
+						System.out.println("in 1");
+						List<String> modreq4 = null;
+						modreq4 = pendingMod.get(String.valueOf(5));
+						if(modreq4 != null && !modreq4.isEmpty()){
+							modreq4.add(modReq.getForUser());
+							pendingMod.put("5", modreq4);
+						}else{
+							modreq4 = new ArrayList<String>();
+							modreq4.add(modReq.getForUser());
+							pendingMod.put("5", (modreq4));
+						}
+						
+						break;
+					}
 					default :{
 						break;
 					}
@@ -590,6 +664,7 @@ public class ModificationRequestDao {
 		}
 		return pendingMod;
 	}
+
 
 }
 

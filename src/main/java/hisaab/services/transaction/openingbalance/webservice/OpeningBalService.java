@@ -65,6 +65,7 @@ public class OpeningBalService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 //			 int i = OpeningBalHelper.validateOpeningBalRequest(obrBean.getOpeningBalRequest(), user);
 			 
@@ -183,6 +184,7 @@ public class OpeningBalService {
 		
 //		TransactionDoc transDoc = null;
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			if(reqId != 0 && userResponse != 0){
 				

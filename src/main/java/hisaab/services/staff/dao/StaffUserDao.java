@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -14,11 +14,11 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import hisaab.config.hibernate.HibernateUtil;
-import hisaab.services.contacts.dao.FriendsDao;
+
 import hisaab.services.contacts.modal.Contact;
-import hisaab.services.contacts.modal.FriendContact;
+
 import hisaab.services.notification.NotificationHelper;
-import hisaab.services.notification.StaffRemoveNotification;
+
 import hisaab.services.pull.helper.PullDocDao;
 import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.sms.SMSHelper;
@@ -30,7 +30,7 @@ import hisaab.services.staff.modal.StaffUserRequest;
 import hisaab.services.staff.modal.UserStaffMapping;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
-import hisaab.services.user.modal.UserProfile;
+
 import hisaab.util.Constants;
 import hisaab.util.RandomStringHelper;
 
@@ -243,7 +243,7 @@ public class StaffUserDao {
 		Session session = null;
 		Transaction tx = null;
 		StaffUserRequest staffUserlocal = null;
-		UserMaster userforAddingPullDoc = UserDao.getUserByContactNoForAddPullDoc(staffUser.getContactNo());
+//		UserMaster userforAddingPullDoc = UserDao.getUserByContactNoForAddPullDoc(staffUser.getContactNo());
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
@@ -271,14 +271,14 @@ public class StaffUserDao {
 			}else{
 				session.save(staffUser);
 			}
-			if(userforAddingPullDoc != null){
+			/*if(userforAddingPullDoc != null){
 								
 								PullDoc pullDoc = new PullDoc();
 								pullDoc.setUserId(""+userforAddingPullDoc.getUserId());
-//								pullDoc = PullDocDao.getPullDoc(pullDoc);
-//								PullDocDao.addAndUpdateStaffRequestForYou(pullDoc,staffUser,staffUser.getStatus());
-//								
-							}
+								pullDoc = PullDocDao.getPullDoc(pullDoc);
+								PullDocDao.addAndUpdateStaffRequestForYou(pullDoc,staffUser,staffUser.getStatus());
+								
+							}*/
 			
 		}catch(Exception e){
 			tx.rollback();
@@ -638,7 +638,7 @@ public class StaffUserDao {
 			
 			tx.commit();
 			
-			/*PullDoc pullDoc = new PullDoc();
+			PullDoc pullDoc = new PullDoc();
 			PullDoc pullDoc1 = new PullDoc();
 						if(i>0){
 							id.setUpdatedTime(epoch);
@@ -665,7 +665,7 @@ public class StaffUserDao {
 									PullDocDao.addAndUpdateStaffRequestForYou( pullDoc1, id,status);
 								}
 							}
-						}*/
+						}
 			
 			flag = true;
 
@@ -992,9 +992,9 @@ public class StaffUserDao {
 //			System.out.println("===--- :"+mapper.writeValueAsString(st));
 			PullDoc pullDoc = new PullDoc();
 			pullDoc.setUserId(""+user.getUserId());
-//			pullDoc = PullDocDao.getPullDoc(pullDoc);
-//			
-//			PullDocDao.addAndUpdateStaffRequestForYou( pullDoc, st,status);
+			pullDoc = PullDocDao.getPullDoc(pullDoc);
+			
+			PullDocDao.addAndUpdateStaffRequestForYou( pullDoc, st,status);
 			
 		}
 		catch (Exception e) {

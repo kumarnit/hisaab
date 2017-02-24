@@ -98,13 +98,13 @@ public class StaffTransactionDao {
 				/***
 				 * Need to work on notification.
 				 * **/
-				PullDoc pullDoc = new PullDoc();
+				/*PullDoc pullDoc = new PullDoc();
 				pullDoc.setUserId(""+userB.getUserId());
-//				pullDoc = PullDocDao.getPullDoc(pullDoc);
-//				TransactionDoc transactionDoc = new TransactionDoc();
-//				transactionDoc.setTransactions(Arrays.asList(t));
-//				PullDocDao.addTransaction(transactionDoc,pullDoc);
-//				
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				TransactionDoc transactionDoc = new TransactionDoc();
+				transactionDoc.setTransactions(Arrays.asList(t));
+				PullDocDao.addTransaction(transactionDoc,pullDoc);*/
+				
 				FriendContact frnd = null; 
 				frnd = FriendsDao.getFriendForWeb(""+user.getStaffId(), 0, userB);
 				String msg = "Staff ";

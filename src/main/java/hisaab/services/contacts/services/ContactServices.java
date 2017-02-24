@@ -1,6 +1,6 @@
 package hisaab.services.contacts.services;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -18,12 +18,10 @@ import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.ContactListBean;
 import hisaab.services.contacts.services.bean.FriendListBean;
-import hisaab.services.transaction.dao.TransactionDao;
-import hisaab.services.user.dao.RequestDao;
+
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
-import hisaab.services.user.modal.UserRequest;
-import hisaab.services.user.webservices.bean.RequestBean;
+
 import hisaab.util.Constants;
 import hisaab.util.ServiceResponse;
 
@@ -35,8 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
+
 import org.codehaus.jackson.map.ObjectMapper;
 
 @Path("v1/contact")
@@ -67,6 +64,7 @@ public class ContactServices {
 		}
 		
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			logModel.setUser(user.getUserId()+"");
 			ContactList clist = ContactsDao.getContactsDocForUser(user);
 			clist.setContactList(ContactHelper.validateContactNoList2(contactListBean.getContactList()));
@@ -187,6 +185,7 @@ public class ContactServices {
 							user = UserDao.getUserFromAuthToken(authToken);
 						}
 					    if(user.getUserId()>0){
+					    	UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 						    userId=""+user.getUserId();
 						    List<FriendContact> frnd=ContactsDao.getFriendListbyUserId(userId);
 												
@@ -243,6 +242,7 @@ public class ContactServices {
 						}
 						if (user.getUserId()>0)
 						{
+							UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 							 frndcont= friendlistbean.getFriends();
 							 FriendsDao.updateFriend(frndcont,user);
 							 result=ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "Successfully updated");
@@ -289,7 +289,7 @@ public class ContactServices {
 		long test1,test2;
 		test1 = System.currentTimeMillis();
 		Calendar cal = Calendar.getInstance();
-		try{
+//		try{
 
 			
 		UserMaster user = null;
@@ -304,7 +304,7 @@ public class ContactServices {
 		System.out.println(authToken+" in contact service called "+test1);
 		if(user.getUserId()>0){
 			
-			
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			ContactList clist = ContactsDao.getContactsDocForUser(user);
 			clist.setContactList(ContactHelper.validateContactNoList2(contactListBean.getContactList()));
 			clist.setUpdatedTime(epoch);
@@ -402,10 +402,10 @@ public class ContactServices {
 			System.out.println("Unable to add log records for : add Contact Service \n"+e.getMessage());
 		}
 		
-		}catch(Exception e){
-			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
-			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}
+//		}catch(Exception e){
+//			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
+//			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+//		}
 		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}

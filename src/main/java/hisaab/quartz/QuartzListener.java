@@ -2,6 +2,7 @@ package hisaab.quartz;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
+import hisaab.util.DateHelper;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -18,7 +19,7 @@ import com.google.android.gcm.server.Message.Builder;
 public class QuartzListener implements ServletContextListener {
 	Scheduler scheduler = null;
 	 public void contextInitialized(ServletContextEvent servletContext) {
-         System.out.println("Context Initialized");
+         System.out.println("Context Initialized Time : "+DateHelper.getDateInString());
             
          try {
                  // Setup the Job class and the Job group
