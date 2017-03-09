@@ -32,6 +32,7 @@ import hisaab.services.user.dao.PrivateUserDao;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.PrivateUser;
 import hisaab.services.user.modal.UserMaster;
+import hisaab.services.viewlog.helper.TransactionLogHelper;
 import hisaab.util.Constants;
 import hisaab.util.DeleteDB;
 import hisaab.util.ServiceResponse;
@@ -140,9 +141,16 @@ public class TransactionService {
 						transDoc.setIdCount(lastCount);
 						if(transDoc.getTransactions().size()>0)
 						{
+							
 							TransactionDao.addTransactions(transDoc, user);
 								if(transDoc.getDocType() == 0)
 									TransactionDao.addTransactiontoSql(transDoc.getTransactions());
+							try{
+								TransactionLogHelper.saveTransLog(user, transDoc.getTransactions());
+								}catch(Exception e){
+									e.printStackTrace();
+									System.out.print("Exception in add Transaction save Log :"+e);
+								}
 						}
 						
 						transDoc.setModifiedTransactions(null);

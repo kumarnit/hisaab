@@ -27,7 +27,7 @@ for(Cookie cookie : cookies){
 	if(cookie.getName().equals("user")) {userName = cookie.getValue();
 		if(userName.equalsIgnoreCase("admin")){
 	
-	 out.print("<div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div></div></div>");
+	 out.print("<div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-12 center-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div></div></div>");
 		}
 	 }
 }
@@ -70,7 +70,10 @@ $('#setCount').click(function () {
 });
 
 })
-
+$('#viewTransactionLog').click(function() {
+    window.location.href = 'viewTransLog.jsp';
+    return false;
+});
 function hideStatus(){
 	
 	setTimeout(function(){ $("#status").html("&nbsp;"); }, 5000);

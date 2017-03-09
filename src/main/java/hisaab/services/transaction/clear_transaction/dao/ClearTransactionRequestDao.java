@@ -109,6 +109,7 @@ public class ClearTransactionRequestDao {
 		Session session = null;
 		
 		ClearTransactionRequest clearTransReq = null;
+		try{
 			session =  HibernateUtil.getSessionFactory().openSession();
 			Criteria criteria = session.createCriteria(ClearTransactionRequest.class);
  	        criteria.add(
@@ -121,6 +122,13 @@ public class ClearTransactionRequestDao {
  	        	if(!criteria.list().isEmpty()){
  	        		clearTransReq = (ClearTransactionRequest)criteria.list().get(0);
  	        	}
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Exception in :"+e);
+		}finally{
+			if(session != null)
+				session.close();
+		}
 				return clearTransReq;
 	}
 
@@ -345,6 +353,7 @@ public class ClearTransactionRequestDao {
 		Session session = null;
 		
 		List<ClearTransactionRequest> obr = new ArrayList<ClearTransactionRequest>();
+		try{
 			session =  HibernateUtil.getSessionFactory().openSession();
 			Criteria criteria = session.createCriteria(ClearTransactionRequest.class);
  	        criteria.add(
@@ -356,6 +365,14 @@ public class ClearTransactionRequestDao {
  	        	if(!criteria.list().isEmpty()){
  	        		obr = criteria.list();
  	        	}
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("Exception in :"+e);
+		}finally{
+			if(session != null)
+				session.close();
+		}
+		
 				return obr;
 	}
 	

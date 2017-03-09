@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.TimeZone;
 
 import hisaab.services.user.modal.UserProfile;
+import hisaab.services.viewlog.dao.TransactionLogDao;
 import hisaab.services.viewlog.dao.UserLogDao;
+import hisaab.services.viewlog.modal.TransactionLog;
 import hisaab.services.viewlog.webservices.bean.PageRequest;
 
 public class ViewLogHelper {
@@ -110,5 +112,42 @@ public class ViewLogHelper {
 		resp.setRecordsTotal(UserLogDao.getCountUserDetailTransCount());
 		resp.setRecordsFiltered(resp.getRecordsTotal());
 		
+	}
+
+	public static void manRespFortranLog(List<TransactionLog> transactionLog,
+			PageRequest resp) {
+		int count = 1;
+		for(TransactionLog trans : transactionLog){
+			List<String> i = new ArrayList<String>();
+			
+			i.add((resp.getStart()+count)+"");
+			i.add(trans.getContactNo());
+			i.add(trans.getContactName());
+			if(trans.getTransType() == 1){
+				i.add("Paid");
+			}else if(trans.getTransType() == 2) {
+				i.add("Received");
+			}else if(trans.getTransType() == 3)
+			{
+				i.add("Sale");
+			}else if(trans.getTransType() == 4){
+				i.add("Purchase");
+			}
+			else{
+				i.add("Undefined");
+			}
+			
+			i.add(convertToISTWithoutYear(trans.getCreatedTime()));
+			
+			
+			
+			resp.getData().add(i);
+			
+			count++;
+			
+		}
+		
+		resp.setRecordsTotal(TransactionLogDao.getCountUserDetailTransCount());
+		resp.setRecordsFiltered(resp.getRecordsTotal());
 	}
 }

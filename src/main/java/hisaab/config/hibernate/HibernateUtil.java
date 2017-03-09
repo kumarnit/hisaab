@@ -58,7 +58,7 @@ public class HibernateUtil {
 
 			
 			//config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-			config.setProperty("hibernate.show_sql", ""+Constants.DEV_MODE+"");
+			config.setProperty("hibernate.show_sql","true");
 			config.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
 			config.setProperty("hibernate.transaction.auto_close_session", "false");
 			config.setProperty("hibernate.current_session_context_class", "thread");

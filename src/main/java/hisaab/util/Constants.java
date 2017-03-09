@@ -21,13 +21,13 @@ public class Constants{
 //    public static Cache<String, UserCache> cache = cacheManager.getCache();
 //	public static ConcurrentHashMap<String, UserCache> cache = new ConcurrentHashMap<String, UserCache>();
    
-	public static final ExecutorService executorService =new ThreadPoolExecutor(
+	/*public static final ExecutorService executorService =new ThreadPoolExecutor(
 		    20, // core thread pool size
 		    40, // maximum thread pool size
 		    1, // time to wait before resizing pool
 		    TimeUnit.MINUTES, 
 		    new ArrayBlockingQueue<Runnable>(50, true),
-		    new ThreadPoolExecutor.CallerRunsPolicy());
+		    new ThreadPoolExecutor.CallerRunsPolicy());*/
 
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		

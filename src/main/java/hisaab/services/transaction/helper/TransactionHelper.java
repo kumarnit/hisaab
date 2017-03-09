@@ -97,6 +97,8 @@ public class TransactionHelper {
 			transDoc.setDocType(docType);
 			transDoc = TransactionDao.getTransactionDoc(transDoc);
 			
+				resultFlag = true;
+				
 			List<Transaction> transactions = TransactionDao.getTransactionListBeforeDate(clearTranRequest.getRequesterUserId(), 
 					clearTranRequest.getForUserId(), docType, clearTranRequest.getTillDate());
 			
@@ -281,6 +283,8 @@ public class TransactionHelper {
 		List<ClearTransactionRequest> clearTransactionList = ClearTransactionRequestDao.getClearTransRequestListForAutoAprove();
 		
 		int docType = 0;
+		if(clearTransactionList != null)
+		{
 		for(ClearTransactionRequest clearTranRequest : clearTransactionList){
 			
 			TransactionDoc transDoc = new TransactionDoc();
@@ -327,7 +331,7 @@ public class TransactionHelper {
 			}
 		}
 		
-				
+		}		
 		
 	}
 

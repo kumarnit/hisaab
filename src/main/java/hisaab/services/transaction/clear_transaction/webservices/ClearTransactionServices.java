@@ -42,7 +42,7 @@ public class ClearTransactionServices {
 	public static Response clearTransactionRequest(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("authId") String authId, ClearTransactionBean clrTransBean){
 		Object result = null;
-		try{
+//		try{
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", transactionBean : "+", authId : "+authId;
 		try {
@@ -89,6 +89,7 @@ public class ClearTransactionServices {
 										clrTransBean.setStatus(205);
 										clrTransBean.setMsg("Already have pending Request.");
 //										result = ServiceResponse.getResponse(205, "Already have pending Request.");
+										result = clrTransBean;
 									}
 									
 								}else{
@@ -133,11 +134,11 @@ public class ClearTransactionServices {
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
 		
-		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
-			e.printStackTrace();
-		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}
+//		}catch(Exception e){
+//			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+//			e.printStackTrace();
+//		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+//		}
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	

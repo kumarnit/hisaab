@@ -1370,8 +1370,8 @@ public class TransactionDao {
 //		deleteTransactionSqlOnBlock("1",user) ;
 //		calculateAmt("57ea2153438db5d9b3b6e1ef");
 //		getTransactionListForWeb(Arrays.asList("2_4_1", "2_3_1","1_2_2"));
-		getPendingTransaction(Arrays.asList("2_4_1"));
-		
+//		getPendingTransaction(Arrays.asList("2_4_1"));
+		getTransactionListBeforeDate("1", "2", 0, 1487929253000l);
 //		getTransactionForWeb("4_14_3", "57f342b0fe1db01b503840fw", user);
 		
 		/*OpeningBalRequest ob = new OpeningBalRequest();
@@ -3588,7 +3588,16 @@ public class TransactionDao {
 		 idList.add(new BasicDBObject("$and",andList2));
 		 
 		 
-		  DBObject match2 = new BasicDBObject("$match", new BasicDBObject("$or", idList));
+		  DBObject match2 = new BasicDBObject("$or", idList);
+		 
+		  
+		  
+			 DBObject match3 = new BasicDBObject("docType" ,docType);
+			 
+			 BasicDBList paramList = new BasicDBList();
+			 paramList.add(match2);
+			 paramList.add(match3);
+			 DBObject match4 = new BasicDBObject("$match", new BasicDBObject("$and",paramList));
 		  
 		  DBObject match1 = new BasicDBObject("$match", new BasicDBObject("transactions.transactionDate", new BasicDBObject("$lt",epochDate)));
 		  DBObject gdb1 = new BasicDBObject();
@@ -3596,7 +3605,7 @@ public class TransactionDao {
 		  gdb1.put("transactions",new BasicDBObject("$push","$transactions"));
 		  DBObject group = new BasicDBObject("$group", gdb1);
 		  DBObject project = new BasicDBObject("$unwind", "$transactions");
-		  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match2,project,match1, group);
+		  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match4,project,match1, group);
 		  System.out.println("i m in");
 		  try {
 		   ObjectMapper mapper = new ObjectMapper();
