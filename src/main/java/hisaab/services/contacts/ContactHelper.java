@@ -215,7 +215,7 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 			ids.add(i+1);
 		}
 		*/
-		System.out.println("=="+validatePhoneNumber("7276603191"));
+		System.out.println("=="+validatePhoneNumber("7004540779"));
 		
 		/*ids.remove(3);
 		
