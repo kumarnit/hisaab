@@ -35,6 +35,8 @@ import hisaab.services.user.modal.UserMaster;
 import hisaab.services.viewlog.helper.TransactionLogHelper;
 import hisaab.util.Constants;
 import hisaab.util.DeleteDB;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -65,6 +67,8 @@ public class TransactionService {
 	public Response addTransaction(@HeaderParam("authToken") String authToken, 
 	 	         TransactionBean transBean, @PathParam("userId") String uid,
 	 	         @HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		List<Transaction> rejectedTransaction = null;
 		TransDocBean trnsDocBean = new TransDocBean();
@@ -141,7 +145,6 @@ public class TransactionService {
 						transDoc.setIdCount(lastCount);
 						if(transDoc.getTransactions().size()>0)
 						{
-							
 							TransactionDao.addTransactions(transDoc, user);
 								if(transDoc.getDocType() == 0)
 									TransactionDao.addTransactiontoSql(transDoc.getTransactions());
@@ -204,7 +207,9 @@ public class TransactionService {
 			   result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 		*/
-		
+		timer.stop();
+		timer.setMethodName("add_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -215,6 +220,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response updateTransactionAsRead(@HeaderParam("authToken") String authToken,
 			    @HeaderParam("authId")String authId, ReadBean rBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", authId :"+authId +" transID"+rBean;
@@ -254,6 +261,9 @@ public class TransactionService {
 			System.out.println("Exception in Read transaction   : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 			   }
+		timer.stop();
+		timer.setMethodName("mark_transaction_read");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -266,6 +276,8 @@ public class TransactionService {
 	public Response updateTransactionAsRead2(@HeaderParam("authToken") String authToken,
 				@HeaderParam("authId") String authId, @PathParam("readStatus") int readStatus,
 			     ReadBean rBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -317,6 +329,9 @@ public class TransactionService {
 			System.out.println("Exception in Read transaction 2 : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("mark_transaction_read2");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -327,6 +342,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response disputeTransaction(@HeaderParam("authToken") String authToken, 
 	 	        @HeaderParam("authId") String authId, TransactionDisputeBean transDispBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 			ObjectMapper mapper = new ObjectMapper();
@@ -386,7 +403,9 @@ public class TransactionService {
 			System.out.println("Exception in Request dispute transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("dispute_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -399,6 +418,8 @@ public class TransactionService {
 	 	         @HeaderParam("transacDocId") String transacDocId, 
 	 	         @PathParam("transacId") String transacId, 
 	 	         @HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 			ObjectMapper mapper = new ObjectMapper();
@@ -488,7 +509,9 @@ public class TransactionService {
 			System.out.println("Exception in delete transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("delete_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -501,6 +524,8 @@ public class TransactionService {
 	public Response addUnmanagedUserTransaction(@HeaderParam("authToken") String authToken, 
 	 	         TransactionBean transBean, @PathParam("userId") String uid,
 	 	         @HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -558,6 +583,9 @@ public class TransactionService {
 			System.out.println("Exception in Add private user transaction: \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("add_unmanaged_user_trans");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -567,6 +595,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response updateTransactions(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("authId") String authId, TransactionBean1 transBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 //		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -654,6 +684,9 @@ public class TransactionService {
 			System.out.println("Exception in update transaction Service : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}*/
+		timer.stop();
+		timer.setMethodName("update_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -668,6 +701,8 @@ public class TransactionService {
 	 	         @PathParam("transacId") String transacId, @PathParam("action") int action,
 	 	         @PathParam("response") int userResponse,
 	 	         @HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -826,6 +861,9 @@ public class TransactionService {
 			System.out.println("Exception in transaction action services : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("transaction_action");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -837,6 +875,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response updateMultipleTransactions(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("authId") String authId, TransactionBean transBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -889,6 +929,9 @@ public class TransactionService {
 			System.out.println("Exception in update mutiple transaction : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("update_multi_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -931,6 +974,8 @@ public class TransactionService {
 	@Produces("application/json")
 	public Response getUpdateTransactionBackup(@HeaderParam("authToken") String authToken,
 			     @HeaderParam("authId") String authId, ReadBean rBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", authId :"+authId;
@@ -985,6 +1030,9 @@ public class TransactionService {
 				System.out.println("Exception in get update transaction backup: \n"+e.getMessage());
 			    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 			}
+		timer.stop();
+		timer.setMethodName("get_update_transaction_backup");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 		}
 }

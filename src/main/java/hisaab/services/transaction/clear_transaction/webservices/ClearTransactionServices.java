@@ -19,6 +19,8 @@ import hisaab.services.transaction.webservices.bean.TransDocBean;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -41,8 +43,10 @@ public class ClearTransactionServices {
 	@Produces("application/json")
 	public static Response clearTransactionRequest(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("authId") String authId, ClearTransactionBean clrTransBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
-//		try{
+		try{
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", transactionBean : "+", authId : "+authId;
 		try {
@@ -92,6 +96,7 @@ public class ClearTransactionServices {
 										result = clrTransBean;
 									}
 									
+									
 								}else{
 									result = ServiceResponse.getResponse(501, "Specify Opening Balance date.");
 							}
@@ -134,11 +139,14 @@ public class ClearTransactionServices {
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
 		
-//		}catch(Exception e){
-//			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
-//			e.printStackTrace();
-//		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-//		}
+		}catch(Exception e){
+			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+			e.printStackTrace();
+		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+		}
+		timer.stop();
+		timer.setMethodName("clear_transaction_request");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -151,8 +159,10 @@ public class ClearTransactionServices {
 	public Response clearTransactionVerification(@HeaderParam("authToken") String authToken,
 				@PathParam("reqId") long reqId, @PathParam("response") int userResponse,
 				@HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
-		try{
+//		try{
 		ObjectMapper mapper = new ObjectMapper();
 		 ClearTransactionBean ctrBean = new ClearTransactionBean();
 		String req1 = "token : "+authToken+", requestId : "+reqId+
@@ -214,7 +224,7 @@ public class ClearTransactionServices {
 								
 								
 								} else{
-									result = ServiceResponse.getResponse(Constants.RESPONSE_REQUEST_EXPIRED, "Request Expired.");
+									result = ServiceResponse.getResponse(Constants.RESPONSE_REQUEST_EXPIRED , "Request Expired.");
 								}
 								break;
 						
@@ -251,10 +261,13 @@ public class ClearTransactionServices {
 		logModel.setRequestName("Clear Transaction Response");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		}catch(Exception e){
-			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
-		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}
+//		}catch(Exception e){
+//			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
+//		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+//		}
+		timer.stop();
+		timer.setMethodName("clear_transaction_verify");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	

@@ -8,6 +8,8 @@ import hisaab.services.user.images.modal.UserImage;
 import hisaab.services.user.images.webservices.bean.UserImageBean;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ImageHelper;
 import hisaab.util.ServiceResponse;
 
@@ -41,6 +43,8 @@ public class UserImageServices {
 			@Context ServletContext servletContext,
 			@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId) {
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		UserMaster user = null;
 		String req = "token : "+authToken+", authId :"+authId;
 		
@@ -110,6 +114,9 @@ public class UserImageServices {
 		}catch(Exception e){
 			System.out.println("Unable to add log records for : update push Service \n"+e.getMessage());
 		}
+		timer.stop();
+		timer.setMethodName("upload_image");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(200).entity(result).build();
 	}
 
@@ -120,7 +127,8 @@ public class UserImageServices {
 			@HeaderParam("authId") String authId,
 			@PathParam("objectKey") String objectKey,
 			@Context ServletContext servletContext) {
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		String directory = "";
 		Object result = null;
 		String contentType = "application/json";
@@ -142,7 +150,9 @@ public class UserImageServices {
 			result = ServiceResponse.getResponse(Constants.FAILURE,
 					"Something went wrong");
 		}
-
+		timer.stop();
+		timer.setMethodName("download_image");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(200).type(contentType).entity(result).build();
 	}
 
@@ -152,6 +162,8 @@ public class UserImageServices {
 	public Response downloadTest(@HeaderParam("authToken") String authToken,
 			@PathParam("objectKey") String objectKey,
 			@Context ServletContext servletContext) {
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		String directory = "";
 		Object result = null;
 		String contentType = "application/json";
@@ -173,7 +185,9 @@ public class UserImageServices {
 			result = ServiceResponse.getResponse(Constants.FAILURE,
 					"Something went wrong");
 		}
-
+		timer.stop();
+		timer.setMethodName("download_image_test");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(200).type(contentType).entity(result).build();
 	}
 

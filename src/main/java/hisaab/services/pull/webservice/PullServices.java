@@ -22,6 +22,8 @@ import hisaab.services.user.dao.PrivateUserDao;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.GET;
@@ -43,6 +45,8 @@ public class PullServices {
 	@Produces("application/json")
 	public Response pullUserData(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @HeaderParam("pullTime") long pullTime){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", pullTime : "+pullTime+", authId :"+authId;
 		
@@ -97,6 +101,9 @@ public class PullServices {
 		}catch(Exception e){
 			System.out.println(e);
 		}
+		timer.stop();
+		timer.setMethodName("pull_user_data");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -105,6 +112,8 @@ public class PullServices {
 	@Produces("application/json")
 	public Response pushTransactions(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("pullTime") long pullTime, @HeaderParam("authId") String authId) {
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", pullTime : "+pullTime+", authId :"+authId;
 		
@@ -152,6 +161,9 @@ public class PullServices {
 		}catch(Exception e){
 			System.out.println(e);
 		}
+		timer.stop();
+		timer.setMethodName("pull_staff_data");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -161,6 +173,8 @@ public class PullServices {
 	@Produces("application/json")
 	public Response pullReadTransactions(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @HeaderParam("readPullTime") long readPullTime){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", readPullTime : "+readPullTime+", authId :"+authId;
 		
@@ -204,12 +218,15 @@ public class PullServices {
 		try{
 		logModel.setRequestData(req);
 		logModel.setResponseData(res);
-		logModel.setRequestName("pull user data");
+		logModel.setRequestName("pull read transaction");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
 		}catch(Exception e){
 			System.out.println(e);
 		}
+		timer.stop();
+		timer.setMethodName("pull_read_trans");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -218,6 +235,8 @@ public class PullServices {
 	@Produces("application/json")
 	public Response syncPullDoc(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, @HeaderParam("PullTime") long pullTime){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", readPullTime : "+pullTime+", authId :"+authId;
 		
@@ -288,6 +307,9 @@ public class PullServices {
 		}catch(Exception e){
 			System.out.println(e);
 		}
+		timer.stop();
+		timer.setMethodName("sync_pull_doc");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 

@@ -1,6 +1,5 @@
 package hisaab.services.user.webservices;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,7 +32,6 @@ import hisaab.services.user.dao.PrivateUserDao;
 import hisaab.services.user.dao.RequestDao;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.PrivateUser;
-import hisaab.services.user.modal.UserCache;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.user.modal.UserRequest;
@@ -45,8 +43,10 @@ import hisaab.services.user.webservices.bean.UserProfileFriendBean;
 import hisaab.services.user.webservices.bean.UserprofileBean;
 import hisaab.services.user.webservices.bean.UserprofileMainBean;
 import hisaab.util.Constants;
-import hisaab.util.Helper;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
+import javassist.bytecode.analysis.Executor;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -58,13 +58,15 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.bson.BasicBSONObject;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
+
+
+
+
+
+
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.mongodb.BasicDBObject;
 
@@ -75,6 +77,8 @@ public class UserServices {
 	@Path("/request")
 	@Produces("application/json")
 	public Response getAuthToken(@HeaderParam("appVersion") String appVersion){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 			String newToken = RequestDao.addNewUserRequest(appVersion);
@@ -83,6 +87,10 @@ public class UserServices {
 			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("user_auth_request");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -92,6 +100,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response requestContact(@HeaderParam("serverToken") String serverToken, 
 			          @HeaderParam("contactNo") String contactNo,@HeaderParam("appVersion") String appVersion ){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		Object result = null;	
 		String req = "token : "+serverToken+", contactNo : "+contactNo;
 		String res = "";
@@ -135,6 +145,10 @@ public class UserServices {
 		}catch(Exception e){
 			System.out.println("Unable to add log records for : Request Contact Service \n"+e.getMessage());
 		}		
+		timer.stop();
+		timer.setMethodName("contact_register");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -146,6 +160,8 @@ public class UserServices {
 			          @HeaderParam("contactNo") String contactNo, 
 			          @HeaderParam("securityCode") String securityCode,
 			          @HeaderParam("appVersion") String appVersion){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		String req = "token : "+serverToken+", contactNo : "+contactNo+", securityCode : "+securityCode;
 		String res = "";
 		ObjectMapper mapper = new ObjectMapper();
@@ -164,7 +180,6 @@ public class UserServices {
 							/**
 							 * testing for cache of contact
 							 * ***/
-							
 							/*UserCache usercache = new UserCache();
 							usercache.setContactno(user.getContactNo());
 							usercache.setUserId(user.getUserId());
@@ -218,6 +233,10 @@ public class UserServices {
 			System.out.println("Unable to add logs for Request Verify service.\n"+e.getMessage());
 			e.printStackTrace();
 		}		
+		timer.stop();
+		timer.setMethodName("securitycode_verfication");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -227,7 +246,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response updatePush(@HeaderParam("authToken") String authToken, UserBean userBean,
 			@HeaderParam("authId") String authId){
-		
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", authId : "+authId;	
@@ -301,8 +321,10 @@ public class UserServices {
 			System.out.println("Exception in Update User push Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
-		
+		timer.stop();
+		timer.setMethodName("update_push_token");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();		
 	}
 
@@ -313,7 +335,8 @@ public class UserServices {
 	@Path("/update")
 	public Response updateProfile(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId, UserBean userBean){
-		
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		long epoch = System.currentTimeMillis();
 		ObjectMapper mapper = new ObjectMapper();
@@ -389,7 +412,10 @@ public class UserServices {
 			System.out.println("Exception in Update User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("update_user_profile");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	@POST
@@ -397,7 +423,8 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response getUserProfile(UserprofileBean userbean ){
-		
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		UserprofileBean userbeanRes = new UserprofileBean();
 		Object result = null;
 		
@@ -422,6 +449,10 @@ public class UserServices {
 			System.out.println("Exception in Request UserProfile Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("get_user_profile_list");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -431,6 +462,9 @@ public class UserServices {
 	@Produces("application/json")
 	public Response requestUserProfileList(UserprofileBean userbean,
 			@HeaderParam("authToken") String authToken, @HeaderParam("authId")String authId ) {
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
+		
 //		HashMap<Long,FriendContact> frndhash = new HashMap<Long,FriendContact>();
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -554,6 +588,10 @@ public class UserServices {
 			System.out.println("Exception in Request UserProfileList Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("request_user_profilelist");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -612,6 +650,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response adNewuser(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, Contact contact){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		UserMaster user1= null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -719,6 +759,10 @@ public class UserServices {
 			System.out.println("Exception in Request add Unmanaged User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("add_unmanaged_user");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -729,7 +773,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response addStaff(@HeaderParam("authToken") String authToken , 
 			@HeaderParam("authId") String authId, ContactBean contact){
-		
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		String req = "token : "+authToken+", contactBean : "+", authId : "+authId;
 		try {
@@ -832,7 +877,10 @@ public class UserServices {
 			System.out.println("Unable to add logs for Add Staff Service \n"+e.getMessage());
 		}
 		
-		
+		timer.stop();
+		timer.setMethodName("add_staff");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -843,6 +891,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response removeStaff(@HeaderParam("authToken") String authToken, @PathParam("staffId") String staffId,
 						@HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		UserMaster user1=null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -899,7 +949,10 @@ public class UserServices {
 				System.out.println("Exception in Remove staff User Service : \n"+e.getMessage());
 				result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-			
+		timer.stop();
+		timer.setMethodName("remove_staff");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -935,7 +988,9 @@ public class UserServices {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response cancelRequestForStaffUser(@HeaderParam("authToken") String authToken,
-			@HeaderParam("authId") String authId, @PathParam("requestId") long reqId){
+			@HeaderParam("authId") String authId, @PathParam("requestId") long reqId){		
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -972,20 +1027,26 @@ public class UserServices {
 					result = ServiceResponse.getResponse(Constants.FAILURE,"Invalid authToken" );
 				}
 			
-			try{
-				logModel.setRequestData(req);
-				logModel.setResponseData(res);
-				logModel.setRequestName("cancel request for staff user");
-				if(Constants.RECORD_LOGS)
-					LogHelper.addLogHelper(logModel);
-			}catch(Exception e){
-				System.out.println("Unable to add log records for : cancel request for staff user Service \n"+e.getMessage());
-			}
+			
 			
 		}catch(Exception e){
 			System.out.println("Exception in Cancel Staff Request Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("cancel request for staff user");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : cancel request for staff user Service \n"+e.getMessage());
+		}
+		timer.stop();
+		timer.setMethodName("cancel_staff_request");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -995,6 +1056,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response addPrivateUser(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId, Contact contact){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		FriendList frndlist = null;
 		
@@ -1063,6 +1126,10 @@ public class UserServices {
 			System.out.println("Exception in Add Private User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}		
+		timer.stop();
+		timer.setMethodName("add_private_user");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -1073,7 +1140,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response deletePrivateUser(@HeaderParam("authToken") String authToken,
 				@HeaderParam("authId") String authId, @PathParam("privateUserId") String privateUserId){
-
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -1129,6 +1197,10 @@ public class UserServices {
 			System.out.println("Exception in Delete Private User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("delete_private_user");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -1139,6 +1211,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response blockUser(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,@PathParam("frndId") String frndId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		UserMaster usermaster = null;
 		ObjectMapper mapper = new ObjectMapper();
@@ -1194,6 +1268,10 @@ public class UserServices {
 			System.out.println("Exception in Block associate Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("Block_user");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -1204,6 +1282,8 @@ public class UserServices {
 	@Produces("application/json")
 	public Response getTansactionDocAndAssociateFriend(@PathParam("associateId") String associateId,
 			@HeaderParam("authToken") String authToken, @HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		TransactionDoc transDoc = null;
 		Object result = null;
 		
@@ -1283,7 +1363,10 @@ public class UserServices {
 			e.printStackTrace();
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("get_transaction_doc");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	

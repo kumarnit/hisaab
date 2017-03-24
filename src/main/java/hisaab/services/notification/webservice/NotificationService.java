@@ -10,6 +10,8 @@ import hisaab.services.notification.ServerMigrateNotification;
 import hisaab.services.notification.webservice.bean.SystemUpdateBean;
 import hisaab.services.user.dao.RequestDao;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -42,6 +44,8 @@ public class NotificationService {
 			@FormParam("max") String max,
 			@QueryParam("fields[]") final List<String> list,
 			@FormParam("stop") String stop){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 //		try{
 			System.out.println("==  "+min);
@@ -70,6 +74,9 @@ public class NotificationService {
 //			System.out.println("Exception in Update System Notification Service : \n"+e.getMessage());
 //			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 //		}
+			timer.stop();
+			timer.setMethodName("upadate_system_notification");
+			ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -78,6 +85,8 @@ public class NotificationService {
 	@Produces("application/json")
 	@Consumes("application/json")
 	public Response servermigrateSystemNotification(ServerMigrateNotification sermigrate ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 			sermigrate.setNotificationType(Constants.NOTIFICATION_SERVER_MIGRATE);
@@ -88,6 +97,9 @@ public class NotificationService {
 			System.out.println("Exception in Update System Notification Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("server_migarate");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -96,6 +108,8 @@ public class NotificationService {
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response sendDeepLinkNotification(DeepLinkNotification deepLink){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 			
@@ -115,6 +129,9 @@ public class NotificationService {
 			System.out.println("Exception in Update System Notification Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("deep_link_notification");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

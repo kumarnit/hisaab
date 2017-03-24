@@ -21,6 +21,8 @@ import hisaab.services.transaction.webservices.bean.TransactionBean1;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -43,6 +45,8 @@ public class OpeningBalService {
 	@Produces("application/json")
 	public Response openingBalRequest(@HeaderParam("authToken") String authToken, 
 	 	         @HeaderParam("authId") String authId, OpeningBalBean obrBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -144,6 +148,9 @@ public class OpeningBalService {
 			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("opening_balance_request");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -160,6 +167,8 @@ public class OpeningBalService {
 	public Response openingBalVerification(@HeaderParam("authToken") String authToken,
 				@PathParam("reqId") long reqId, @PathParam("response") int userResponse,
 				@HeaderParam("authId") String authId){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 		ObjectMapper mapper = new ObjectMapper();
@@ -257,6 +266,9 @@ public class OpeningBalService {
 			System.out.println("Exception in Request Server Token Service : \n"+e.getMessage());
 		    result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("opening_balance_verify");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	

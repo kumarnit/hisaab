@@ -25,6 +25,8 @@ import hisaab.services.user.modal.UserProfile;
 import hisaab.services.user.token.TokenModal;
 import hisaab.services.user.webservices.bean.UserBean;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.Helper;
 import hisaab.util.ServiceResponse;
 
@@ -62,7 +64,8 @@ public class StaffServices {
 	public Response staffLogin(@HeaderParam("contactNo") String contactNo,
 			@PathParam("requestId") long reqId, @PathParam("response") int status) 
 			          {
-						
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		try{
 		
@@ -141,6 +144,9 @@ public class StaffServices {
 			System.out.println("Exception in Verify staff User Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		timer.stop();
+		timer.setMethodName("verify_staff_login");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -179,7 +185,8 @@ public class StaffServices {
 	@Produces("application/json")
 	public Response updatePush(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, StaffUserBean userBean){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -244,7 +251,9 @@ public class StaffServices {
 			System.out.println("Exception in Update Staff push token Service : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("update_staff_push_token");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();		
 	}
 
@@ -255,7 +264,8 @@ public class StaffServices {
 	@Path("/update/profile")
 	public Response updateStaffProfile(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,StaffUserBean userBean){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		Object result = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -314,7 +324,9 @@ public class StaffServices {
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 
-		
+		timer.stop();
+		timer.setMethodName("update_staff_profile");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -326,6 +338,8 @@ public class StaffServices {
 	@Produces("application/json")
 	public Response removeStaff(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,@PathParam("ownerId") long ownerId ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		StaffUser requestingUser = null;
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -369,7 +383,9 @@ public class StaffServices {
 			System.out.println("Exception in Leave owner : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("leave_owner");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

@@ -21,6 +21,8 @@ import hisaab.services.transaction.webservices.bean.TransactionBean;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import java.util.ArrayList;
@@ -49,7 +51,8 @@ public class StaffTransactionService {
 	@Produces("application/json")
 	public Response addTransaction(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,TransactionBean transBean){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		List<Transaction> rejected = new ArrayList<Transaction>();
 		List<Transaction> rejectedOpen = new ArrayList<Transaction>();
@@ -166,7 +169,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("Add transaction by Staff");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("add_staff_transaction");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -178,7 +183,8 @@ public class StaffTransactionService {
 	@Produces("application/json")
 	public Response approveTransaction(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId, ApprovalBean rBean){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", ApprovalBean : "+rBean+", authId : "+authId;
@@ -243,7 +249,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("Approve transaction By user");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("approve_staff_transcation");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -255,6 +263,8 @@ public class StaffTransactionService {
 	@Produces("application/json")
 	public Response updateMultipleTransactions(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId, TransactionBean transBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
@@ -298,7 +308,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("Update Transaction By staff");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("update_staff_multi_trans");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -309,7 +321,8 @@ public class StaffTransactionService {
 	@Produces("application/json")
 	public Response deleteTransactionByStaff(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId,@HeaderParam("transactionId") String transactionId){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transactionId : "+transactionId+", authId : "+authId;
@@ -351,7 +364,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("Delete Staff_Transaction by Staff ");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("delete_trans_by_staff");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -363,7 +378,8 @@ public class StaffTransactionService {
 	public Response deleteTransactionByUser(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId, @HeaderParam("transactionId") String transactionId
 			, @PathParam("staffId") String staffId){
-		
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transactionId : "+transactionId+", staffId : "
@@ -407,7 +423,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("Delete Staff_Transaction by User");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("delete_staff_trans_by_owner");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -418,6 +436,8 @@ public class StaffTransactionService {
 	@Produces("application/json")
 	public Response getStaffTransactionsById(@HeaderParam("authToken") String authToken, 
 			@HeaderParam("authId") String authId,ReadBean rBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
@@ -468,7 +488,9 @@ public class StaffTransactionService {
 		logModel.setRequestName("getTransaction By Ids");
 		if(Constants.RECORD_LOGS)
 			LogHelper.addLogHelper(logModel);
-		
+		timer.stop();
+		timer.setMethodName("get_staff_trans_by_id");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	

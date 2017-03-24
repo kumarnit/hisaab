@@ -1,6 +1,8 @@
 package hisaab.services.contacts.services;
 
 
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -18,11 +20,11 @@ import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.ContactListBean;
 import hisaab.services.contacts.services.bean.FriendListBean;
-
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
-
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -32,7 +34,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -45,6 +46,8 @@ public class ContactServices {
 	@Produces("application/json")
 	public Response addContactList(@HeaderParam("authToken") String authToken, 
 			       @HeaderParam("authId") String authId,  ContactListBean contactListBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		long epoch = System.currentTimeMillis();
 		Object result = null;
 		String req = "token : "+authToken+", authId : "+authId+"contactSize :"
@@ -153,7 +156,9 @@ public class ContactServices {
 			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
-		
+		timer.stop();
+		timer.setMethodName("add_contact_list");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -164,7 +169,8 @@ public class ContactServices {
 	@Produces("application/json")
 	public Response getFriendList(@HeaderParam("authToken") String authToken,
 				@HeaderParam("authId") String authId) {
-
+				ExecutionTimeLog timer = new ExecutionTimeLog();
+				timer.start();
 				    Object result = null;
 				    
 				    String req = "token : "+authToken+", authId : "+authId;	
@@ -213,7 +219,9 @@ public class ContactServices {
 						System.out.println("Exception in get Associated userList : \n"+e.getMessage());
 						result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 					}
-				    
+				    timer.stop();
+				    timer.setMethodName("get_friend_list");
+				    System.out.println(timer.toString());
                     return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
             }
 	
@@ -224,6 +232,8 @@ public class ContactServices {
 	
 	public Response updateFriend(@HeaderParam("authToken") String authToken,FriendListBean friendlistbean,
 					@HeaderParam("authId") String authId) {
+					ExecutionTimeLog timer = new ExecutionTimeLog();
+					timer.start();
 					List<FriendContact> frndcont;
 					ObjectMapper mapper = new ObjectMapper();
 					Object result=null;
@@ -269,6 +279,9 @@ public class ContactServices {
 						System.out.println("Exception in Update Friends : \n"+e.getMessage());
 						result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 					}
+					timer.stop();
+					timer.setMethodName("update_friends");
+					System.out.println(timer.toString());
                     return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
             }
 	
@@ -278,6 +291,8 @@ public class ContactServices {
 	@Produces("application/json")
 	public Response addContactListtest(@HeaderParam("authToken") String authToken, 
 			      @HeaderParam("authId") String authId, ContactListBean contactListBean ){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		long epoch = System.currentTimeMillis();
 		Object result = null;
 		String req = "token : "+authToken+", authId : "+authId+"contactSize :"
@@ -364,7 +379,7 @@ public class ContactServices {
 					}
 						frndList.setIdCount(id);
 						frndList.setFriends(newFrndList);
-						frndList.getFriends().addAll(unmangedFriend);
+//						frndList.getFriends().addAll(unmangedFriend);
 					}
 	//				frndList.setIdCount(frndList.getFriends().size());
 					if(!frndList.getFriends().isEmpty())
@@ -406,7 +421,10 @@ public class ContactServices {
 //			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
 //			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 //		}
-		
+		timer.stop();
+		timer.setMethodName("add_contact_list_new");
+		System.out.println(timer.toString());
+	      
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

@@ -10,6 +10,8 @@ import hisaab.services.device.webservices.bean.DeviceInfoBean;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+import hisaab.util.ExcecutorHelper;
+import hisaab.util.ExecutionTimeLog;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -28,6 +30,8 @@ public class DeviceInfoService {
 	@Produces("application/json")
 	public Response addDeviceInfo(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId, DeviceInfoBean deviceInfoBean){
+		ExecutionTimeLog timer = new ExecutionTimeLog();
+		timer.start();
 		UserMaster user = null;
 		Object result=null;
 		
@@ -69,7 +73,9 @@ public class DeviceInfoService {
 		}catch(Exception e){
 			System.out.println("Unable to add log records for : Device Info Service \n"+e.getMessage());
 		}
-		
+		timer.stop();
+		timer.setMethodName("add_device_info");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
