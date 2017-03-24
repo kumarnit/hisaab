@@ -37,6 +37,7 @@ public class NotificationServlet extends HttpServlet {
 		String min = request.getParameter("min");
 		String max = request.getParameter("max");
 		String stop = request.getParameter("stop");
+		String date = request.getParameter("date");
 		String features1[] = request.getParameterValues("fields[]");
 		System.out.println("==  "+min);
 		System.out.println("==  "+max);
@@ -52,9 +53,10 @@ public class NotificationServlet extends HttpServlet {
 		sub.getUpdate().setMaxAvialableVersion(max);
 		sub.getUpdate().setMinStableAppVersion(min);
 		sub.getUpdate().setStopSupportForVersion(stop);
+		sub.getUpdate().setLastDate(Long.parseLong(date));
 		sub.getUpdate().setNewFeatures(features);
 		sub.getUpdate().setNotificationType(Constants.NOTIFICATION_SYSTEM_NOTIFICATION);
-		NotificationHelper.buildAndSendUpdateSystemNotification(sub.getUpdate(),"New Update Availble");
+		NotificationHelper.buildAndSendUpdateSystemNotification(sub.getUpdate(),"New Update Available");
 		PrintWriter out = response.getWriter();
 		out.print("<html>sucess</html>");
 		response.sendRedirect("updateNotification.jsp");

@@ -1,6 +1,10 @@
 package hisaab.services.transaction.webservices.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import hisaab.services.contacts.modal.FriendContact;
+import hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest;
 import hisaab.services.transaction.modal.TransactionDoc;
 
 public class TransactionDocFriendBean {
@@ -12,6 +16,20 @@ public class TransactionDocFriendBean {
 	private TransactionDoc transactionDoc = new TransactionDoc();
 	
 	private FriendContact friend = new FriendContact();
+	
+	private List<ClearTransactionRequest> clearTransRequestList = new ArrayList<ClearTransactionRequest>();
+	
+	
+	
+
+	public List<ClearTransactionRequest> getClearTransRequestList() {
+		return clearTransRequestList;
+	}
+
+	public void setClearTransRequestList(
+			List<ClearTransactionRequest> clearTransRequestList) {
+		this.clearTransRequestList = clearTransRequestList;
+	}
 
 	public int getStatus() {
 		return status;

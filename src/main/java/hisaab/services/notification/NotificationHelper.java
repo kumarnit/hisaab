@@ -4,14 +4,20 @@ package hisaab.services.notification;
 import hisaab.services.notification.android.PullAndroidNotify;
 import hisaab.services.staff.modal.StaffUser;
 import hisaab.services.staff.modal.StaffUserRequest;
+import hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest;
 import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 
 public class NotificationHelper {
@@ -21,6 +27,10 @@ public class NotificationHelper {
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
+//			Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+			
 				TransactionNotification tn = new TransactionNotification();
 				tn.setNotificationType(notificationType);
 				tn.setTransaction(transaction);
@@ -43,13 +53,18 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//			
+//		});
 	}
 
 	
 	public static void buildAndSendTransactionReadNotification(final UserMaster userB, final List<String> transIds, final int readStat, final String notificationText, final long serverTime){
 		Thread thrd = new Thread(){
 			 @Override
-	         public void run(){
+//			 Constants.executorService.execute(new Runnable() {
+					public void run() {
+//						System.out.println("Asynchronous Runnable");
 			
 				 TransactionReadNotification tn = new TransactionReadNotification();
 					tn.setReadStatus(readStat);
@@ -62,6 +77,9 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//					}
+//					
+//				});		
 	}
 
 
@@ -71,6 +89,10 @@ public class NotificationHelper {
 			 @Override
 	         public void run(){
 			
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				
 				 StaffInviteNotification sin = new StaffInviteNotification();
 				 sin.setStaffRequest(staffRequest);
 				 sin.setUserId(userB.getUserId()+"");
@@ -93,6 +115,8 @@ public class NotificationHelper {
 				 
 		};
 		thrd.start();
+//			}
+//		});
 	}
 	
 	
@@ -101,7 +125,8 @@ public class NotificationHelper {
 	public static void buildAndSendBlockedUserNotification(final String blocUser, final String userId , final String notificationText, final boolean isStaff){
 		Thread thrd = new Thread(){
 			 @Override
-	         public void run(){
+//			 Constants.executorService.execute(new Runnable() {
+					public void run() {
 			
 				 
 				 BlockedUserNotification bun = new BlockedUserNotification();
@@ -131,6 +156,9 @@ public class NotificationHelper {
 				 
 		};
 		thrd.start();
+//					}
+//					
+//				});
 	}
 	
 	
@@ -141,7 +169,9 @@ public class NotificationHelper {
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
-			
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
 				 
 				 OpeningBalanceNotification obn = new OpeningBalanceNotification();
 				 obn.setUserId(obr.getForUserId());
@@ -158,13 +188,76 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//		});
 	}
+	
+	
+	public static void buildAndSendClearTransactionRequestNotification( final ClearTransactionRequest ctr, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				 
+				 ClearTransactionNotification ctn = new ClearTransactionNotification();
+				 ctn.setUserId(ctr.getForUserId());
+				 ctn.setClearTransactionRequest(ctr);
+				 ctn.setNotificationType(Constants.NOTIFICATION_CLEAR_TRANS_REQ);
+				 	
+				 try {
+					long id = Long.parseLong(ctr.getForUserId());
+					PushNotificationControler.sendNotificationsToUser(Arrays.asList(id), null, ctn, notificationText);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				 
+			 }
+		};
+		thrd.start();
+//			}
+//		});
+	}
+	
+	
+	public static void buildAndSendClearTransactionResponseNotification( final ClearTransactionRequest ctr, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				 
+				 ClearTransactionNotification ctn = new ClearTransactionNotification();
+				 ctn.setUserId(ctr.getForUserId());
+				 ctn.setClearTransactionRequest(ctr);
+				 ctn.setNotificationType(Constants.NOTIFICATION_CLEAR_TRANS_RES);
+				 	
+				 try {
+					long id = Long.parseLong(ctr.getRequesterUserId());
+					PushNotificationControler.sendNotificationsToUser(Arrays.asList(id), null, ctn, notificationText);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				 
+			 }
+		};
+		thrd.start();
+//			}
+//		});
+	}
+
+	
 	
 	public static void buildAndSendStaffRemovalNotification(final long userB, final String staffUser,  final String notificationText, final boolean forStaff){
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
-			
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				
 				 StaffRemoveNotification srn = new StaffRemoveNotification();
 				 srn.setNotificationType(Constants.NOTIFICATION_STAFF_REMOVAL_STATUS);
 				 srn.setOwnerId(userB+"");
@@ -181,12 +274,17 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//		});
 	}
 	public static void buildAndSendOpeningBalanceResponse(final long userB, final OpeningBalRequest obr, final String notificationText){
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
-			
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				
 				 OpeningBalanceNotification obn = new OpeningBalanceNotification();
 				 obn.setUserId(obr.getForUserId());
 				 obn.setOpeningBalReq(obr);
@@ -202,11 +300,16 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//		});
 	}
 	public static void buildAndSendUpdateSystemNotification(final SystemUpdateNotification obsys, final String notificationText){
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
 				
 				 try {
 					 PullAndroidNotify.setAndSendAndroidSystemNotification(obsys,notificationText,Constants.SYSTEM_NOTIFICATION_UPDATE);
@@ -217,11 +320,36 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//		});
+	}
+	public static void buildAndSendDeepLinkNoti(final DeepLinkNotification obsys, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				
+				 try {
+					 PullAndroidNotify.setAndSendAndroidSystemNotification(obsys,notificationText,Constants.DEEP_LINK_NOTIFICATION);
+				    System.out.println("oo7 : System Notification");
+				 } catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			 }
+		};
+		thrd.start();
+//			}
+//		});
 	}
 	public static void buildAndSendServerMigrateSystemNotification(final ServerMigrateNotification obsys, final String notificationText){
 		Thread thrd = new Thread(){
 			 @Override
 	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
 				
 				 try {
 					 PullAndroidNotify.setAndSendAndroidSystemNotification(obsys,notificationText,Constants.SYSTEM_NOTIFICATION_SERVER_MIGRATE);
@@ -232,6 +360,8 @@ public class NotificationHelper {
 			 }
 		};
 		thrd.start();
+//			}
+//		});
 	}
 	public static void SendSimpleMessageAsThread(final String msg) {
 		Thread thrd = new Thread(){
@@ -252,6 +382,59 @@ public class NotificationHelper {
 		};
 		thrd.start();
 	}
+	public static void buildAndSendAutoDeleteNotification(final List<Long> users, final AutoDeleteNotification msg, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				
+				     ObjectMapper mapper = new ObjectMapper();
+					 PushNotificationControler.sendNotificationsToUser(users, null, msg, notificationText);
+				 try {
+					System.out.println("]]"+mapper.writeValueAsString(msg));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+		};
+		thrd.start();
+//			}
+//		});
+	}
+	
+	
+	
+	public static void buildAndSendClearTransactionResponseNotificationForAutoApproval( final ClearTransactionRequest ctr, final String notificationText){
+		Thread thrd = new Thread(){
+			 @Override
+	         public void run(){
+//		Constants.executorService.execute(new Runnable() {
+//			public void run() {
+//				System.out.println("Asynchronous Runnable");
+				 
+				 ClearTransactionNotification ctn = new ClearTransactionNotification();
+				 ctn.setUserId(ctr.getForUserId());
+				 ctn.setClearTransactionRequest(ctr);
+				 ctn.setNotificationType(Constants.NOTIFICATION_CLEAR_TRANS_RES);
+				 	
+				 try {
+					long id = Long.parseLong(ctr.getRequesterUserId());
+					long id2 = Long.parseLong(ctr.getForUserId());
+					PushNotificationControler.sendNotificationsToUser(Arrays.asList(id, id2), null, ctn, notificationText);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				 
+			 }
+		};
+		thrd.start();
+//			}
+//		});
+	}
+	
 	
 	public static void main(String[] args) {
 		System.out.println("in main....");

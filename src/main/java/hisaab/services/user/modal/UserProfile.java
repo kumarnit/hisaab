@@ -36,6 +36,7 @@ public class UserProfile {
 	@Column(name="user_name", length=50)
 	private String userName;
 	
+	
 	@Column(name="display_name", length=50)
 	private String displayName;
 	
@@ -54,6 +55,14 @@ public class UserProfile {
 	@Column(name="contact_no", length=20)
 	private String contactNo;
 
+	@Column(name="last_sync_time", length=14, columnDefinition="bigint default '0'")
+	private long lastSyncTime;
+	
+	@Column(name="last_activity", length=14, columnDefinition="bigint default '0'")
+	private long lastActivity;
+	
+	
+	
 	@Transient
 	private String userIdString = "";
 	
@@ -63,7 +72,9 @@ public class UserProfile {
 	@OneToOne
     @PrimaryKeyJoinColumn
 	    private UserMaster user;
-
+	
+	@Column(name="transaction_count", length=20 , columnDefinition="int default '0'")
+	private long transactionCount = 0;
 	
 	@JsonIgnore
 	public UserMaster getUser() {
@@ -76,6 +87,15 @@ public class UserProfile {
 	}
 
 	
+	public long getTransactionCount() {
+		return transactionCount;
+	}
+
+
+	public void setTransactionCount(long transactionCount) {
+		this.transactionCount = transactionCount;
+	}
+
 
 	public int getUserType() {
 		return userType;
@@ -177,6 +197,28 @@ public class UserProfile {
 	}
 	
 	
+	
+	
+	public long getLastSyncTime() {
+		return lastSyncTime;
+	}
+
+
+	public void setLastSyncTime(long lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
+	}
+
+
+	public long getLastActivity() {
+		return lastActivity;
+	}
+
+
+	public void setLastActivity(long lastActivity) {
+		this.lastActivity = lastActivity;
+	}
+
+
 	public static boolean validateProfileUpdate(UserProfile user){
 		boolean flag = true;
 		if(user.userName == null)

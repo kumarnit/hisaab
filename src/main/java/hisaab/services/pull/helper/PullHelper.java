@@ -17,6 +17,7 @@ import hisaab.services.pull.modal.PullBean;
 import hisaab.services.pull.modal.PullStaffBean;
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.staff.modal.StaffUser;
+import hisaab.services.transaction.clear_transaction.dao.ClearTransactionRequestDao;
 import hisaab.services.transaction.dao.TransactionDao;
 import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.openingbalance.dao.OpeningBalDao;
@@ -74,7 +75,7 @@ public class PullHelper {
 		pullBean.setPrivateuser(PrivateUserDao.getPrivateUser(user, pullTime));
 		pullBean.setModificationRequest(ModificationRequestDao.pullModificationRequest(user,pullTime));
 		pullBean.setListOfDeletedStaffTransaction(DeletedStaffTransactionDao.pullDeletedTransactionId(""+user.getUserId(),pullTime,true));
-		
+		pullBean.setClearTransRequestList(ClearTransactionRequestDao.pullClearTransRequestList(pullTime, user.getUserId()));
 		try {
 			System.out.println(mapper.writeValueAsString(pullBean.getUserIds()));
 		} catch (Exception e) {

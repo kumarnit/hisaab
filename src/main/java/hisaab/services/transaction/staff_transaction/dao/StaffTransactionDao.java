@@ -15,6 +15,8 @@ import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.notification.PushNotificationControler;
 import hisaab.services.notification.TransactionNotification;
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.staff.modal.StaffUser;
 import hisaab.services.transaction.dao.TransactionDao;
@@ -96,6 +98,13 @@ public class StaffTransactionDao {
 				/***
 				 * Need to work on notification.
 				 * **/
+				/*PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+userB.getUserId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				TransactionDoc transactionDoc = new TransactionDoc();
+				transactionDoc.setTransactions(Arrays.asList(t));
+				PullDocDao.addTransaction(transactionDoc,pullDoc);*/
+				
 				FriendContact frnd = null; 
 				frnd = FriendsDao.getFriendForWeb(""+user.getStaffId(), 0, userB);
 				String msg = "Staff ";

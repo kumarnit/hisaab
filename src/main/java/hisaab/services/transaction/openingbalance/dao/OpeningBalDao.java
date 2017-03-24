@@ -15,6 +15,8 @@ import hisaab.config.hibernate.HibernateUtil;
 import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.notification.NotificationHelper;
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
@@ -58,11 +60,13 @@ public class OpeningBalDao {
  	        		query.setParameter("updatedDate", epoch);
  	        		query.setParameter("forUserId", obr.getForUserId());
  	        		query.setParameter("ids", openingBalance.getId() );
+ 	        		obr.setId(openingBalance.getId());
+ 	        		obr.setUpdatedTime(epoch);
  	        		query.setParameter("requesterUserId", obr.getRequesterUserId());
  	        		query.setParameter("openingBalAmt", obr.getOpeningBalAmt());
  	        		query.setParameter("paymentStatus", obr.getPaymentStatus());
  	        		query.setParameter("openingBalDate", obr.getOpeningBalDate());
- 	        		query.setParameter("createdTime", obr.getCreatedTime());
+ 	        		query.setParameter("createdTime", epoch);
  	        		int i = query.executeUpdate();
  	        		if(i>0){
  	   				resFlag = true;
@@ -90,6 +94,13 @@ public class OpeningBalDao {
 			String msg = "";
 			if(frnd != null)
 			{
+				
+				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(frnd.getFrndId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDocDao.addAndUpadteOpeningBalanceRequest(obr,pullDoc);
+				
+				
 				if(frnd.getContactName() != null && !frnd.getContactName().isEmpty())
 					msg = frnd.getContactName();
 				else if(user.getUserProfile().getUserName() != null && 
@@ -174,6 +185,19 @@ public class OpeningBalDao {
 			String msg = "";
 			if(frnd != null)
 			{
+				
+				if(resFlag){
+					PullDoc pullDoc = new PullDoc();
+					pullDoc.setUserId(""+userB.getUserId());
+					pullDoc = PullDocDao.getPullDoc(pullDoc);
+					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
+					PullDoc pullDoc2 = new PullDoc();
+					pullDoc2.setUserId(""+user.getUserId());
+					pullDoc2 = PullDocDao.getPullDoc(pullDoc2);
+					PullDocDao.UpadteOpeningBalanceResponse(req,pullDoc,userResponse);
+								
+					}
+				
 				if(frnd.getContactName() != null && !frnd.getContactName().isEmpty())
 					msg = frnd.getContactName();
 				else if(user.getUserProfile().getUserName() != null && 
@@ -246,12 +270,15 @@ public class OpeningBalDao {
 			session = HibernateUtil.getSessionFactory().openSession();
 			org.hibernate.Transaction tx=null;
 			tx = session.beginTransaction();
-			org.hibernate.Query query=session.createQuery("FROM OpeningBalRequest WHERE (requesterUserId =:requesterUserId OR forUserId =:forUserId)"
-					+ " AND updatedTime > :pullTIme") ;
+			String hql = "FROM OpeningBalRequest WHERE (requesterUserId =:requesterUserId OR forUserId =:forUserId)";
+			if(pullTime > 0)
+				hql += " AND updatedTime > :pullTIme";
+			Query query = session.createQuery(hql);
 			query.setParameter("requesterUserId", ""+user.getUserId());
 			query.setParameter("forUserId", ""+user.getUserId());
-			query.setParameter("pullTIme", pullTime);
 //			query.setParameter("status", 0);
+			if(pullTime > 0)
+				query.setParameter("pullTIme", pullTime);
 			if(query.list() !=null && !query.list().isEmpty()){
 				openingBalance = query.list();
 			}

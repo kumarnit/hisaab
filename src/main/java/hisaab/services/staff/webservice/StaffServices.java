@@ -1,5 +1,7 @@
 package hisaab.services.staff.webservice;
 
+import hisaab.services.Logs.LogHelper;
+import hisaab.services.Logs.LogModel;
 import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.ContactsDao;
 import hisaab.services.contacts.dao.FriendsDao;
@@ -8,6 +10,8 @@ import hisaab.services.contacts.modal.ContactList;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.ContactBean;
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.staff.modal.StaffProfile;
 import hisaab.services.staff.dao.UserStaffMappingDao;
@@ -71,6 +75,20 @@ public class StaffServices {
 			contact.setName("");
 			StaffUserRequest st = StaffUserDao.verifyStaffUserCode( contactNo,reqId, status);
 			if(st != null){
+				/**
+				 * Adding to pull Doc
+				 * */
+				UserMaster userStaff = UserDao.getUserByContactNo(contact.getContactNo());
+				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+st.getOwnerId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDoc pullDoc1 = new PullDoc();
+				if(userStaff != null){
+					
+					pullDoc1.setUserId(""+userStaff.getUserId());
+					pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
+				}
+				
 				if(status == Constants.STAFFUSER_REQ_ACCEPTED){
 					StaffUser user = StaffUserDao.staffUserLogin(st,contact, TokenModal.generateToken(), Constants.STAFF_USER, st.getOwnerId(),status);
 					if(user != null)
@@ -94,6 +112,9 @@ public class StaffServices {
 					ubean.setStatus(Constants.SUCCESS_RESPONSE);
 					ubean.setMsg("success");
 					result = ubean;
+					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+					if(pullDoc1 != null)
+					PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}else if(status == 2){
 					UserMaster user = new UserMaster();       
 					user = UserDao.getUserForWeb(st.getOwnerId());
@@ -103,6 +124,9 @@ public class StaffServices {
 					}else{
 						result = ServiceResponse.getResponse(Constants.FAILURE, "Request rejection Failed");
 					}
+					PullDocDao.setStatusToStaffUserRequest(st,pullDoc,status);
+					if(pullDoc1 != null)
+						PullDocDao.addAndUpdateStaffRequestForYou(pullDoc1, st, status);
 				}	
 				else{
 					result = ServiceResponse.getResponse(401, "Invalid Response Type");
@@ -157,6 +181,13 @@ public class StaffServices {
 			@HeaderParam("authId") String authId, StaffUserBean userBean){
 		
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		StaffUser user = null;
 		long epoch = System.currentTimeMillis();
 		try {
@@ -182,6 +213,12 @@ public class StaffServices {
 						
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "PushToken updated successfully.");
 						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 					}else{
 							
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, "Unable to store into the database");
@@ -190,6 +227,18 @@ public class StaffServices {
 					
 					result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 				}
+		
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName(" staff update push");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : Staff update push Service \n"+e.getMessage());
+		}
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Exception in Update Staff push token Service : \n"+e.getMessage());
@@ -208,6 +257,13 @@ public class StaffServices {
 			@HeaderParam("authId") String authId,StaffUserBean userBean){
 		
 		Object result = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		StaffUser requestingUser =null;
 		try{
 			if(Constants.AUTH_USERID){
@@ -224,6 +280,11 @@ public class StaffServices {
 							userBean.setMsg("Successfuly Updated.");
 						result = userBean;
 						
+						try {
+							res = mapper.writeValueAsString(result);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}else{
 						String msg = "Something went wrong.";
 						result = ServiceResponse.getResponse(Constants.DB_FAILURE, msg);
@@ -237,11 +298,23 @@ public class StaffServices {
 				String msg = "Invalid Login";
 				result = ServiceResponse.getResponse(Constants.AUTH_FAILURE, "Invalid Login");
 			}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("update staff profile");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : update staff profile services \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Update Staff Profile : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
 
+		
 			return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 
@@ -254,6 +327,13 @@ public class StaffServices {
 	public Response removeStaff(@HeaderParam("authToken") String authToken,
 			@HeaderParam("authId") String authId,@PathParam("ownerId") long ownerId ){
 		StaffUser requestingUser = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String req = "token : "+authToken+", authId : "+authId;	
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		if(Constants.AUTH_USERID){
 			requestingUser = StaffUserDao.getStaffUserFromAuthToken1(authToken,authId);
 		}
@@ -273,12 +353,23 @@ public class StaffServices {
 			
 			}else
 				result =ServiceResponse.getResponse(401, "Invalid AuthToken");
+				
+			
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("remove staff services");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : remove staff Service \n"+e.getMessage());
+		}
+		
 		}catch(Exception e){
 			System.out.println("Exception in Leave owner : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}		
-			
-
+		}
+		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

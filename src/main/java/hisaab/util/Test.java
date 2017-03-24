@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import hisaab.config.morphia.MorphiaDatastoreTrasaction;
 import hisaab.services.contacts.modal.FriendList;
@@ -148,13 +149,39 @@ public class Test {
 //		long[] ids ={};
 //		pullFriendsById(null,Arrays.asList(Long.parseLong("2")) );
 //		calculateAmt("57ece38767ff843582787383");
-		UserMaster u = new UserMaster();
-		u.setUserId(1);
-		getTransactionForWebByTransactionList(Arrays.asList("1_2_2","1_2_5","1_4_2","4_8_4"), "", u);
+//		UserMaster u = new UserMaster();
+//		u.setUserId(1);
+//		getTransactionForWebByTransactionList(Arrays.asList("1_2_2","1_2_5","1_4_2","4_8_4"), "", u);
+//		long l1 = Long.parseLong("1484320838317");
+//		long l2 = Long.parseLong("1484840298127");
+//		System.out.println(TimeUnit.MILLISECONDS.toDays(l1 - l2));
+		int a=0, b=0;
+		System.out.println(a/b);
+	}
+	
+	public static Object getTransactionCount(){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
 		
+		BasicDBList ifno = new BasicDBList();
+	
+		DBObject gdb1 = new BasicDBObject();
+		gdb1.put("_id",Integer.parseInt("1"));
+		gdb1.put("user1",Integer.parseInt("1") );
+		gdb1.put("user2", Integer.parseInt("1"));
+		gdb1.put("count",new BasicDBObject("$size",new BasicDBObject("$ifNull",Arrays.asList("$transactions", new ArrayList()))));
+		DBObject project = new BasicDBObject("$project", gdb1);
 		
-		
-		
+		AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(project);
+		System.out.println("i m in");
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			System.out.println("== : "+mapper.writeValueAsString(output.getCommandResult().get("result")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Object result = null;
+		result = output.getCommandResult().get("result");
+		return result;
 	}
 	
 }

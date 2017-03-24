@@ -6,25 +6,33 @@ import hisaab.services.contacts.modal.Contact;
 import hisaab.services.contacts.modal.ContactList;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
-import hisaab.services.notification.webservice.bean.SystemUpdateBean;
+
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.staff.modal.StaffUser;
 import hisaab.services.staff.modal.StaffUserRequest;
 import hisaab.services.transaction.modal.TransactionDoc;
 import hisaab.services.user.dao.UserDao;
+
 import hisaab.services.user.modal.UserMaster;
 import hisaab.util.Constants;
+
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+import org.codehaus.jackson.map.ObjectMapper;
+
+
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType;
+
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 public class ContactHelper {
@@ -127,7 +135,7 @@ public class ContactHelper {
 	
 	
 	public static List<Contact> validateContactNoList2(List<Contact> clist){
-		
+		ObjectMapper mapper = new ObjectMapper();
 		List<Contact> cont = new ArrayList<Contact>(); 
 		Contact conta = null;
 		for(Contact contact : clist){
@@ -136,7 +144,8 @@ public class ContactHelper {
 					String defaultCountryCode = "91";
 					String defaultCountryNationalPrefix = "0";
 					// strip any non-significant characters
-					String number = originalNumber.replaceAll("[^0-9+]", ""); 
+					String number1 = originalNumber.replaceAll("[^0-9+]", ""); 
+					String number = number1.replace("+", "");
 					// check for prefixes
 						PhoneNumber pnum = validatePhoneNumber(number);
 						if(pnum != null){
@@ -149,7 +158,6 @@ public class ContactHelper {
 					}
 				
 			
-		
 		return cont;
 	}
 	              
@@ -208,6 +216,50 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 		
 		return friends;
 	}
+
+/*public static List<FriendContact> getFriends1(ContactList clist, long count){
+	HashMap<String, Contact> contactMap	 = 	new HashMap<String, Contact>();
+	for(Contact cont : clist.getContactList()){
+		contactMap.put(cont.getContactNo(), cont);
+	}
+	
+	ArrayList<String> contactNos = (ArrayList<String>) ContactHelper.getContactNoList(clist.getContactList());
+	KeySetView<String, UserCache> userContactNos = Constants.cache.keySet();
+	ArrayList<String> tempContacts = (ArrayList<String>) contactNos.clone();
+//	List<String> tempContacts = contactNos.;
+//	List<String> unmanaged = contactNos; 
+	ArrayList<String> unmanaged = (ArrayList<String>) contactNos.clone();
+	unmanaged.removeAll(userContactNos);
+	UserDao.addUnRegisteredUserInBulk(unmanaged,contactMap);
+	List<FriendContact> friends = new ArrayList<FriendContact>();
+	
+	userContactNos = Constants.cache.keySet();
+	tempContacts.retainAll(userContactNos);
+//	tempContacts.addAll(unmanaged);
+	if(!tempContacts.isEmpty()){
+		
+//		HashMap<String, UserMaster> userMap	 = 	 UserDao.getUserListFronNumbers(tempContacts);
+		
+		
+		
+		for(String number : tempContacts ){
+			Contact cont = contactMap.get(number);
+			UserCache usr = Constants.cache.get(number);
+			System.out.println(cont.getName());
+			FriendContact frndc = new FriendContact();
+			frndc.setId(++count);
+			frndc.setContactName(cont.getName());
+			frndc.setCreatedTime(System.currentTimeMillis());
+			frndc.setUpdatedTime(System.currentTimeMillis());
+			frndc.setFrndStatus(usr.getUserType());
+			frndc.setContactNo(number);
+			frndc.setFrndId(""+usr.getUserId());
+			friends.add(frndc);
+		}
+	}
+	
+	return friends;
+}*/
 	
 	public static void main(String[] args) {
 		/*List<Long> ids = new ArrayList<Long>();
@@ -215,7 +267,11 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 			ids.add(i+1);
 		}
 		*/
-		System.out.println("=="+validatePhoneNumber("7004540779"));
+		Contact conta  = new Contact();
+		conta.setContactNo("+15127365104");
+		conta.setName("nitish");
+		System.out.println("=="+validateContactNoList2(Arrays.asList(conta)));
+
 		
 		/*ids.remove(3);
 		

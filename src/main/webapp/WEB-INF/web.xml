@@ -7,7 +7,7 @@
          metadata-complete="false">
 
      <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>main.jsp</welcome-file>
      </welcome-file-list>
           <servlet>
 		<servlet-name>jersey-serlvet</servlet-name>
@@ -29,6 +29,27 @@
           	<servlet-name>NotificationServlet</servlet-name>
           	<servlet-class>hisaab.services.notification.webservice.NotificationServlet</servlet-class>
           </servlet>
+          <servlet>
+          	<description>
+          	</description>
+          	<display-name>DeepLinkServlet</display-name>
+          	<servlet-name>DeepLinkServlet</servlet-name>
+          	<servlet-class>hisaab.services.notification.webservice.DeepLinkServlet</servlet-class>
+          </servlet>
+          <servlet>
+          	<description>
+          	</description>
+          	<display-name>TestingSer</display-name>
+          	<servlet-name>TestingSer</servlet-name>
+          	<servlet-class>hisaab.util.TestingSer</servlet-class>
+          </servlet>
+          <servlet>
+          	<description>
+          	</description>
+          	<display-name>RespSer</display-name>
+          	<servlet-name>RespSer</servlet-name>
+          	<servlet-class>hisaab.util.RespSer</servlet-class>
+          </servlet>
 
 	<servlet-mapping>
 		<servlet-name>jersey-serlvet</servlet-name>
@@ -38,6 +59,18 @@
 		<servlet-name>NotificationServlet</servlet-name>
 		<url-pattern>/NotificationServlet</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DeepLinkServlet</servlet-name>
+		<url-pattern>/DeepLinkServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>TestingSer</servlet-name>
+		<url-pattern>/TestingSer</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RespSer</servlet-name>
+		<url-pattern>/RespSer</url-pattern>
+	</servlet-mapping>
     
 	<listener>
 	    <listener-class>hisaab.quartz.QuartzListener</listener-class>
@@ -45,6 +78,14 @@
 	<listener>
 		<listener-class>hisaab.util.Intializer</listener-class>
 	</listener>
-	 
+	<listener>
+		<listener-class>hisaab.quartz.QuartzListener1</listener-class>
+	</listener>
+	 <listener>
+		<listener-class>hisaab.quartz.QuartzListener2</listener-class>
+	</listener>
+	<listener>
+	    <listener-class>hisaab.util.MyContextListener</listener-class>
+	  </listener>
 </web-app>
 

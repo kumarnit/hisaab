@@ -1,12 +1,14 @@
 package hisaab.services.contacts.services;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import hisaab.services.Logs.LogHelper;
+import hisaab.services.Logs.LogModel;
 import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.ContactsDao;
 import hisaab.services.contacts.dao.FriendsDao;
@@ -16,12 +18,10 @@ import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.ContactListBean;
 import hisaab.services.contacts.services.bean.FriendListBean;
-import hisaab.services.transaction.dao.TransactionDao;
-import hisaab.services.user.dao.RequestDao;
+
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
-import hisaab.services.user.modal.UserRequest;
-import hisaab.services.user.webservices.bean.RequestBean;
+
 import hisaab.util.Constants;
 import hisaab.util.ServiceResponse;
 
@@ -33,8 +33,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 @Path("v1/contact")
 public class ContactServices {
@@ -47,7 +47,11 @@ public class ContactServices {
 			       @HeaderParam("authId") String authId,  ContactListBean contactListBean ){
 		long epoch = System.currentTimeMillis();
 		Object result = null;
-
+		String req = "token : "+authToken+", authId : "+authId+"contactSize :"
+				+ ""+contactListBean.getContactList().size();
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
 		try{
 
 		UserMaster user = null;
@@ -60,6 +64,8 @@ public class ContactServices {
 		}
 		
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
+			logModel.setUser(user.getUserId()+"");
 			ContactList clist = ContactsDao.getContactsDocForUser(user);
 			clist.setContactList(ContactHelper.validateContactNoList2(contactListBean.getContactList()));
 			clist.setUpdatedTime(epoch);
@@ -125,16 +131,29 @@ public class ContactServices {
 					contactListBean.setMsg("Contacts Added Successfully");
 					contactListBean.setContactList(clist.getContactList());
 					result = contactListBean;
+					res ="Friend List Sze :"+contactListBean.getFriends().size();
 				}
 				else
 			     	result = ServiceResponse.getResponse(402, "NO contact to add");
 			}else{
 				result = ServiceResponse.getResponse(401, "Invalid Server Token");
 			}
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("addContact List");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : add Contact Service \n"+e.getMessage());
+		}	
+		
 		}catch(Exception e){
 			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
 			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 		}
+		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
@@ -147,6 +166,12 @@ public class ContactServices {
 				@HeaderParam("authId") String authId) {
 
 				    Object result = null;
+				    
+				    String req = "token : "+authToken+", authId : "+authId;	
+					String res = "";
+					LogModel logModel = new LogModel();
+					logModel.setUserToken(authId);
+					
 				    try{
 					    String userId;
 					    FriendListBean frndbean=new FriendListBean();
@@ -160,6 +185,7 @@ public class ContactServices {
 							user = UserDao.getUserFromAuthToken(authToken);
 						}
 					    if(user.getUserId()>0){
+					    	UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 						    userId=""+user.getUserId();
 						    List<FriendContact> frnd=ContactsDao.getFriendListbyUserId(userId);
 												
@@ -167,13 +193,27 @@ public class ContactServices {
 						    frndbean.setMsg("Success");
 						    frndbean.setStatus(200);
 							result = frndbean;
+							res = "Friend Size :"+frndbean.getFriends().size();
 	                    }else{
 		                     result = ServiceResponse.getResponse(401, "Invalid Server Token");
 	                         }
+				    
+				    
+				    try{
+						logModel.setRequestData(req);
+						logModel.setResponseData(res);
+						logModel.setRequestName("getfriend list");
+						if(Constants.RECORD_LOGS)
+							LogHelper.addLogHelper(logModel);
+					}catch(Exception e){
+						System.out.println("Unable to add log records for : get friend list Service \n"+e.getMessage());
+					}
+				    
 				    }catch(Exception e){
 						System.out.println("Exception in get Associated userList : \n"+e.getMessage());
 						result = ServiceResponse.getResponse(507, "Server was unable to process the request");
 					}
+				    
                     return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
             }
 	
@@ -185,7 +225,13 @@ public class ContactServices {
 	public Response updateFriend(@HeaderParam("authToken") String authToken,FriendListBean friendlistbean,
 					@HeaderParam("authId") String authId) {
 					List<FriendContact> frndcont;
+					ObjectMapper mapper = new ObjectMapper();
 					Object result=null;
+					String req = "token : "+authToken+", authId : "+authId
+							+ "friendlist Bean :"+friendlistbean;	
+					String res = "";
+					LogModel logModel = new LogModel();
+					logModel.setUserToken(authId);
 					try{
 						UserMaster user = null;
 						if(Constants.AUTH_USERID){
@@ -196,12 +242,29 @@ public class ContactServices {
 						}
 						if (user.getUserId()>0)
 						{
+							UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 							 frndcont= friendlistbean.getFriends();
 							 FriendsDao.updateFriend(frndcont,user);
 							 result=ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "Successfully updated");
 						}
 						else
 						result=ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "invalid token");
+					
+					try {
+						res = mapper.writeValueAsString(result);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try{
+						logModel.setRequestData(req);
+						logModel.setResponseData(res);
+						logModel.setRequestName("update friend");
+						if(Constants.RECORD_LOGS)
+							LogHelper.addLogHelper(logModel);
+					}catch(Exception e){
+						System.out.println("Unable to add log records for : update friend Service \n"+e.getMessage());
+					}
+					
 					}catch(Exception e){
 						System.out.println("Exception in Update Friends : \n"+e.getMessage());
 						result = ServiceResponse.getResponse(507, "Server was unable to process the request");
@@ -217,10 +280,16 @@ public class ContactServices {
 			      @HeaderParam("authId") String authId, ContactListBean contactListBean ){
 		long epoch = System.currentTimeMillis();
 		Object result = null;
+		String req = "token : "+authToken+", authId : "+authId+"contactSize :"
+				+ ""+contactListBean.getContactList().size();
+		String res = "";
+		LogModel logModel = new LogModel();
+		logModel.setUserToken(authId);
+		
 		long test1,test2;
 		test1 = System.currentTimeMillis();
 		Calendar cal = Calendar.getInstance();
-		try{
+//		try{
 
 			
 		UserMaster user = null;
@@ -235,7 +304,7 @@ public class ContactServices {
 		System.out.println(authToken+" in contact service called "+test1);
 		if(user.getUserId()>0){
 			
-			
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			ContactList clist = ContactsDao.getContactsDocForUser(user);
 			clist.setContactList(ContactHelper.validateContactNoList2(contactListBean.getContactList()));
 			clist.setUpdatedTime(epoch);
@@ -310,20 +379,34 @@ public class ContactServices {
 					contactListBean.setContactList(clist.getContactList());
 					result = contactListBean;
 					
+					res ="Friend List Sze :"+contactListBean.getFriends().size();
 				}
 				else
 			     	result = ServiceResponse.getResponse(402, "NO contact to add");
 			}else{
 				result = ServiceResponse.getResponse(401, "Invalid Server Token");
 			}
-		}catch(Exception e){
-			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
-			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
-		}
+		
 		
 		test2 = System.currentTimeMillis();
 		System.out.println(authToken+"  contact service finished :"+test2);
 		System.out.println("!! Difference : "+(test2-test1));
+		
+		try{
+			logModel.setRequestData(req);
+			logModel.setResponseData(res);
+			logModel.setRequestName("addContact List");
+			if(Constants.RECORD_LOGS)
+				LogHelper.addLogHelper(logModel);
+		}catch(Exception e){
+			System.out.println("Unable to add log records for : add Contact Service \n"+e.getMessage());
+		}
+		
+//		}catch(Exception e){
+//			System.out.println("Exception in Upload Contact : \n"+e.getMessage());
+//			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+//		}
+		
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 }

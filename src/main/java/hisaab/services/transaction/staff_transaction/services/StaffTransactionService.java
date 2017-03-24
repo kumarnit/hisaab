@@ -52,8 +52,9 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<Transaction> rejected = new ArrayList<Transaction>();
+		List<Transaction> rejectedOpen = new ArrayList<Transaction>();
 		
-		String req = "token : "+authToken+", transaction : ";
+		String req = "token : "+authToken+", transaction : "+", authId :"+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -93,16 +94,30 @@ public class StaffTransactionService {
 				long lastCount = transDoc.getIdCount();
 				List<String> blockedFriend = FriendsDao.getBlockedUserIdForSaff(staffUser.getOwnerId());
 				Iterator<Transaction> itr = transBean.getTransactions().iterator();
-				
+				FriendContact frnd = null;
+				UserMaster userMaster = null;
 				while(itr.hasNext()){
+					
 					Transaction trans = itr.next();
 					String from = trans.getFrom();
 					String to = trans.getTo();
+					
+					userMaster = new UserMaster();
+					userMaster.setUserId(staffUser.getOwnerId());
+					if(trans.getFrom().equals(""+staffUser.getOwnerId()))
+						frnd = FriendsDao.getFriendForWeb(trans.getTo(), 0 , userMaster);
+					else
+						frnd = FriendsDao.getFriendForWeb(trans.getFrom(), 0 , userMaster);
+					if(frnd.getOpeningBalDate() > trans.getTransactionDate()){
+						rejectedOpen.add(trans);
+						itr.remove();
+					}else{
 				    if(blockedFriend.contains(from) || 
 				    blockedFriend.contains(to)){
 				    	rejected.add(trans);
 				    	itr.remove();
 				    }
+					}
 				}
 				if(transBean.getTransactions() != null && !transBean.getTransactions().isEmpty())
 				{
@@ -120,10 +135,17 @@ public class StaffTransactionService {
 					transDoc.setIdCount(lastCount);
 					StaffTransactionDao.addStaffTransactions(transDoc, staffUser);
 					transBean.getTransactions().addAll(rejected);
+					transBean.getTransactions().addAll(rejectedOpen);
+					transBean.setMsg("transactions Added");
+					transBean.setStatus(Constants.SUCCESS_RESPONSE);
+					result = transBean;
+				}else if(rejectedOpen != null && !rejectedOpen.isEmpty()){
+					transBean.getTransactions().addAll(rejectedOpen);
 					transBean.setMsg("transactions Added");
 					transBean.setStatus(Constants.SUCCESS_RESPONSE);
 					result = transBean;
 				}else{
+					
 					transBean.getTransactions().addAll(rejected);
 					transBean.setMsg("transaction against blocked user not allowed");
 					transBean.setStatus(Constants.SUCCESS_RESPONSE);
@@ -159,7 +181,7 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", ApprovalBean : "+rBean;
+		String req = "token : "+authToken+", ApprovalBean : "+rBean+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(rBean);
 		} catch (Exception e) {
@@ -183,6 +205,7 @@ public class StaffTransactionService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			boolean aFlag = false;
 			boolean rFlag = false;
@@ -234,7 +257,7 @@ public class StaffTransactionService {
 			@HeaderParam("authId") String authId, TransactionBean transBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transaction :";
+		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(transBean);
 		} catch (Exception e) {
@@ -289,7 +312,7 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transactionId : "+transactionId;
+		String req = "token : "+authToken+", transactionId : "+transactionId+", authId : "+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -343,7 +366,8 @@ public class StaffTransactionService {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transactionId : "+transactionId+", staffId : "+staffId;
+		String req = "token : "+authToken+", transactionId : "+transactionId+", staffId : "
+				+ ""+staffId+", authId : "+authId;
 		
 		String res = "";
 		LogModel logModel = new LogModel();
@@ -358,6 +382,7 @@ public class StaffTransactionService {
 			user = UserDao.getUserFromAuthToken(authToken);
 		}
 		if(user.getUserId()>0){
+			UserDao.updateTransActivityTime(user.getUserId(), System.currentTimeMillis());
 			 logModel.setUser(user.getUserId()+"_"+user.getUserProfile().getUserName());
 			 
 				 if(StaffTransactionDao.deleteTransaction(transactionId, staffId, ""+user.getUserId(), ""+user.getUserId(), false)){
@@ -395,7 +420,7 @@ public class StaffTransactionService {
 			@HeaderParam("authId") String authId,ReadBean rBean){
 		ObjectMapper mapper = new ObjectMapper();
 		
-		String req = "token : "+authToken+", transaction :";
+		String req = "token : "+authToken+", transaction :"+", authId : "+authId;
 		try {
 			req += mapper.writeValueAsString(rBean);
 		} catch (Exception e) {

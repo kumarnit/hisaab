@@ -3,6 +3,7 @@ package hisaab.services.pull.modal;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.staff.modal.StaffProfile;
 import hisaab.services.staff.modal.StaffUserRequest;
+import hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest;
 import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.modal.TransactionSql;
 import hisaab.services.transaction.openingbalance.modal.OpeningBalRequest;
@@ -43,10 +44,22 @@ public class PullBean {
 	
 	private List<OpeningBalRequest> openingBalance = new ArrayList<OpeningBalRequest>();
 	
+	private List<ClearTransactionRequest> clearTransRequestList = new ArrayList<ClearTransactionRequest>();
+	
 	private long pullTime ;
 	
 	
 	
+	
+	public List<ClearTransactionRequest> getClearTransRequestList() {
+		return clearTransRequestList;
+	}
+
+	public void setClearTransRequestList(
+			List<ClearTransactionRequest> clearTransRequestList) {
+		this.clearTransRequestList = clearTransRequestList;
+	}
+
 	public List<OpeningBalRequest> getOpeningBalance() {
 		return openingBalance;
 	}

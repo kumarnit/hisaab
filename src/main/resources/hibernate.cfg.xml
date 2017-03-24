@@ -12,12 +12,14 @@
         <property name="hibernate.cache.use_query_cache">false</property>
 	    
 	    <property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
-		<property name="hibernate.c3p0.min_size">1</property>
-		<property name="hibernate.c3p0.max_size">19</property>
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.max_size">120</property>
 		<property name="hibernate.c3p0.timeout">120</property>
 		<property name="hibernate.c3p0.max_statements">10</property>
 		
-		
+		<!-- Database Scheme Auto Update -->
+        <property name="hbm2ddl.auto">update</property>   
+        
 		<property name="hibernate.connection.useUnicode">true</property>
 		<property name="hibernate.connection.characterEncoding">UTF-8</property>
 		<property name="hibernate.connection.charSet">UTF-8</property>
@@ -50,7 +52,10 @@
 	    <mapping class="hisaab.services.transaction.staff_transaction.modal.DeletedStaffTransaction"/> 
 	    <mapping class="hisaab.services.staff.modal.UserStaffMapping"/>
 	    <mapping class="hisaab.services.transaction.openingbalance.modal.OpeningBalRequest"/>
-	    
+	    <mapping class="hisaab.services.transaction.clear_transaction.modal.ClearTransactionRequest"/>
+	    <mapping class="hisaab.services.appVersion.modal.AppVersion"/>
+		<mapping class="hisaab.services.sms.modal.SmsCountTable"/>
+		<mapping class="hisaab.services.viewlog.modal.TransactionLog"/>
 	    
 	    		
 	</session-factory>

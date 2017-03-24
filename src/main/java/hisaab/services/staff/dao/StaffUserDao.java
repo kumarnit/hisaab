@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.jackson.map.ObjectMapper;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -14,11 +14,13 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import hisaab.config.hibernate.HibernateUtil;
-import hisaab.services.contacts.dao.FriendsDao;
+
 import hisaab.services.contacts.modal.Contact;
-import hisaab.services.contacts.modal.FriendContact;
+
 import hisaab.services.notification.NotificationHelper;
-import hisaab.services.notification.StaffRemoveNotification;
+
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.sms.SMSHelper;
 import hisaab.services.sms.dao.SmsDao;
 import hisaab.services.sms.modal.SmsTable;
@@ -28,7 +30,7 @@ import hisaab.services.staff.modal.StaffUserRequest;
 import hisaab.services.staff.modal.UserStaffMapping;
 import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
-import hisaab.services.user.modal.UserProfile;
+
 import hisaab.util.Constants;
 import hisaab.util.RandomStringHelper;
 
@@ -44,7 +46,9 @@ public class StaffUserDao {
 		UserStaffMapping staffUsermap =null;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
+			
 			for(Contact conta : contact){
+				UserMaster userforSendingNotification = UserDao.getUserByContactNo(conta.getContactNo());
 			String hql = "from UserStaffMapping  where contactNo = :contact AND Status = :stat";
 //			String hql = "from StaffUserRequest where contactNo = :contact_no AND Status <> :stat";
 //			+" AND Status = :stat ";
@@ -111,6 +115,9 @@ public class StaffUserDao {
 							staffUser.setSecurityCode(RandomStringHelper.getCodeRandomAlphaNumeric());
 							staffUser.setDisplayName(conta.getName());
 							staffUser.setUpdatedTime(epoch);
+							if(!user1.getUserProfile().getUserName().equals(""))
+								staffUser.setOwnerName(user1.getUserProfile().getUserName());
+							staffUser.setOwnerContactNo(user1.getContactNo());
 //							tx = session.beginTransaction();
 							addStaffUserRequest(staffUser);
 //							session.save(staffUser);
@@ -118,16 +125,16 @@ public class StaffUserDao {
 							/***
 							 * Sending text message to invite staff user.
 							 ***/
-							UserMaster userB = UserDao.getUserByContactNo(conta.getContactNo());
-							if(userB != null){
+							
+							if(userforSendingNotification != null){
 								String msg = new StringBuffer(user1.getContactNo())
 											.append(" has sent you Staff Invite.").toString();
 								
-								NotificationHelper.buildAndSendStaffInviteNotification(user1,userB, staffUser, msg, false);
+								NotificationHelper.buildAndSendStaffInviteNotification(user1,userforSendingNotification, staffUser, msg, false);
 							}
-							userB = null;
 							
-							if(Constants.SMS_PACK_ACTIVE){
+							
+							if(userforSendingNotification == null && Constants.SMS_PACK_ACTIVE){
 								String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
 								String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 								SmsTable sms = new SmsTable();
@@ -175,6 +182,10 @@ public class StaffUserDao {
 					staffUser.setSecurityCode(RandomStringHelper.getCodeRandomAlphaNumeric());
 					staffUser.setDisplayName(conta.getName());
 					staffUser.setUpdatedTime(epoch);
+					if(!user1.getUserProfile().getUserName().equals(""))
+						staffUser.setOwnerName(user1.getUserProfile().getUserName());
+					staffUser.setOwnerContactNo(user1.getContactNo());
+					
 //					tx = session.beginTransaction();
 					addStaffUserRequest(staffUser);
 //					session.save(staffUser);
@@ -182,23 +193,23 @@ public class StaffUserDao {
 					/***
 					 *Sending text message to invite staff user.
 					 ***/
-					UserMaster userB = UserDao.getUserByContactNo(conta.getContactNo());
-					if(userB != null){
+					
+					if(userforSendingNotification != null){
 						String msg = new StringBuffer(user1.getContactNo())
 									.append(" has sent you Staff Invite.").toString();
 						
-						NotificationHelper.buildAndSendStaffInviteNotification(user1, userB, staffUser, msg, false);
+						NotificationHelper.buildAndSendStaffInviteNotification(user1, userforSendingNotification, staffUser, msg, false);
 					}
-					userB = null;
-					if(Constants.SMS_PACK_ACTIVE){
+					
+					if(userforSendingNotification == null && Constants.SMS_PACK_ACTIVE){
 						String strMsg = SMSHelper.generatePromotionalStaffInviteMessage(user1, conta.getContactNo());
 
-						String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+						String id1 =  SMSHelper.sendSms(conta.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 						SmsTable sms = new SmsTable();
 						sms.setContactNo(conta.getContactNo());
 						sms.setMsgId(id1);
 						sms.setSenderId(user1.getUserId());
-						sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
+						sms.setType(Constants.SMS_TYPE_TRANSACTIONAL);
 						sms.setStatus("");
 						SmsDao.addNewUserRequest(sms);
 					}
@@ -232,6 +243,7 @@ public class StaffUserDao {
 		Session session = null;
 		Transaction tx = null;
 		StaffUserRequest staffUserlocal = null;
+//		UserMaster userforAddingPullDoc = UserDao.getUserByContactNoForAddPullDoc(staffUser.getContactNo());
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			tx = session.beginTransaction();
@@ -243,7 +255,7 @@ public class StaffUserDao {
 				staffUserlocal = (StaffUserRequest) criteria.list().get(0);
 				Query query = session.createQuery("update StaffUserRequest set staffUserId =:staffUserId, createdTime =:createdTime,"
 						+ "updatedTime =:updatedTime, Status =:Status, securityCode =:securityCode,"
-						+ "displayName =:displayName where id =:id");
+						+ "displayName =:displayName, ownerName =:ownername, ownerContactNo =:ownercontactNo where id =:id");
 				query.setParameter("staffUserId", staffUser.getStaffUserId());
 				query.setParameter("createdTime", staffUser.getCreatedTime());
 				query.setParameter("updatedTime", staffUser.getUpdatedTime());
@@ -251,11 +263,22 @@ public class StaffUserDao {
 				query.setParameter("securityCode", staffUser.getSecurityCode());
 				query.setParameter("displayName", staffUser.getDisplayName());
 				query.setParameter("id", staffUserlocal.getId());
+				query.setParameter("ownername", staffUser.getOwnerName());
+				query.setParameter("ownercontactNo", staffUser.getOwnerContactNo());
 				query.executeUpdate();
-				
+				staffUser.setId(staffUserlocal.getId());
+				staffUser.setStatus(0);
 			}else{
 				session.save(staffUser);
 			}
+			/*if(userforAddingPullDoc != null){
+								
+								PullDoc pullDoc = new PullDoc();
+								pullDoc.setUserId(""+userforAddingPullDoc.getUserId());
+								pullDoc = PullDocDao.getPullDoc(pullDoc);
+								PullDocDao.addAndUpdateStaffRequestForYou(pullDoc,staffUser,staffUser.getStatus());
+								
+							}*/
 			
 		}catch(Exception e){
 			tx.rollback();
@@ -557,6 +580,7 @@ public class StaffUserDao {
 		boolean flag = false;
 		long blank = 0;
 		long epoch = System.currentTimeMillis();
+		StaffUserRequest id = null;
 		
 		int i=0;
 		try {
@@ -598,7 +622,7 @@ public class StaffUserDao {
 				if(querReq1.list().size()>0)
 				{
 				
-					StaffUserRequest id =(StaffUserRequest) querReq1.list().get(0);
+					id =(StaffUserRequest) querReq1.list().get(0);
 					System.out.println("==========="+id.getId());
 					String hqldelete1 = "Update StaffUserRequest set status = :deleted, updatedTime = :time where "
 							+ " id = :id and ownerId = :owner ";
@@ -613,6 +637,36 @@ public class StaffUserDao {
 			}
 			
 			tx.commit();
+			
+			PullDoc pullDoc = new PullDoc();
+			PullDoc pullDoc1 = new PullDoc();
+						if(i>0){
+							id.setUpdatedTime(epoch);
+							if(status == 3){
+								pullDoc.setUserId(""+ownerId);
+								pullDoc = PullDocDao.getPullDoc(pullDoc);
+								PullDocDao.setStatusToStaffUserRequest(id, pullDoc, status);
+								UserMaster user = UserDao.getUserByContactNo(contactno);
+								if(user != null){
+									pullDoc1.setUserId(""+user.getUserId());
+									pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
+									PullDocDao.addAndUpdateStaffRequestForYou( pullDoc1, id,status);
+								}
+								
+							}
+							else{
+								pullDoc.setUserId(""+ownerId);
+								pullDoc = PullDocDao.getPullDoc(pullDoc);
+								PullDocDao.setStatusToStaffUserRequest(id, pullDoc, status);
+								UserMaster user = UserDao.getUserByContactNo(contactno);
+								if(user != null){
+									pullDoc1.setUserId(""+user.getUserId());
+									pullDoc1 = PullDocDao.getPullDoc(pullDoc1);
+									PullDocDao.addAndUpdateStaffRequestForYou( pullDoc1, id,status);
+								}
+							}
+						}
+			
 			flag = true;
 
 			/**
@@ -936,6 +990,11 @@ public class StaffUserDao {
 		    
 			
 //			System.out.println("===--- :"+mapper.writeValueAsString(st));
+			PullDoc pullDoc = new PullDoc();
+			pullDoc.setUserId(""+user.getUserId());
+			pullDoc = PullDocDao.getPullDoc(pullDoc);
+			
+			PullDocDao.addAndUpdateStaffRequestForYou( pullDoc, st,status);
 			
 		}
 		catch (Exception e) {

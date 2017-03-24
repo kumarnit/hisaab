@@ -17,9 +17,13 @@ import hisaab.services.notification.NotificationHelper;
 import hisaab.services.notification.PushNotificationControler;
 import hisaab.services.notification.TransactionNotification;
 import hisaab.services.notification.TransactionReadNotification;
+import hisaab.services.pull.helper.PullDocDao;
+import hisaab.services.pull.modal.PullDoc;
 import hisaab.services.pull.modal.ReadTransaction;
 import hisaab.services.sms.SMSHelper;
+import hisaab.services.sms.dao.SmsCountDao;
 import hisaab.services.sms.dao.SmsDao;
+import hisaab.services.sms.modal.SmsCountTable;
 import hisaab.services.sms.modal.SmsTable;
 import hisaab.services.transaction.modal.Transaction;
 import hisaab.services.transaction.modal.TransactionDoc;
@@ -114,6 +118,7 @@ public class TransactionDao {
 		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
 //		query.field("_id").equals(androidId);
 		query.field("_id").equal(transactionDoc.get_id());
+		long epoch = System.currentTimeMillis();
 		UpdateOperations<TransactionDoc> op = datastore.createUpdateOperations(TransactionDoc.class);
 //		op.disableValidation();
 //		op.add("idCount", transactionDoc.getIdCount());
@@ -225,7 +230,13 @@ public class TransactionDao {
 				}
 				if(transactionDoc.getTransactions().size()>1)
 					tn.setPullFlag(1);
-*/				/**
+*/				
+				/*PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+userB.getUserId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				PullDocDao.addTransaction(transactionDoc,pullDoc);*/
+				
+				/**
 				 * Notification message
 				 **/
 				FriendContact frnd = null; 
@@ -271,13 +282,13 @@ public class TransactionDao {
 			else{
 				tempUser = UserDao.getUserForWeb(Long.parseLong(transactionDoc.getUser1()));
 			}
-			if(tempUser != null && tempUser.getSmsCount()< Constants.PROMOTIONAL_SMS_LIMIT && Constants.SMS_PACK_ACTIVE){	
+			/*if(tempUser != null && tempUser.getSmsCount()< Constants.PROMOTIONAL_SMS_LIMIT && Constants.SMS_PACK_ACTIVE){	
 				String strMsg = SMSHelper.generatePromotionalTransactionMessage(user, tempUser.getContactNo());
 				
 				List<Long> userli = tempUser.getValueMsgBy();
 				if(userli.isEmpty()){
 
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
@@ -295,8 +306,8 @@ public class TransactionDao {
 				
 				if( !tempUser.getValueMsgBy().contains(user.getUserId())){
 
-					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_PROMOTIONAL);
-
+					String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
+						
 					UserDao.updateSmsCount(tempUser,user);
 					SmsTable sms = new SmsTable();
 					
@@ -310,8 +321,62 @@ public class TransactionDao {
 					SmsDao.addNewUserRequest(sms);
 				}
 				}
-			}
+			}*/
+			if(tempUser != null && tempUser.getSmsCount()< Constants.PROMOTIONAL_SMS_LIMIT && Constants.SMS_PACK_ACTIVE){	
+			String strMsg = SMSHelper.generatePromotionalTransactionMessage(user, tempUser.getContactNo());
+			SmsCountTable smsCount = SmsCountDao.getSmsCountDetail(user, ""+tempUser.getUserId());
+			List<Long> userli = tempUser.getValueMsgBy();
+			if(smsCount == null){
+				
+				String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
+				UserDao.updateSmsCount(tempUser,user);
+				SmsCountTable smsCount1 = new SmsCountTable();
+				smsCount1.setReceiverId(tempUser.getUserId());
+				smsCount1.setSenderId(user.getUserId());
+				smsCount1.setTime(epoch);
+				smsCount1.setCreatedTime(epoch);
+				smsCount1.setSmsCount(1);
+				SmsCountDao.addSmsCount(smsCount1);
+				SmsTable sms = new SmsTable();
+				
+				sms.setContactNo(tempUser.getContactNo());
+				sms.setMsgId(id);
+				sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
+				sms.setSenderId(user.getUserId());
+				sms.setReceiverId(tempUser.getUserId());
+				sms.setStatus("");
+				System.out.println("FIRst Time sending");
+				SmsDao.addNewUserRequest(sms);
+				
+			}else{
+				System.out.println(" --->"+userli.contains(user.getUserId()));
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.DAY_OF_YEAR, -1);
+				long validateTime = cal.getTimeInMillis();
+			if( smsCount.getSmsCount() <= Constants.PER_USER_SMS_LIMIT && smsCount.getTime() < validateTime){
 
+				String id =  SMSHelper.sendSms(tempUser.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL);
+
+				UserDao.updateSmsCount(tempUser,user);
+				
+				SmsCountTable smsCount1 = new SmsCountTable();
+				smsCount1.setReceiverId(tempUser.getUserId());
+				smsCount1.setSenderId(user.getUserId());
+				SmsCountDao.addSmsCount(smsCount1);
+				
+				SmsTable sms = new SmsTable();
+				
+				sms.setContactNo(tempUser.getContactNo());
+				sms.setMsgId(id);
+				sms.setType(Constants.SMS_TYPE_PROMOTIONAL);
+				sms.setSenderId(user.getUserId());
+				sms.setReceiverId(tempUser.getUserId());
+				sms.setStatus("");
+				System.out.println("SECond Time sending");
+				SmsDao.addNewUserRequest(sms);
+			}
+			}
+		}
 
 
 		}
@@ -706,6 +771,23 @@ public class TransactionDao {
 								else
 									tn.setPaymentStatus(Constants.TO_GIVE);
 							}*/
+							
+							/**
+							 * Adding to Sync Pull
+							 **/
+							/*PullDoc pullDoc = new PullDoc();
+							pullDoc.setUserId(""+userB.getUserId());
+							pullDoc = PullDocDao.getPullDoc(pullDoc);
+							TransactionDoc pullTransDoc = new TransactionDoc();
+							pullTransDoc.setTransactions(Arrays.asList(transaction));
+							PullDocDao.addModifiedTransaction(pullTransDoc,pullDoc);
+//							
+							modReq.setCreatedBy(user.getUserId());
+							modReq.setCreatedTime(epoch);
+							modReq.setUpdatedTime(epoch);
+							
+							PullDocDao.addModificationRequest(modReq,pullDoc);*/
+							
 							/**
 							 * Notification message
 							 **/
@@ -919,7 +1001,24 @@ public class TransactionDao {
 										tn.setPaymentStatus(Constants.TO_GIVE);
 	
 									}
-	*/								/**
+	*/		
+								/**
+								 * adding to sync pull
+								 **/
+								
+								/*PullDoc pullDoc = new PullDoc();
+								pullDoc.setUserId(""+userB.getUserId());
+								pullDoc = PullDocDao.getPullDoc(pullDoc);
+								TransactionDoc pullTransDoc = new TransactionDoc();
+								pullTransDoc.setTransactions(Arrays.asList(transaction));
+								PullDocDao.addModifiedTransaction(pullTransDoc,pullDoc);
+								
+								modReq.setCreatedBy(user.getUserId());
+								modReq.setCreatedTime(epoch);
+								modReq.setUpdatedTime(epoch);
+								
+								PullDocDao.addModificationRequest(modReq,pullDoc);*/
+									/**
 									 * Notification message
 									 **/
 									FriendContact frnd = null; 
@@ -1187,9 +1286,13 @@ public class TransactionDao {
 					 BasicDBList idList = new BasicDBList();
 					 idList.add(new BasicDBObject("user1",""+user.getUserId()));
 					 idList.add(new BasicDBObject("user2",""+user.getUserId()));
-					 DBObject match2 = new BasicDBObject("$match", new BasicDBObject("$or", idList));
-					  
-					  BasicDBList paramList = new BasicDBList();
+					 DBObject match2 = new BasicDBObject("$or", idList);
+					 DBObject match3 = new BasicDBObject("docType" ,new BasicDBObject("$ne",Constants.BLOCKED_USER));
+					 
+					 BasicDBList paramList = new BasicDBList();
+					 paramList.add(match2);
+					 paramList.add(match3);
+					 DBObject match4 = new BasicDBObject("$match", new BasicDBObject("$and",paramList));
 //					  paramList.add(new BasicDBObject("transactions.createdTime", new BasicDBObject("$gt",pullTime)));
 //					  paramList.add(new BasicDBObject("transactions.transactionStatus", Constants.TRANS_APROOVED));
 //					 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("$and", paramList));
@@ -1199,7 +1302,7 @@ public class TransactionDao {
 					  gdb1.put("transactions",new BasicDBObject("$push","$modifiedTransactions"));
 					  DBObject group = new BasicDBObject("$group", gdb1);
 					  DBObject project = new BasicDBObject("$unwind", "$modifiedTransactions");
-					  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match2,project,match1, group);
+					  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match4,project,match1, group);
 					  System.out.println("i m in");
 					  try {
 					   ObjectMapper mapper = new ObjectMapper();
@@ -1263,11 +1366,12 @@ public class TransactionDao {
 		UserMaster user = new UserMaster();
 		user.setUserId(4);
 		user.setOwnerId(0);
-		pullReadTransactions(user,0);
+//		pullReadTransactions(user,0);
 //		deleteTransactionSqlOnBlock("1",user) ;
 //		calculateAmt("57ea2153438db5d9b3b6e1ef");
-//		getTransactionListForWeb(Arrays.asList("1_2_1", "2_3_1","1_2_2"));
-		
+//		getTransactionListForWeb(Arrays.asList("2_4_1", "2_3_1","1_2_2"));
+//		getPendingTransaction(Arrays.asList("2_4_1"));
+		getTransactionListBeforeDate("1", "2", 0, 1487929253000l);
 //		getTransactionForWeb("4_14_3", "57f342b0fe1db01b503840fw", user);
 		
 		/*OpeningBalRequest ob = new OpeningBalRequest();
@@ -1664,6 +1768,7 @@ public class TransactionDao {
 		quer.field("_id").equal(new ObjectId(transacDocId));
 //		quer.field("transactions.createdBy").equal(""+user.getUserId());
 		quer.filter("transactions.transactionId",transacId);
+		ModificationRequest modReq = new ModificationRequest();
 		
 
 		if(!quer.asList().isEmpty())
@@ -1675,7 +1780,7 @@ public class TransactionDao {
 		{
 		if(transactionDoc != null && transactionDoc.getDocType() == 0){
 			
-			ModificationRequest modReq = new ModificationRequest();
+			
 			modReq.setAction(Constants.TRANSACTION_DELETE);
 			modReq.setTransactionId(transaction.getTransactionId());
 			String user1 = quer.asList().get(0).getUser1();
@@ -1790,8 +1895,21 @@ public class TransactionDao {
 						tn.setPaymentStatus(Constants.TO_GIVE);
 				}
 				if(transactionDoc.getTransactions().size()>1)
-					tn.setPullFlag(1);
-*/				/**
+					tn.setPullFlag(1);				
+*/	
+				PullDoc pullDoc = new PullDoc();
+				pullDoc.setUserId(""+userB.getUserId());
+				pullDoc = PullDocDao.getPullDoc(pullDoc);
+				TransactionDoc transDoc = new TransactionDoc();
+				transDoc.setTransactions(Arrays.asList(transaction));
+				PullDocDao.addModifiedTransaction(transDoc,pullDoc);
+				
+				modReq.setCreatedBy(user.getUserId());
+				modReq.setCreatedTime(epoch);
+				modReq.setUpdatedTime(epoch);
+				
+				PullDocDao.addModificationRequest(modReq,pullDoc);
+				/**
 				 * Notification message
 				 **/
 				FriendContact frnd = null; 
@@ -1872,7 +1990,7 @@ public class TransactionDao {
 	 * user Response on transaction update approval
 	 **/
 	public static int processResponseForTransactionUpdate(String transactionId, String transactionDocId, UserMaster user, 
-					int userResponse, ModificationRequest req){
+					int userResponse, ModificationRequest req,boolean autoApproval){
 		ObjectMapper mapper = new ObjectMapper();
 		int res = 0;
 		Transaction trans = null;
@@ -1947,7 +2065,7 @@ public class TransactionDao {
 					
 				UpdateOperations<TransactionDoc> opAmt = datastore.createUpdateOperations(TransactionDoc.class);
 				opAmt.disableValidation();
-				opAmt.set("amount", transDoc.getAmount());
+				opAmt.set("amount", transDoc.getAmount()); 
 				opAmt.set("paymentStatus", transDoc.getPaymentStatus());
 				opAmt.set("updatedTime", epoch);
 				
@@ -1962,9 +2080,9 @@ public class TransactionDao {
 				Query<TransactionDoc> quer = datastore.createQuery(TransactionDoc.class);
 				quer.field("_id").equal(new ObjectId(transactionDocId));
 				quer.filter("modifiedTransactions.transactionId",transactionId);
-
+				
 				UpdateOperations<TransactionDoc> updateOp= datastore.createUpdateOperations(TransactionDoc.class).removeAll("modifiedTransactions", new BasicDBObject("transactionId", transactionId));
-
+				
 				UpdateResults up = datastore.update(quer, updateOp);
 				if(up.getUpdatedCount()>0){
 					
@@ -2011,7 +2129,21 @@ public class TransactionDao {
 									tn.setPaymentStatus(Constants.TO_GIVE);
 							}
 */							
-
+							PullDoc pullDoc = new PullDoc();
+							pullDoc.setUserId(""+userB.getUserId());
+							pullDoc = PullDocDao.getPullDoc(pullDoc);
+							TransactionDoc pullTransDoc = new TransactionDoc();
+							pullTransDoc.setTransactions(Arrays.asList(t));
+							if(userResponse == Constants.ACTION_APPROVED){
+								PullDocDao.addUpdateApproval(pullTransDoc,pullDoc,user);
+							}else
+								PullDocDao.addUpdateReject(pullTransDoc,pullDoc,user);
+							req.setCreatedBy(user.getUserId());
+							req.setCreatedTime(epoch);
+							req.setUpdatedTime(epoch);
+							
+							PullDocDao.addModificationRequest(req,pullDoc);
+							
 							/**
 							 * Notification message
 							 **/
@@ -2044,7 +2176,18 @@ public class TransactionDao {
 									.sendNotificationsToUser(
 											Arrays.asList(userB.getUserId()), null,
 											tn, msg);
-*/						}
+											
+*/						if(autoApproval){
+	
+							String msg1;
+							msg1 =" Your Pending Request is approved Automatically.";
+						   
+							System.out.println("==///=="+msg);
+							
+							NotificationHelper.buildAndSendTransactionNotification(user, user, t, transDoc, flag, msg1, Constants.NOTIFICATION_TRANS_UPDATE);
+										
+									}
+					        }
 					}
 				}
 
@@ -2085,16 +2228,16 @@ public class TransactionDao {
 		} finally {
 			session.close();
 		}
-		
 	}
 
 
 	/**
 	 * for processing 
 	 * user Response on transaction update approval
+	 * @param autoApproval 
 	 **/
 	public static int processResponseForTransactionDelete(String transactionId, String transactionDocId, UserMaster user, 
-					int userResponse, ModificationRequest req){
+					int userResponse, ModificationRequest req, boolean autoApproval){
 		ObjectMapper mapper = new ObjectMapper();
 		int res = 0;
 		
@@ -2219,6 +2362,20 @@ public class TransactionDao {
 							else
 								tn.setPaymentStatus(Constants.TO_GIVE);
 						}*/
+						
+						PullDoc pullDoc = new PullDoc();
+						pullDoc.setUserId(""+userB.getUserId());
+						pullDoc = PullDocDao.getPullDoc(pullDoc);
+						TransactionDoc pullTransDoc = new TransactionDoc();
+						pullTransDoc.setTransactions(Arrays.asList(t));
+						PullDocDao.addDeleteTransaction(pullTransDoc,pullDoc,user,userResponse);
+						
+						req.setCreatedBy(user.getUserId());
+						req.setCreatedTime(epoch);
+						req.setUpdatedTime(epoch);
+						
+						PullDocDao.addModificationRequest(req,pullDoc);
+						
 						/**
 						 * Notification message
 						 **/
@@ -2250,6 +2407,16 @@ public class TransactionDao {
 						NotificationHelper.buildAndSendTransactionNotification(user, userB, t, transDoc, flag, msg, Constants.NOTIFICATION_TRANS_DELETE);
 						/*PushNotificationControler.sendNotificationsToUser(Arrays.asList(userB.getUserId()), null,
 										tn, msg);*/
+						if(autoApproval){
+							
+							String msg1;
+							msg1 =" Your Pending Request is approved Automatically.";
+					       
+							System.out.println("==///=="+msg);
+							
+							NotificationHelper.buildAndSendTransactionNotification(user, user, t, transDoc, flag, msg1, Constants.NOTIFICATION_TRANS_DELETE);
+							
+						}
 					}
 				}
 			
@@ -2602,6 +2769,7 @@ public class TransactionDao {
 		  try {
 		   
 		   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+//		   System.out.println("44 : "+mapper.writeValueAsString(output));
 		   List objList =  (List) output.getCommandResult().get("result") ;
 		   List<Transaction> flist = null;
 		   
@@ -2890,6 +3058,7 @@ public class TransactionDao {
 				transDoc.setAmount(transDoc.getAmount()*(-1));
 				transDoc.setPaymentStatus(Constants.TO_GIVE);
 			}
+			
 			
 			UpdateOperations<TransactionDoc> op = datastore.createUpdateOperations(TransactionDoc.class);
 			op.set("openingBalAmt", transDoc.getOpeningBalAmt());
@@ -3219,9 +3388,13 @@ public class TransactionDao {
 				 BasicDBList idList = new BasicDBList();
 				 idList.add(new BasicDBObject("user1",""+user.getUserId()));
 				 idList.add(new BasicDBObject("user2",""+user.getUserId()));
-				 DBObject match2 = new BasicDBObject("$match", new BasicDBObject("$or", idList));
-				  
-				  BasicDBList paramList = new BasicDBList();
+				 DBObject match2 = new BasicDBObject("$or", idList);
+				 DBObject match3 = new BasicDBObject("docType" ,new BasicDBObject("$ne",Constants.BLOCKED_USER));
+				 
+				 BasicDBList paramList = new BasicDBList();
+				 paramList.add(match2);
+				 paramList.add(match3);
+				 DBObject match4 = new BasicDBObject("$match", new BasicDBObject("$and",paramList));
 //				  paramList.add(new BasicDBObject("transactions.createdTime", new BasicDBObject("$gt",pullTime)));
 //				  paramList.add(new BasicDBObject("transactions.transactionStatus", Constants.TRANS_APROOVED));
 //				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("$and", paramList));
@@ -3231,7 +3404,7 @@ public class TransactionDao {
 				  gdb1.put("transactions",new BasicDBObject("$push","$transactions"));
 				  DBObject group = new BasicDBObject("$group", gdb1);
 				  DBObject project = new BasicDBObject("$unwind", "$transactions");
-				  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match2,project,match1, group);
+				  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match4,project,match1, group);
 				  System.out.println("i m in");
 				  try {
 				   ObjectMapper mapper = new ObjectMapper();
@@ -3358,6 +3531,254 @@ public class TransactionDao {
 			transDoc = query.get();
 		}
 		return transDoc;
+	}
+
+	public static Object getTransactionCount(){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		
+		BasicDBList ifno = new BasicDBList();
+	
+		DBObject gdb1 = new BasicDBObject();
+		gdb1.put("_id",Integer.parseInt("1"));
+		gdb1.put("user1",Integer.parseInt("1") );
+		gdb1.put("user2", Integer.parseInt("1"));
+		gdb1.put("count",new BasicDBObject("$size",new BasicDBObject("$ifNull",Arrays.asList("$transactions", new ArrayList()))));
+		DBObject project = new BasicDBObject("$project", gdb1);
+		
+		AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(project);
+		System.out.println("i m in");
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			System.out.println("== : "+mapper.writeValueAsString(output.getCommandResult().get("result")));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Object result = null;
+		result = output.getCommandResult().get("result");
+		return result;
+	}
+
+	
+	
+	
+	/***
+	 * FetchList Of transactions less than the provided date
+	 **/
+	/***
+	 * for fetching the minimum date in transactions
+	 ***/
+	public static List<Transaction> getTransactionListBeforeDate(String userId, String targetUser, int docType, long epochDate){
+		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		 List<Transaction> flist = new ArrayList<Transaction>();
+		
+//		 DBObject match2 = new BasicDBObject("$match", new BasicDBObject("_id",new ObjectId())); 
+		 long date = 0;
+		 
+		 BasicDBList andList1 = new BasicDBList();
+		 andList1.add(new BasicDBObject("user1",userId));
+		 andList1.add(new BasicDBObject("user2",targetUser));
+		 
+		 BasicDBList andList2 = new BasicDBList();
+		 andList2.add(new BasicDBObject("user1",targetUser));
+		 andList2.add(new BasicDBObject("user2",userId));
+		 
+		 
+		 BasicDBList idList = new BasicDBList();
+		 idList.add(new BasicDBObject("$and",andList1));
+		 idList.add(new BasicDBObject("$and",andList2));
+		 
+		 
+		  DBObject match2 = new BasicDBObject("$or", idList);
+		 
+		  
+		  
+			 DBObject match3 = new BasicDBObject("docType" ,docType);
+			 
+			 BasicDBList paramList = new BasicDBList();
+			 paramList.add(match2);
+			 paramList.add(match3);
+			 DBObject match4 = new BasicDBObject("$match", new BasicDBObject("$and",paramList));
+		  
+		  DBObject match1 = new BasicDBObject("$match", new BasicDBObject("transactions.transactionDate", new BasicDBObject("$lt",epochDate)));
+		  DBObject gdb1 = new BasicDBObject();
+		  gdb1.put("_id","$_id");
+		  gdb1.put("transactions",new BasicDBObject("$push","$transactions"));
+		  DBObject group = new BasicDBObject("$group", gdb1);
+		  DBObject project = new BasicDBObject("$unwind", "$transactions");
+		  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(match4,project,match1, group);
+		  System.out.println("i m in");
+		  try {
+		   ObjectMapper mapper = new ObjectMapper();
+		   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+		   List objList =  (List) output.getCommandResult().get("result") ;
+		   if(!objList.isEmpty()){
+//			  System.out.println(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")));
+			  Gson gson = new Gson();
+			  for(BasicDBObject objArr : (List<BasicDBObject>) objList){
+				  List<Transaction> tempList =  gson.fromJson(gson.toJson(objArr.get("transactions")),List.class);
+				  
+				  Iterator<Transaction> iterator = tempList.iterator();
+				  while(iterator.hasNext()){
+					  flist.add(gson.fromJson(gson.toJson(iterator.next()), Transaction.class));
+				  }
+			  }
+//			  flist = (List<Transaction>) mapper.readValue(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")), List.class);
+		   }
+		   
+		  } catch (Exception e) {
+		   e.printStackTrace();
+		  }
+		 
+		 return flist;
+	}
+	
+	
+	/***
+	 * Update opening bal amt and date from transDoc
+	 **/
+	public static boolean updateOpeningBal(TransactionDoc transDoc, String rUser){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
+		boolean updateResultFlag = false;
+		query.field("_id").equal(new ObjectId(transDoc.getIdString()));
+		query.filter("docType", transDoc.getDocType());
+		if(!query.asList().isEmpty()){
+			
+			UpdateOperations<TransactionDoc> op = datastore.createUpdateOperations(TransactionDoc.class);
+			op.set("openingBalAmt", transDoc.getOpeningBalAmt());
+			op.set("openingBalDate", transDoc.getOpeningBalDate());
+			op.set("updatedTime", System.currentTimeMillis());
+			op.set("amount", transDoc.getAmount());
+			op.set("paymentStatus",transDoc.getPaymentStatus());
+			op.set("openingBalBy", rUser);
+			UpdateResults ur =  datastore.update(query,op);
+			if(ur.getUpdatedCount()>0){
+				updateResultFlag = true;
+				
+				FriendsDao.updateOpeningBalAmount(transDoc.getUser1(), transDoc.getUser2(), transDoc);
+				
+				if(transDoc.getDocType() == 0)
+					FriendsDao.updateOpeningBalAmount(transDoc.getUser2(), transDoc.getUser1(), transDoc);
+			}
+		}
+		
+		return updateResultFlag;
+	}
+	
+	
+	/**
+	 * delete transactions
+	 * by ids.
+	 **/
+	public static boolean deleteMultipleTransactions(List<String> transIds, String transactionDocId){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		boolean delStatus = false;
+		Query<TransactionDoc> quer = datastore.createQuery(TransactionDoc.class);
+		quer.field("_id").equal(new ObjectId(transactionDocId));
+		quer.field("transactions.transactionId").in(transIds);
+
+		UpdateOperations<TransactionDoc> updateOp= datastore.createUpdateOperations(TransactionDoc.class).removeAll("transactions", new BasicDBObject("transactionId", new BasicDBObject("$in",transIds)));
+
+		UpdateResults up = datastore.update(quer, updateOp);
+		if(up.getUpdatedCount()> 0)
+			delStatus = true;
+		
+		return delStatus;
+		
+	}
+	
+	
+	/**
+	 * delete modified transactions
+	 * by ids.
+	 **/
+	public static boolean deleteMultipleModifiedTransactions(List<String> transIds){
+		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		boolean delStatus = false;
+		Query<TransactionDoc> quer = datastore.createQuery(TransactionDoc.class);
+		quer.field("modifiedTransactions.transactionId").in(transIds);
+		
+		UpdateOperations<TransactionDoc> updateOp= datastore.createUpdateOperations(TransactionDoc.class).removeAll("modifiedTransactions", new BasicDBObject("transactionId", new BasicDBObject("$in",transIds)));
+		
+		UpdateResults up = datastore.update(quer, updateOp);
+		if(up.getUpdatedCount()> 0)
+			delStatus = true;
+		
+		return delStatus;
+		
+	}
+	
+	
+	/***
+	 * Delete multiple transactions from sql 
+	 * ***/
+	public static void deleteTransactionSqlByIds(List<String> transIds) {
+		Session session = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			org.hibernate.Transaction tx=null;
+			tx = session.beginTransaction();
+			org.hibernate.Query query=session.createQuery("DELETE FROM TransactionSql WHERE transactionId IN (:transIds) ");
+			query.setParameterList("transIds", transIds);
+			query.executeUpdate();
+			tx.commit();
+			System.out.println("sql transaction : deleted");			
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}
+		
+	}
+
+
+
+
+	public static List<Transaction> getPendingTransaction(List<String> pendingTransId) {
+		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
+		 List<Transaction> flist = new ArrayList<Transaction>();
+			
+				  
+				  BasicDBList paramList = new BasicDBList();
+				  DBObject match = new BasicDBObject("$match", new BasicDBObject("modifiedTransactions.transactionId", 
+						     new BasicDBObject("$in",pendingTransId )));
+//				  paramList.add(new BasicDBObject("transactions.createdTime", new BasicDBObject("$gt",pullTime)));
+//				  paramList.add(new BasicDBObject("transactions.transactionStatus", Constants.TRANS_APROOVED));
+//				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("$and", paramList));
+//				 DBObject match1 = new BasicDBObject("$match", new BasicDBObject("transactions.transactionId", new BasicDBObject("$gt",pullTime)));
+				  DBObject gdb1 = new BasicDBObject();
+				  gdb1.put("_id","$_id");
+				  gdb1.put("modifiedTransactions",new BasicDBObject("$push","$modifiedTransactions"));
+				  DBObject group = new BasicDBObject("$group", gdb1);
+				  DBObject project = new BasicDBObject("$unwind", "$modifiedTransactions");
+				  AggregationOutput output = datastore.getCollection(TransactionDoc.class).aggregate(project,match,group);
+				  System.out.println("i m in");
+				  try {
+				   ObjectMapper mapper = new ObjectMapper();
+				   System.out.println("== : "+mapper.writeValueAsString(((BasicDBList)(BasicDBList)output.getCommandResult().get("result") )));
+				   List objList =  (List) output.getCommandResult().get("result") ;
+				   if(!objList.isEmpty()){
+			//		  System.out.println(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")));
+					  Gson gson = new Gson();
+					  for(BasicDBObject objArr : (List<BasicDBObject>) objList){
+						  List<Transaction> tempList =  gson.fromJson(gson.toJson(objArr.get("modifiedTransactions")),List.class);
+
+						  Iterator<Transaction> iterator = tempList.iterator();
+						  while(iterator.hasNext()){
+							 flist.add(gson.fromJson(gson.toJson(iterator.next()), Transaction.class));
+						  }
+					  }
+			//		  flist = (List<Transaction>) mapper.readValue(mapper.writeValueAsString(((BasicDBObject)objList.get(0)).get("transactions")), List.class);
+				   }
+				   
+				  } catch (Exception e) {
+				   e.printStackTrace();
+				  }
+				 
+				 return flist;
 	}
 
 }

@@ -4,11 +4,31 @@ import hisaab.services.staff.modal.StaffUser;
 import hisaab.services.user.modal.UserMaster;
 
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public class Constants {
+
+
+
+public class Constants{
 	
 	public static boolean DEV_MODE = false;
 	
+//	public static DefaultCacheManager cacheManager = new DefaultCacheManager();
+     // Obtain the default cache
+//    public static Cache<String, UserCache> cache = cacheManager.getCache();
+//	public static ConcurrentHashMap<String, UserCache> cache = new ConcurrentHashMap<String, UserCache>();
+   
+	/*public static final ExecutorService executorService =new ThreadPoolExecutor(
+		    20, // core thread pool size
+		    40, // maximum thread pool size
+		    1, // time to wait before resizing pool
+		    TimeUnit.MINUTES, 
+		    new ArrayBlockingQueue<Runnable>(50, true),
+		    new ThreadPoolExecutor.CallerRunsPolicy());*/
+
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		
 	public static HashMap<String,StaffUser> staffUser = new HashMap<String,StaffUser>();
@@ -70,6 +90,7 @@ public class Constants {
 	
 	public static final int STAFF_REQUEST_REJECT_RESPONSE = 508;
 	
+	public static final int RESPONSE_REQUEST_EXPIRED = 509;
 	
 	/**
 	 * Transaction Constants
@@ -163,18 +184,29 @@ public class Constants {
 	
 	public static final int NOTIFICATION_OPENING_BAL_RES = 13;
 	
+	public static final int NOTIFICATION_CLEAR_TRANS_REQ = 17;
+	
+	public static final int NOTIFICATION_CLEAR_TRANS_RES = 18;
+	
 	public static final int NOTIFICATION_SYSTEM_NOTIFICATION = 14;
 	
 	public static final int NOTIFICATION_BLOCK_USER = 15;
 	
 	public static final int NOTIFICATION_SERVER_MIGRATE = 16;
 	
+	public static final int NOTIFICATION_AUTO_DELETE_TRANSACTION = 19;
+	
+	public static final int NOTIFICATION_DEEP_LINK = 20;
+	
 	/**
 	 * System update Notification 
+	 * e883ea1766d0d01e
 	 **/
 	public static final String SYSTEM_NOTIFICATION_UPDATE = "update";
 	
 	public static final String SYSTEM_NOTIFICATION_SERVER_MIGRATE = "servermigrate";
+	
+	public static final String DEEP_LINK_NOTIFICATION = "deepLink";
 	
 	/***
 	 *Sms sending 
@@ -194,9 +226,10 @@ public class Constants {
 	
 	public static final String SMS_TXT_TYPE = "txt";
 	
-	public static final int PROMOTIONAL_SMS_LIMIT = 3;
+	public static final int PROMOTIONAL_SMS_LIMIT = 10;
 	
 	
+	public static final int PER_USER_SMS_LIMIT = 5;
 	
 	public static final int SMS_TYPE_PROMOTIONAL = 1;
 	

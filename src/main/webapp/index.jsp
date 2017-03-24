@@ -1,5 +1,8 @@
+<%@page import="hisaab.util.RandomStringHelper"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+   <%@ page import="hisaab.util.Constants,org.codehaus.jackson.map.ObjectMapper" %>
+  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,27 +10,81 @@
 <title>Insert title here</title>
 <link href="css/style.css" rel="stylesheet">
 <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
-
-
 </head>
-<body>
+<br>
+<form action="RespSer" method="post">
+<input type="submit" value="Logout" >
+</form>
 
-<div class="container home-wrapper">
+<%
+String userName = null;
+Cookie[] cookies = request.getCookies();
+/* ObjectMapper mapper = new ObjectMapper();
+HttpSession str = request.getSession();
+out.print(request.getSession().getId()); */	
+if(cookies !=null){
+for(Cookie cookie : cookies){
+	if(cookie.getName().equals("user")) {userName = cookie.getValue();
+		if(userName.equalsIgnoreCase("admin")){
+	
+	 out.print("<div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-12 center-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div></div></div>");
+		}
+	 }
+}
+}
+if(userName == null) response.sendRedirect("main.jsp");
+%>
+<%-- <h3>Hi <%=userName %>, Login successful.</h3> --%>
 
-		<button class="button" id="viewuser" style="vertical-align:middle">View User</button>
 
-</div>
 
-</body>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">
 /* $(document).ready(function () { */
-
+	
+$(document).ready(function () {
 $('#viewuser').click(function() {
     window.location.href = 'viewUser.jsp';
     return false;
 });
+$('#viewalluser').click(function() {
+    window.location.href = 'viewAllUser.jsp';
+    return false;
+});
+$('#viewUserTransCount').click(function() {
+    window.location.href = 'viewUserTransCount.jsp';
+    return false;
+});
+$('#setCount').click(function () {
+    $.ajax({          
+    url: 'rest/v1/viewlogs/set/transactionCount',
+    type: 'GET',
+    success:function(){
+    	console.log(" successfully Archived");
+    	$("#status").html("<b style='color: green;'>Sucessfully Archived!</b>");
+    	hideStatus();
+    },
+    error:function(){
+    	console.log("error");
+    }
+});
 
+})
+$('#viewTransactionLog').click(function() {
+    window.location.href = 'viewTransLog.jsp';
+    return false;
+});
+function hideStatus(){
+	
+	setTimeout(function(){ $("#status").html("&nbsp;"); }, 5000);
+}
+
+})
+ 
+/* $('#setCount').click(function() {
+    window.location.href = 'rest/v1/viewlogs/set/transactionCount';
+    return false;
+}); */
 /* $('#invUsers').click(function() {
     window.location.href = 'http://invoicelogs-tacktilesys.rhcloud.com/input.jsp';
     return false;
