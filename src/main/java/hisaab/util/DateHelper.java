@@ -75,8 +75,18 @@ public class DateHelper {
 	        return cal.getTimeInMillis();
 	       
 	    }
+	  public static String getDateString(Long currentTime) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(currentTime);
+			cal.setTimeZone(TimeZone.getTimeZone("IST"));
+			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			formatter.setTimeZone(TimeZone.getTimeZone("IST"));
+			Date dat = cal.getTime();
+			String date = formatter.format(dat);
+			return date;
+		}
 	  public static void main(String arg[]){
-		  System.out.println(getDateForOpen(1486664399000l)); 
+		  System.out.println(getDateString(1490604862000l)); 
 	  }
 	  
 }

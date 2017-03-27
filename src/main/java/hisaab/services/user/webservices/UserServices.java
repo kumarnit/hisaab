@@ -265,7 +265,7 @@ public class UserServices {
 				else{
 					user = UserDao.getUserFromAuthToken(authToken);
 				}
-				
+				System.out.print("AFter authetication : "+System.currentTimeMillis());
 				long userId = user.getUserId();
 				String email = user.getEmail();
 				user = userBean.getUser();
@@ -279,7 +279,7 @@ public class UserServices {
 //					user.setOnboarding(Constants.ONBOARDING_COMPLETED);
 					if(UserDao.updatePushToken(user)){
 							
-							
+						    System.out.print("AFter updation : "+System.currentTimeMillis());
 							UserMaster tempUser = null;
 							UserMaster newTemp = new UserMaster();
 							tempUser = Constants.userMaster.get(user.getUserId()+"");
@@ -291,7 +291,7 @@ public class UserServices {
 								newTemp.getUserProfile().setPubStatus(userBean.getUser().getUserProfile().getPubStatus());
 								Constants.userMaster.put(user.getUserId()+"",  newTemp);
 							}
-						
+							System.out.print("AFter HashMAp Update : "+System.currentTimeMillis());
 						result = ServiceResponse.getResponse(Constants.SUCCESS_RESPONSE, "PushToken updated successfully.");
 						try {
 							res = mapper.writeValueAsString(result);

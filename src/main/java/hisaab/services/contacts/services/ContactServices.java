@@ -221,6 +221,7 @@ public class ContactServices {
 					}
 				    timer.stop();
 				    timer.setMethodName("get_friend_list");
+				    ExcecutorHelper.addExecutionLog(timer.toString());
 				    System.out.println(timer.toString());
                     return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
             }
@@ -281,6 +282,7 @@ public class ContactServices {
 					}
 					timer.stop();
 					timer.setMethodName("update_friends");
+					ExcecutorHelper.addExecutionLog(timer.toString());
 					System.out.println(timer.toString());
                     return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
             }
@@ -423,6 +425,7 @@ public class ContactServices {
 //		}
 		timer.stop();
 		timer.setMethodName("add_contact_list_new");
+		ExcecutorHelper.addExecutionLog(timer.toString());
 		System.out.println(timer.toString());
 	      
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
