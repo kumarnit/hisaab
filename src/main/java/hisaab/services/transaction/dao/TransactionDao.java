@@ -116,12 +116,9 @@ public class TransactionDao {
 	public static int addTransactions(TransactionDoc transactionDoc , UserMaster user ){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(TransactionDoc.class);
 		Query<TransactionDoc> query = datastore.createQuery(TransactionDoc.class);
-//		query.field("_id").equals(androidId);
 		query.field("_id").equal(transactionDoc.get_id());
 		long epoch = System.currentTimeMillis();
 		UpdateOperations<TransactionDoc> op = datastore.createUpdateOperations(TransactionDoc.class);
-//		op.disableValidation();
-//		op.add("idCount", transactionDoc.getIdCount());
 		op.addAll("transactions", transactionDoc.getTransactions(),false);
 		UpdateResults ur = datastore.update(query,op );
 		int stat = 0;
@@ -323,7 +320,11 @@ public class TransactionDao {
 				}
 			}*/
 			if(tempUser != null && tempUser.getSmsCount()< Constants.PROMOTIONAL_SMS_LIMIT && Constants.SMS_PACK_ACTIVE){	
-			String strMsg = SMSHelper.generatePromotionalTransactionMessage(user, tempUser.getContactNo());
+				Transaction tempTrans = new Transaction();
+				if(!transactionDoc.getTransactions().isEmpty()){
+				 tempTrans = transactionDoc.getTransactions().get(0);
+				}
+			String strMsg = SMSHelper.generatePromotionalTransactionMessage(user, tempUser.getContactNo(),tempTrans.getAmount(),tempTrans.getType());
 			SmsCountTable smsCount = SmsCountDao.getSmsCountDetail(user, ""+tempUser.getUserId());
 			List<Long> userli = tempUser.getValueMsgBy();
 			if(smsCount == null){

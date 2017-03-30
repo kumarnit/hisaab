@@ -105,9 +105,13 @@ public class Constants{
 	
 	public static final int TO_GIVE = 2;
 	
-	public static final int TRANS_TYPE_SALE = 1;
+	public static final int TRANS_TYPE_SALE = 3;
 	
-	public static final int TRANS_TYPE_PURCHASE = 2;
+	public static final int TRANS_TYPE_PURCHASE = 4;
+	
+	public static final int TRANS_TYPE_PAID = 1;
+	
+	public static final int TRANS_TYPE_RECEIVED = 2;
 	
 	public static final int TRANS_NEED_TO_APROOVE = 1;
 	

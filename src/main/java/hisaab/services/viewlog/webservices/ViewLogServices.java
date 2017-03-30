@@ -1,5 +1,6 @@
 package hisaab.services.viewlog.webservices;
 
+import java.io.File;
 import java.util.List;
 
 import hisaab.app.cronjob.TransactionCount;
@@ -9,6 +10,7 @@ import hisaab.services.viewlog.dao.UserLogDao;
 import hisaab.services.viewlog.helper.ViewLogHelper;
 import hisaab.services.viewlog.modal.TransactionLog;
 import hisaab.services.viewlog.webservices.bean.PageRequest;
+import hisaab.util.Constants;
 import hisaab.util.ServiceResponse;
 
 import javax.ws.rs.Consumes;
@@ -18,6 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 @Path("v1/viewlogs")
 public class ViewLogServices {
@@ -102,5 +105,23 @@ public class ViewLogServices {
 		ViewLogHelper.manRespFortranLog(transactionLog, resp);
 		
 		return Response.status(200).entity(resp).build();
+	}
+	
+	@GET
+	@Path("/get/logs")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public static Response getExecutionTimeLogs(){
+		String contextPath="E:\\";
+		if(!Constants.DEV_MODE){
+			contextPath = Constants.LOG_FILE_PATH;
+		}
+		
+		File logFile = new File(contextPath+Constants.SERVICE_LOG_FILE);
+
+		ResponseBuilder response = Response.ok((Object) logFile).status(200);  
+        response.header("Content-Disposition","attachment; filename=\"executionTimeLog.csv\"");  
+        return response.build();  
+
 	}
 }

@@ -88,12 +88,32 @@ public class SMSHelper {
 	   return str;
    }
 
-   public static String generatePromotionalTransactionMessage(UserMaster user, String contactNo){
+   public static String generatePromotionalTransactionMessage(UserMaster user, String contactNo, double amount, int transType){
 	   String name = "";
 	   if(user.getUserProfile().getUserName() != null)
 		   name = user.getUserProfile().getUserName();
-	   String str = name+" ("+user.getContactNo()+") has added transactions with you on LenaDena App. "
-	   				+ "To view the transactions join LenaDena App.\n"
+	   String str = "";
+	   switch (transType) {
+			case Constants.TRANS_TYPE_PAID:
+				str = "You have received Payment of Rs. "+amount+"/- from "+name+" ("+user.getContactNo()+").";
+				break;
+				
+			case Constants.TRANS_TYPE_RECEIVED:
+				str = "You have paid Payment of Rs. "+amount+"/- to "+name+" ("+user.getContactNo()+").";
+				break;
+			case Constants.TRANS_TYPE_SALE:
+				str = "You have made purchase worth Rs. "+amount+"/- from "+name+" ("+user.getContactNo()+").";
+				break;
+			case Constants.TRANS_TYPE_PURCHASE:
+				str = "You have made sales worth Rs. "+amount+"/- to "+name+" ("+user.getContactNo()+").";
+				break;
+
+			default:
+				str = name+" ("+user.getContactNo()+") has added transactions with you on LenaDena App. ";
+				break;
+	   }
+	   
+	   			str	+= " To view the transactions join LenaDena App.\n"
 	   				+ "http://tinyurl.com/lenadena";
 	   return str;
    }

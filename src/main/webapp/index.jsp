@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>LenaDena</title>
 <link href="css/style.css" rel="stylesheet">
 <link href="resources/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
 </head>
@@ -27,7 +27,7 @@ for(Cookie cookie : cookies){
 	if(cookie.getName().equals("user")) {userName = cookie.getValue();
 		if(userName.equalsIgnoreCase("admin")){
 	
-	 out.print("<div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-12 center-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div></div></div>");
+	 out.print("<div class=\"col-sm-12\" style=\"text-align:center\"><div id=\"status\"></div><div class=\"col-sm-12 loader\" style=\"text-align:center\"><img  src=\"images/loader.gif\"  /></div></div><div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"executionLog\" >Download Logs</button></div></div></div>");
 		}
 	 }
 }
@@ -41,7 +41,7 @@ if(userName == null) response.sendRedirect("main.jsp");
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript">
 /* $(document).ready(function () { */
-	
+ $(".loader").hide();	
 $(document).ready(function () {
 $('#viewuser').click(function() {
     window.location.href = 'viewUser.jsp';
@@ -70,10 +70,30 @@ $('#setCount').click(function () {
 });
 
 })
+
 $('#viewTransactionLog').click(function() {
     window.location.href = 'viewTransLog.jsp';
     return false;
 });
+ $('#executionLog').click(function () {
+	/*  $(".loader").show(); 
+     $.ajax({          
+    url: 'rest/v1/viewlogs/get/logs',
+    type: 'GET',
+     success:function(data){
+    	$(".loader").hide();
+    	console.log(" downloaded");
+    	$("#status").html("<b style='color: rgba(31, 35, 95, 0.74);'>Downloading Started!</b>");
+    	hideStatus();
+    },
+    error:function(){
+    	console.log("error");
+    } 
+});   */
+	  window.location.href = 'rest/v1/viewlogs/get/logs';
+	    return false;  
+
+})
 function hideStatus(){
 	
 	setTimeout(function(){ $("#status").html("&nbsp;"); }, 5000);
