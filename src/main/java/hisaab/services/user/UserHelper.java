@@ -11,6 +11,9 @@ import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
 import hisaab.services.contacts.services.bean.PrivateUserBean;
 import hisaab.services.notification.NotificationHelper;
+import hisaab.services.sms.SMSHelper;
+import hisaab.services.sms.dao.PromotionalSmsDao;
+import hisaab.services.sms.modal.PromotionalSms;
 import hisaab.services.staff.dao.StaffUserDao;
 import hisaab.services.transaction.dao.TransactionDao;
 import hisaab.services.transaction.modal.Transaction;
@@ -352,9 +355,11 @@ public class UserHelper {
 	
 	public static void main(String[] args) {
 		
-		UserMaster user = new UserMaster();
+		/*UserMaster user = new UserMaster();
 		user.setUserId(1);
-		blockUser("2", user);
+		blockUser("2", user);*/
+		
+		sendPromotionalMessageToUser();
 	}
 	
 	
@@ -366,5 +371,21 @@ public class UserHelper {
 			}
 		};
 		thrd.start();
+	}
+	
+	
+	
+	public static void sendPromotionalMessageToUser(){
+		List<PromotionalSms> smsUserList = UserDao.getUserListForPromotionalSms();
+		if(smsUserList != null && !smsUserList.isEmpty()){
+			String msg = SMSHelper.generatePromotionalMessage();
+			for(PromotionalSms prosms : smsUserList){
+				prosms.setMsgId(SMSHelper.sendSms(prosms.getContact_no(), msg, Constants.SMS_TYPE_PROMOTIONAL));
+			}
+			PromotionalSmsDao.addPromotionalSms(smsUserList);
+			UserDao.updatePromotionalFlag(smsUserList);
+		}
+		
+		
 	}
 }

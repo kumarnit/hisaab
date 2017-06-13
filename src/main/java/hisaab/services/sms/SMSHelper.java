@@ -128,7 +128,17 @@ public class SMSHelper {
 	   return str;
    }
 
+   
+   public static String generatePromotionalMessage(){
+	   
+	   String str = "Kya aap udhaar maal bechate hain? Staff se payment mangwaate hain? "
+	   		+ "\nFree Lena-Dena app se apna hisab rakhe."
+	   		+ "\nhttp://tinyurl.com/lenadena \n\nShare to Help others";
+	   return str;
+   }
 
+   
+   
    public static void main(String[] args) {
 //	sendSms("+918087611301", "jsdjhgfj 73476 gsjdfg", 0);
 }

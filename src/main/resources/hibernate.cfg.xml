@@ -56,7 +56,7 @@
 	    <mapping class="hisaab.services.appVersion.modal.AppVersion"/>
 		<mapping class="hisaab.services.sms.modal.SmsCountTable"/>
 		<mapping class="hisaab.services.viewlog.modal.TransactionLog"/>
-	    
+	    <mapping class="hisaab.services.sms.modal.PromotionalSms"/>
 	    		
 	</session-factory>
 

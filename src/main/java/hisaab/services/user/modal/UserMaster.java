@@ -130,6 +130,9 @@ public class UserMaster {
 	@Column(name = "msg_by_user")
 	private String msgByuser = "[]";
 	
+	@Column(name="promo_sms_flag", length = 2, columnDefinition="int default '0'")
+	private int promoSmsFlag;
+	
 	@Transient 
 	private List<Long> valueMsgBy;
 	
@@ -350,6 +353,16 @@ public class UserMaster {
 		this.smsCount = smsCount;
 	}
 	
+	
+	
+	public int getPromoSmsFlag() {
+		return promoSmsFlag;
+	}
+
+	public void setPromoSmsFlag(int promoSmsFlag) {
+		this.promoSmsFlag = promoSmsFlag;
+	}
+
 	public static void main(String arg[])
 	{
 		

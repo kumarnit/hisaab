@@ -10,23 +10,23 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import hisaab.config.hibernate.HibernateUtil;
-
 import hisaab.services.contacts.ContactHelper;
 import hisaab.services.contacts.dao.FriendsDao;
 import hisaab.services.contacts.modal.Contact;
 import hisaab.services.contacts.modal.FriendContact;
 import hisaab.services.contacts.modal.FriendList;
+import hisaab.services.sms.modal.PromotionalSms;
 import hisaab.services.user.UserHelper;
-
 import hisaab.services.user.modal.UserMaster;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.user.token.TokenModal;
-
 import hisaab.services.user.webservices.bean.UserProfileFriendBean;
-
 import hisaab.util.Constants;
 
 
+
+
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -302,7 +302,9 @@ public class UserDao {
 //		updateSmsCount(user);
 //		deleteUserRequest();
 		
-		updateLastSyncTime(Long.parseLong("2"), System.currentTimeMillis());
+//		updateLastSyncTime(Long.parseLong("2"), System.currentTimeMillis());
+		
+		getUserListForPromotionalSms();
 	}
 	
 	public static boolean updateUserOnBoardingFlag(Long userId){
@@ -1295,8 +1297,74 @@ public class UserDao {
 		} finally {
 			session.close();
 		}		
+	}
+	
+	public static List<PromotionalSms> getUserListForPromotionalSms(){
+		Session session = null;
+		List<PromotionalSms> smsUserList = new ArrayList<PromotionalSms>();
+		PromotionalSms proSms = null;
+		long epoch = System.currentTimeMillis();
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			
+			Criteria criteria = session.createCriteria(UserMaster.class);
+			criteria.add(Restrictions.eq("promoSmsFlag", 0));
+			criteria.add(Restrictions.eq("userType", Constants.NOT_REGISTERED_USER));
+			criteria.add(Restrictions.sqlRestriction("1=1 order by rand()"));
+			criteria.setMaxResults(Constants.PROMOTIONAL_SMS_BATCH_SIZE);
+			for(UserMaster user : (List<UserMaster>) criteria.list()){
+				proSms = new PromotionalSms();
+				proSms.setContact_no(user.getContactNo());
+				proSms.setEpochTime(epoch);
+				proSms.setUserId(user.getUserId());
+//				System.out.println(" - "+ user.getUserId());
+				smsUserList.add(proSms);
+			}
+			System.out.println("size ==> "+smsUserList.size());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			if(session != null)
+				session.close();
+		}
 		
-		
+		return smsUserList;
 	}
 
+	public static boolean updatePromotionalFlag(List<PromotionalSms> smsUserList){
+		
+		Session session = null;
+		Transaction tx = null;
+		boolean resFlag = false;
+		List<Long> idList = new ArrayList<Long>();
+		
+		for(PromotionalSms prosms : smsUserList){
+			idList.add(prosms.getUserId());
+		}
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			String hql = "update UserMaster set promoSmsFlag = :status"
+					+ "  WHERE userId in :userList";
+							
+			Query query = session.createQuery(hql);
+			query.setParameter("status", 1);
+			query.setParameterList("userList", idList);
+			int i = query.executeUpdate();
+			if(i>0){
+				resFlag = true;
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			if(session != null){
+				session.close();
+			}
+		}
+		
+		return resFlag;
+	}
+	
 }

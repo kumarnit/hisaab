@@ -1370,5 +1370,27 @@ public class UserServices {
 		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
 	}
 	
+	
+	@GET
+	@Path("/promosmstest")
+	@Produces("application/json")
+	public Response getPromoTest(@HeaderParam("appVersion") String appVersion){
+		ExecutionTimeLog timer = new  ExecutionTimeLog();
+		timer.start();
+		Object result = null;
+		try{
+			UserHelper.sendPromotionalMessageToUser();
+			result =  "{ " + "\"status\" : 200, " + "\", \"msg\": \"sms sent\"}";
+		}catch(Exception e){
+			System.out.println("Exception in Request Promotional sms Service : \n"+e.getMessage());
+			result = ServiceResponse.getResponse(507, "Server was unable to process the request");
+		}
+		timer.stop();
+		timer.setMethodName("sms promo test");
+		ExcecutorHelper.addExecutionLog(timer.toString());
+		System.out.println(timer.toString());
+		return Response.status(Constants.SUCCESS_RESPONSE).entity(result).build();
+	}
+	
 }
 

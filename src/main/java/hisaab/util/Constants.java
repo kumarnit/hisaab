@@ -237,9 +237,13 @@ public class Constants{
 	
 	public static final String SMS_TRANS_SENDERID = "HISAAB";
 	
-	public static final String SMS_TXT_TYPE = "txt";
+	public static final String SMS_TXT_TYPE = "uni";
 	
 	public static final int PROMOTIONAL_SMS_LIMIT = 10;
+	
+	public static final int PROMOTIONAL_SMS_BATCH_SIZE = 200;
+	
+	
 	
 	
 	public static final int PER_USER_SMS_LIMIT = 5;
@@ -252,6 +256,7 @@ public class Constants{
 	
 	public static final String DEFAULT_COUNTRY_CODE = "+91";
 
+	
 	
 	
 	/***
