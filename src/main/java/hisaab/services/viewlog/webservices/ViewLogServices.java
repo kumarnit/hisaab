@@ -7,6 +7,7 @@ import hisaab.app.cronjob.TransactionCount;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.viewlog.dao.TransactionLogDao;
 import hisaab.services.viewlog.dao.UserLogDao;
+import hisaab.services.viewlog.helper.DelIntenalUser;
 import hisaab.services.viewlog.helper.ViewLogHelper;
 import hisaab.services.viewlog.modal.TransactionLog;
 import hisaab.services.viewlog.webservices.bean.PageRequest;
@@ -122,6 +123,17 @@ public class ViewLogServices {
 		ResponseBuilder response = Response.ok((Object) logFile).status(200);  
         response.header("Content-Disposition","attachment; filename=\"executionTimeLog.csv\"");  
         return response.build();  
+
+	}
+	@GET
+	@Path("/delete/logs")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public static Response deleteIntenalUser(){
+
+		DelIntenalUser.deleteIntenalUser();
+		Object result = ServiceResponse.getResponse(200, "sucess");
+		return Response.status(200).entity(result).build();
 
 	}
 }

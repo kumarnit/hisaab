@@ -180,17 +180,17 @@ public static List<FriendContact> getFriends(ContactList clist, long count){
 		}
 		
 		ArrayList<String> contactNos = (ArrayList<String>) ContactHelper.getContactNoList(clist.getContactList());
-		List<String> userContactNos = UserDao.getContactNoListOfUsers();
+//		List<String> userContactNos = UserDao.getContactNoListOfUsers();
 		ArrayList<String> tempContacts = (ArrayList<String>) contactNos.clone();
 //		List<String> tempContacts = contactNos.;
 //		List<String> unmanaged = contactNos; 
 		ArrayList<String> unmanaged = (ArrayList<String>) contactNos.clone();
-		unmanaged.removeAll(userContactNos);
+		unmanaged.removeAll(Constants.contactListAll);
 		UserDao.addUnRegisteredUserInBulk(unmanaged,contactMap);
 		List<FriendContact> friends = new ArrayList<FriendContact>();
 		
-		userContactNos = UserDao.getContactNoListOfUsers();
-		tempContacts.retainAll(userContactNos);
+//		userContactNos = UserDao.getContactNoListOfUsers();
+		tempContacts.retainAll(Constants.contactListAll);
 //		tempContacts.addAll(unmanaged);
 		if(!tempContacts.isEmpty()){
 			

@@ -23,6 +23,7 @@ public class Intializer implements ServletContextListener {
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
      */
     public void contextDestroyed(ServletContextEvent arg0)  { 
+    	Constants.executorService.shutdown();
          // TODO Auto-generated method stub
     }
 
@@ -33,6 +34,7 @@ public class Intializer implements ServletContextListener {
     	UserDao.setUserMasterInHashMap();
     	StaffUserDao.setStaffUserInHashMap();
 //    	UserDao.setUserMasterInCacheMap();
+    	UserDao.setContactListAll();
          // TODO Auto-generated method stub
     }
 	

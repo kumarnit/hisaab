@@ -1,9 +1,12 @@
 package hisaab.util;
 
 import hisaab.services.staff.modal.StaffUser;
+import hisaab.services.user.dao.UserDao;
 import hisaab.services.user.modal.UserMaster;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -20,20 +23,22 @@ public class Constants{
      // Obtain the default cache
 //    public static Cache<String, UserCache> cache = cacheManager.getCache();
 //	public static ConcurrentHashMap<String, UserCache> cache = new ConcurrentHashMap<String, UserCache>();
-   
+	
 	public static final ExecutorService executorService =new ThreadPoolExecutor(
-		    20, // core thread pool size
-		    40, // maximum thread pool size
+		    10, // core thread pool size
+		    20, // maximum thread pool size
 		    1, // time to wait before resizing pool
 		    TimeUnit.MINUTES, 
-		    new ArrayBlockingQueue<Runnable>(150, true),
+		    new ArrayBlockingQueue<Runnable>(100, true),
 		    new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public static HashMap<String,UserMaster> userMaster = new HashMap<String,UserMaster>();
 		
 	public static HashMap<String,StaffUser> staffUser = new HashMap<String,StaffUser>();
 	
-	public static boolean RECORD_LOGS = true;
+	public static List<String> contactListAll = new ArrayList<String>();
+	
+	public static boolean RECORD_LOGS = false;
 	
 	public static boolean AUTH_USERID = true;
 	
@@ -267,5 +272,8 @@ public class Constants{
 	public static final String MYSQL_USER = "hisaab2";
 	
 	public static final String MYSQL_PASS = "hisaab";
+	
+	public static String[] testingContact = {"8698574743","9096386464","8446825217","8623047417",
+		"9561154084","8055528213"};
 
 }

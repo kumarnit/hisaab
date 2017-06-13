@@ -27,6 +27,17 @@ public class TransactionLog {
 		
 		@Column(name="transaction_type", length=2)
 		private long transType;
+		
+		@Column(name="delete_flag",length=2, columnDefinition="int default '0'")
+		private int  delFlag = 0;
+		
+		public int getDelFlag() {
+			return delFlag;
+		}
+
+		public void setDelFlag(int delFlag) {
+			this.delFlag = delFlag;
+		}
 
 		public long getId() {
 			return id;

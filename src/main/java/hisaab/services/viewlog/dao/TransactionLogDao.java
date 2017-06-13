@@ -6,8 +6,10 @@ import java.util.List;
 import hisaab.config.hibernate.HibernateUtil;
 import hisaab.services.user.modal.UserProfile;
 import hisaab.services.viewlog.modal.TransactionLog;
+import hisaab.util.Constants;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
@@ -131,5 +133,32 @@ public class TransactionLogDao {
 			session.close();
 		}
 		return total;
+	}
+	public static int clearTransactionLog() {
+		Session session = null;
+		Transaction tx = null;
+		int status = 0;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			tx = session.beginTransaction();
+			String hql = "delete From TransactionLog where contactNo IN (:contacts)" ;
+			Query  query = session.createQuery(hql);
+			query.setParameterList("contacts", Constants.testingContact);
+			status = query.executeUpdate();
+			tx.commit();
+			System.out.println("<> "+status);
+			
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}
+		return status;
+	}
+	public static void main(String[] arg){
+		System.out.println(";;;"+clearTransactionLog());
+		
 	}
 }

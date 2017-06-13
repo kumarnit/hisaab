@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 
 import hisaab.config.hibernate.HibernateUtil;
 import hisaab.services.user.modal.UserProfile;
+import hisaab.util.Constants;
 
 public class UserLogDao {
 
@@ -106,8 +107,8 @@ public class UserLogDao {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			Criteria criteria = session.createCriteria(UserProfile.class);
-//			criteria.add(Restrictions.eq("delFlag", 0));
-//			criteria.add(Restrictions.eq("userType", 0));
+
+			criteria.add(Restrictions.not(Restrictions.in("contactNo", Constants.testingContact)));
 			switch(order){
 			case 0:{
 			criteria.addOrder(Order.desc("createdTime"));break;
@@ -202,6 +203,7 @@ public class UserLogDao {
 			Criteria criteria = session.createCriteria(UserProfile.class);
 //			criteria.add(Restrictions.eq("delFlag", 0));
 			criteria.add(Restrictions.gt("transactionCount", Long.parseLong("0")));
+			criteria.add(Restrictions.not(Restrictions.in("contactNo", Constants.testingContact)));
 			switch(order){
 			case 0:{
 			criteria.addOrder(Order.desc("createdTime"));break;

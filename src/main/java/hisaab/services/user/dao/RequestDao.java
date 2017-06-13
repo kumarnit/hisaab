@@ -12,9 +12,12 @@ import hisaab.services.user.token.TokenModal;
 import hisaab.util.Constants;
 import hisaab.util.RandomStringHelper;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 
 public class RequestDao {
@@ -52,6 +55,7 @@ public class RequestDao {
 		Session session = null;
 		Transaction tx = null;
 		String str = "";
+		Boolean smsSendingStatus = true;
 		long epoch = System.currentTimeMillis();
 		UserRequest userRequest = new UserRequest();
 		try {
@@ -60,17 +64,21 @@ public class RequestDao {
 			
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.HOUR_OF_DAY, -3);
+			Calendar cal1 = Calendar.getInstance();
+			cal1.add(Calendar.MINUTE, -5);
 			long time = cal.getTimeInMillis();
 			String reqCheck = "from UserRequest where createdTime > :time AND contactNo = :contact "
 					+ " AND status = :status order by createdTime";
 			Query quer = session.createQuery(reqCheck);
 			quer.setParameter("time", time);
+			System.out.println(time);
 			quer.setParameter("contact", contact);
 			quer.setParameter("status", 1);
 			if(quer.list().size()>0){
 				UserRequest userRequest1 = (UserRequest) quer.list().get(0);
 				sCode = userRequest1.getSecurityCode();
 			}
+			
 			
 			String hql = "from UserRequest where serverToken = :serverToken";
 			Query query = session.createQuery(hql);
@@ -101,13 +109,24 @@ public class RequestDao {
 				queryUp.executeUpdate();
 				tx.commit();
 				
-				if(!Constants.DEV_MODE && Constants.SMS_PACK_ACTIVE){
+				
+				Criteria criteria = session.createCriteria(SmsTable.class);
+				criteria.add(Restrictions.gt("createdTime", cal1.getTimeInMillis()));
+				criteria.add(Restrictions.eq("contactNo", contact));
+				criteria.add(Restrictions.eq("type", Constants.SMS_TYPE_TRANSACTIONAL));
+				
+				if(!criteria.list().isEmpty()){
+					smsSendingStatus = false;
+				}
+				
+				if(Constants.SMS_PACK_ACTIVE && smsSendingStatus){
+					System.out.println("in sms");
 					String strMsg = SMSHelper.generateTransactionalCodeMessage(userRequest.getSecurityCode());
 					SmsTable sms = new SmsTable();
 					sms.setContactNo(userRequest.getContactNo());
 					sms.setType(Constants.SMS_TYPE_TRANSACTIONAL);
 					sms.setStatus("");
-					sms.setMsgId(SMSHelper.sendSms(userRequest.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL));
+//					sms.setMsgId(SMSHelper.sendSms(userRequest.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL));
 					SmsDao.addNewUserRequest(sms);
 				}
 			}
@@ -125,7 +144,7 @@ public class RequestDao {
 		return userRequest;
 	}
 
-	
+
 	public static UserRequest verifyUserCode(String serverToken, String contact, String scode) {
 		Session session = null;
 		Transaction tx = null;

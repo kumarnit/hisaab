@@ -113,6 +113,9 @@ public class UserDao {
 				user.getUserProfile().setUser(user);
 				session.save(user.getUserProfile());
 				tx.commit();
+				if(!Constants.contactListAll.contains(user.getContactNo())){
+					Constants.contactListAll.add(user.getContactNo());
+				}
 			}
 		} catch (Exception e) {
 			System.out.println("Exception = " + e.getMessage());
@@ -585,6 +588,9 @@ public class UserDao {
 				user.getUserProfile().setUser(user);
 				session.save(user.getUserProfile());
 				tx.commit();
+				if(!Constants.contactListAll.contains(user.getContactNo())){
+					Constants.contactListAll.add(user.getContactNo());
+				}
 			}
 			
 		} catch (Exception e) {
@@ -820,7 +826,9 @@ public class UserDao {
 		return friendResponse;
 	}
 
-
+/**
+*
+	
 	public static FriendContact addUnRegisteredUserInBulk(List<String> contactList, HashMap<String, Contact> contactMap) {
 		FriendContact friendResponse = null;
 		long epoch= System.currentTimeMillis();
@@ -862,7 +870,7 @@ public class UserDao {
 							}
 						}
 					
-					}*/
+					}*//*
 
 //			}
 			}catch(Exception e){
@@ -873,6 +881,86 @@ public class UserDao {
 		
 		return friendResponse;
 	}
+	  */
+	
+	public static void addUnRegisteredUserInBulk(List<String> contactList, HashMap<String, Contact> contactMap) {
+		Session session = null;
+		Transaction tx = null;
+		String str = "";
+
+		
+		UserMaster user = null;
+		long epoch = System.currentTimeMillis();
+
+		try{
+			session = HibernateUtil.getSessionFactory().openSession();
+			int count = 0;
+			
+			for(String cont : contactList )
+			{
+				count++;
+//				UserDao.test(contactMap.get(contact),Constants.NOT_REGISTERED_USER);
+//				UserDao.userLogin2(contactMap.get(contact),TokenModal.generateToken(), Constants.NOT_REGISTERED_USER, 0);
+//				
+				Contact contact = contactMap.get(cont);
+				String serverToken = TokenModal.generateToken(); 
+				int userType = Constants.NOT_REGISTERED_USER;
+				
+				String hql = "from UserMaster where contactNo = :contact and delFlag = :delFlag ";
+				Query query = session.createQuery(hql);
+				query.setParameter("contact", contact.getContactNo());
+				query.setParameter("delFlag", 0);
+				
+				
+				if(query.list().size()>0){
+					
+					user = (UserMaster) query.list().get(0);
+									
+				}
+				else{
+					tx = session.beginTransaction();
+					user = new UserMaster();
+					user.setContactNo(contact.getContactNo());
+					user.setCountrCode(contact.getCountryCode());
+					user.setCreatedTime(epoch);
+					user.setAuthToken(serverToken);
+					user.setUserType(userType);
+					user.setOwnerId(0);
+					user.getUserProfile().setContactNo(contact.getContactNo());
+					user.getUserProfile().setCreatedTime(epoch);
+					user.getUserProfile().setUserName(contact.getName());
+					user.getUserProfile().setUserType(userType);
+					
+					session.save(user);
+					
+					user.getUserProfile().setUser(user);
+					session.save(user.getUserProfile());
+					tx.commit();
+					
+					if(!Constants.contactListAll.contains(user.getContactNo())){
+						Constants.contactListAll.add(user.getContactNo());
+					}
+	
+					if ( count % 50 == 0 ) { //20, same as the JDBC batch size
+				        //flush a batch of inserts and release memory:
+				        session.flush();
+				        session.clear();
+				        count = 0;
+				    }
+				}
+				
+			}
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			if(session != null)
+				session.close();
+		}
+	
+	}
+	
 	public static UserMaster getUserFromAuthToken1(String authToken,String userId) {
 		Session session = null;
 		Transaction tx = null;
@@ -1182,6 +1270,33 @@ public class UserDao {
 		}
 		
 		return flag;
+	}
+
+
+	public static void setContactListAll() {
+		Session session = null;
+		Transaction tx = null;
+		
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			Criteria criteria = session.createCriteria(UserMaster.class);
+			criteria.add(Restrictions.eq("delFlag", 0));
+			Projection p1 = Projections.property("contactNo");
+			criteria.setProjection(p1);
+
+			Constants.contactListAll = criteria.list();
+			System.out.println("no."+Constants.contactListAll.size()+"No. "+criteria.list().size());
+		} catch (Exception e) {
+			System.out.println("Exception = " + e.getMessage());
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			
+		} finally {
+			session.close();
+		}		
+		
+		
 	}
 
 }

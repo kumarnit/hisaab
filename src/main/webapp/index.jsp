@@ -27,7 +27,7 @@ for(Cookie cookie : cookies){
 	if(cookie.getName().equals("user")) {userName = cookie.getValue();
 		if(userName.equalsIgnoreCase("admin")){
 	
-	 out.print("<div class=\"col-sm-12\" style=\"text-align:center\"><div id=\"status\"></div><div class=\"col-sm-12 loader\" style=\"text-align:center\"><img  src=\"images/loader.gif\"  /></div></div><div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"executionLog\" >Download Logs</button></div></div></div>");
+	 out.print("<div class=\"col-sm-12\" style=\"text-align:center\"><div id=\"status\"></div><div class=\"col-sm-12 loader\" style=\"text-align:center\"><img  src=\"images/loader.gif\"  /></div></div><div class=\"container home-wrapper\"><div id=\"status\" align=\"center\">&nbsp;</div><div class=\"top-buttons col-sm-12\"><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewuser\" onClick=\"connect()\" >View User</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewalluser\" >View All user</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"setCount\" >Set Transaction Count</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"viewUserTransCount\" >View Transaction Count</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"viewTransactionLog\" >View Transaction Log</button></div><div class=\"col-sm-6 right-div\"><button class=\"btn btn-primary\" id=\"executionLog\" >Download Logs</button></div><div class=\"col-sm-6 left-div\"><button class=\"btn btn-primary\" id=\"deleteInternal\" >Delete Internal Logs</button></div></div></div>");
 		}
 	 }
 }
@@ -55,6 +55,7 @@ $('#viewUserTransCount').click(function() {
     window.location.href = 'viewUserTransCount.jsp';
     return false;
 });
+
 $('#setCount').click(function () {
     $.ajax({          
     url: 'rest/v1/viewlogs/set/transactionCount',
@@ -62,6 +63,21 @@ $('#setCount').click(function () {
     success:function(){
     	console.log(" successfully Archived");
     	$("#status").html("<b style='color: green;'>Sucessfully Archived!</b>");
+    	hideStatus();
+    },
+    error:function(){
+    	console.log("error");
+    }
+});
+
+})
+$('#deleteInternal').click(function () {
+    $.ajax({          
+    url: 'rest/v1/viewlogs/delete/logs',
+    type: 'GET',
+    success:function(){
+    	console.log("Deleted successfully ");
+    	$("#status").html("<b style='color: green;'>Deleted Sucessfully!</b>");
     	hideStatus();
     },
     error:function(){
