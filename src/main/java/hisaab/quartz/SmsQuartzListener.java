@@ -24,44 +24,46 @@ public class SmsQuartzListener implements ServletContextListener{
                 // Setup the Job class and the Job group
                 
                 JobDetail logJob = newJob(PromotionalSmsJob.class).withIdentity(
-                        "smsPromotion", "Group5").build();
+                        "smsPromotion", "Group5").storeDurably(true).build();
+                
                // Create a Trigger that fires every day 9 am.
-                     Trigger trigger1 = newTrigger()
+                     Trigger trigger1 = newTrigger().forJob(logJob)
                         .withIdentity("trig101", "Group5")
-                        .withSchedule(CronScheduleBuilder.cronSchedule("0 30 9 1/1 * ? *"))
+                        .withSchedule(CronScheduleBuilder.cronSchedule("0 0 4 1/1 * ? *"))
                         .build();
                      
-                     Trigger trigger2 = newTrigger()
+                     Trigger trigger2 = newTrigger().forJob(logJob)
                              .withIdentity("trig102", "Group5")
-                             .withSchedule(CronScheduleBuilder.cronSchedule("0 30 11 1/1 * ? *"))
+                             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 6 1/1 * ? *"))
                              .build();
 
-                     Trigger trigger3 = newTrigger()
+                     Trigger trigger3 = newTrigger().forJob(logJob)
                              .withIdentity("trig103", "Group5")
-                             .withSchedule(CronScheduleBuilder.cronSchedule("0 30 13 1/1 * ? *"))
+                             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 8 1/1 * ? *"))
                              .build();
 
-                     Trigger trigger4 = newTrigger()
+                     Trigger trigger4 = newTrigger().forJob(logJob)
                              .withIdentity("trig104", "Group5")
-                             .withSchedule(CronScheduleBuilder.cronSchedule("0 30 15 1/1 * ? *"))
+                             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 10 1/1 * ? *"))
                              .build();
 
-                     Trigger trigger5 = newTrigger()
+                     Trigger trigger5 = newTrigger().forJob(logJob)
                              .withIdentity("trig105", "Group5")
-                             .withSchedule(CronScheduleBuilder.cronSchedule("0 30 17 1/1 * ? *"))
+                             .withSchedule(CronScheduleBuilder.cronSchedule("0 0 12 1/1 * ? *"))
                              .build();
                      
 //         12:00 AM Daily ==>   	0 0 1 1/1 * ? *      2 miniutes ==> 0 0/2 * 1/1 * ? *
                 // Setup the Job and Trigger with Scheduler & schedule jobs
                 scheduler = new StdSchedulerFactory().getScheduler();
+         
+                scheduler.addJob(logJob, true);
+                scheduler.scheduleJob(trigger1);
+                scheduler.scheduleJob(trigger2);
+                scheduler.scheduleJob(trigger3);
+                scheduler.scheduleJob(trigger4);
+                scheduler.scheduleJob(trigger5);
+                
                 scheduler.start();
-                
-                scheduler.scheduleJob(logJob,trigger1);
-                scheduler.scheduleJob(logJob,trigger2);
-                scheduler.scheduleJob(logJob,trigger3);
-                scheduler.scheduleJob(logJob,trigger4);
-                scheduler.scheduleJob(logJob,trigger5);
-                
         }
         catch (SchedulerException e) {
                 e.printStackTrace();
