@@ -126,7 +126,7 @@ public class RequestDao {
 					sms.setContactNo(userRequest.getContactNo());
 					sms.setType(Constants.SMS_TYPE_TRANSACTIONAL);
 					sms.setStatus("");
-//					sms.setMsgId(SMSHelper.sendSms(userRequest.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL));
+					sms.setMsgId(SMSHelper.sendSms(userRequest.getContactNo(), strMsg, Constants.SMS_TYPE_TRANSACTIONAL));
 					SmsDao.addNewUserRequest(sms);
 				}
 			}

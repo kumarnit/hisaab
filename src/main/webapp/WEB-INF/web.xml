@@ -84,9 +84,9 @@
 	 <listener>
 		<listener-class>hisaab.quartz.QuartzListener2</listener-class>
 	</listener>
-	<listener>
+	<!-- <listener>
 		<listener-class>hisaab.quartz.SmsQuartzListener</listener-class>
-	</listener>
+	</listener> -->
 	<listener>
 	    <listener-class>hisaab.util.MyContextListener</listener-class>
 	  </listener>

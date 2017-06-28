@@ -56,7 +56,7 @@ public class SmsQuartzListener implements ServletContextListener{
                 // Setup the Job and Trigger with Scheduler & schedule jobs
                 scheduler = new StdSchedulerFactory().getScheduler();
          
-                scheduler.addJob(logJob, true);
+             /*   scheduler.addJob(logJob, true);
                 scheduler.scheduleJob(trigger1);
                 scheduler.scheduleJob(trigger2);
                 scheduler.scheduleJob(trigger3);
@@ -64,7 +64,7 @@ public class SmsQuartzListener implements ServletContextListener{
                 scheduler.scheduleJob(trigger5);
                 
                 scheduler.start();
-        }
+*/        }
         catch (SchedulerException e) {
                 e.printStackTrace();
         }
