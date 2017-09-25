@@ -44,7 +44,7 @@ public class TestingSer extends HttpServlet {
 //			loginCookie.setComment("FullSecure");
 			response.addCookie(loginCookie);
 			
-			response.sendRedirect("index.jsp");
+			response.sendRedirect("/index.jsp");
 		}else{
 			PrintWriter out= response.getWriter();
 			RequestDispatcher rd = getServletContext().getRequestDispatcher("/main.jsp");

@@ -10,6 +10,9 @@ import hisaab.services.sms.modal.PromotionalSms;
 
 public class PromotionalSmsDao {
 
+	/**
+	 * Add Promotional sms to db
+	 **/
 	public static boolean addPromotionalSms(List<PromotionalSms> smsUserList){
 		boolean resFlag = false;
 		Session session = null;

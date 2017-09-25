@@ -1,5 +1,8 @@
 package hisaab.services.device.modal;
 
+/**
+ * Actual Properties that are stored in Documents of DeviceInfo Collection.
+ **/
 public class DeviceInfo {
 	
      private long id;

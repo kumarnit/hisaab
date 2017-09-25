@@ -20,6 +20,9 @@ import hisaab.services.user.dao.UserDao;
 
 public class TransactionCount {
 
+	/**
+	 * set the transaction count for all users
+	 **/
 	public static void setTransactionCount(){
 		ObjectMapper maper = new ObjectMapper();
 		Gson gson = new Gson();
@@ -37,18 +40,17 @@ public class TransactionCount {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    for (Object object2 : result ){
+	    for (Object object2 : result ){ /// building a pair of user and transaction count in map
 	    	TransactionCountModal object1 = gson.fromJson((gson.toJson(object2)), TransactionCountModal.class);
 	    	if(object1.getCount() > 0){
 	    		try{
 	    			long userid = Long.parseLong(object1.getUser1());
 		    		if(countHash.get(userid) != null ){
-		    			
 		    				long temp = countHash.get(userid);
 		    				countHash.put(userid,temp + object1.getCount());
 	//	    				countHash.			
 		    		}else {
-		    				countHash.put(userid,object1.getCount());
+		    			countHash.put(userid,object1.getCount());
 		    		}
 	    		}catch(Exception e){
     				e.printStackTrace();
@@ -58,9 +60,7 @@ public class TransactionCount {
 	    			if(countHash.get(userid) != null ){
 	    				long temp = countHash.get(userid);
 	    				countHash.put(userid,temp + object1.getCount());
-	    			
 	    			}else {
-	    			
 	    				countHash.put(userid,object1.getCount()); 
 	    			
 	    			}
@@ -70,7 +70,7 @@ public class TransactionCount {
 	    	}
 	    	
 	    }
-	    Iterator it = countHash.entrySet().iterator();
+	    Iterator it = countHash.entrySet().iterator(); // traversing the hashmap and updating transaction_count for user
 	    while (it.hasNext()) {
 	        Map.Entry pair = (Map.Entry)it.next();
 	        UserDao.setTransactionCount(pair);

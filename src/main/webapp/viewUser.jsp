@@ -45,7 +45,7 @@ for(Cookie cookie : cookies){
 	 }
 }
 }
-if(userName == null) response.sendRedirect("main.jsp");
+if(userName == null) response.sendRedirect("/main.jsp");
 %>
 <%-- <h3>Hi <%=userName %>, Login successful.</h3> --%>
 <br>

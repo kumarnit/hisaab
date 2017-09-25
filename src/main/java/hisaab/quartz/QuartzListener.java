@@ -16,6 +16,10 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.google.android.gcm.server.Message.Builder;
 
+
+/**
+ * this listener is for deleting transactions from the sql table
+ * */
 public class QuartzListener implements ServletContextListener {
 	Scheduler scheduler = null;
 	 public void contextInitialized(ServletContextEvent servletContext) {

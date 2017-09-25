@@ -32,6 +32,9 @@ import hisaab.util.Constants;
 
 public class PullHelper {
 	
+	/**
+	 * Pull data for User / Owner
+	 * */
 	public static PullBean getUserData(long pullTime, UserMaster user) {
 //		FriendContact frndCon = null;
 		List<Transaction> listtran = new ArrayList<Transaction>();

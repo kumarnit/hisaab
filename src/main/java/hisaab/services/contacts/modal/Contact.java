@@ -7,7 +7,9 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.MongoOptions;
-
+/**
+ * This is Actual json properties of Contact that will be used in ContactList Document
+ **/
 public class Contact {
 	
 	

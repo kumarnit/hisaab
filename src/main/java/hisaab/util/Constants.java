@@ -38,7 +38,7 @@ public class Constants{
 	
 	public static List<String> contactListAll = new ArrayList<String>();
 	
-	public static boolean RECORD_LOGS = false;
+	public static boolean RECORD_LOGS = true;
 	
 	public static boolean AUTH_USERID = true;
 	

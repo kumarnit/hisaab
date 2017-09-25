@@ -9,7 +9,9 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Transient;
-
+/**
+ * This is Object Mapping for Transaction Document
+ * */
 @Entity("transaction_doc")
 public class TransactionDoc {
 

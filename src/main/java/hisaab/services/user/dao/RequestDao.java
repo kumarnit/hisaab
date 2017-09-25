@@ -22,6 +22,10 @@ import org.hibernate.criterion.Restrictions;
 
 public class RequestDao {
 	
+	/**
+	 *add User Request 
+	 * 
+	 **/
 	public static String addNewUserRequest(String appVersion) {
 		Session session = null;
 		Transaction tx = null;
@@ -51,6 +55,10 @@ public class RequestDao {
 	}
 	
 	
+	/**
+	 * Update Contact to User Request
+	 * here we also generate a security Code and send via sms to the contact
+	 **/
 	public static UserRequest addContactToUserRequest(String serverToken, String contact, String countryCode,String appVersion) {
 		Session session = null;
 		Transaction tx = null;
@@ -145,6 +153,9 @@ public class RequestDao {
 	}
 
 
+	/**
+	 * Verify Security Code
+	 * */
 	public static UserRequest verifyUserCode(String serverToken, String contact, String scode) {
 		Session session = null;
 		Transaction tx = null;

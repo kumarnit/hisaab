@@ -45,7 +45,9 @@ import com.mongodb.WriteResult;
 
 public class FriendsDao {
 
-	
+	/**
+	 * get Associate users document or create new if not exist.
+	 **/
 	public static FriendList getAssociatedUserDoc(UserMaster user){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		FriendList frndList = null;
@@ -68,6 +70,9 @@ public class FriendsDao {
 		return frndList;
 	}
 	
+	/**
+	 * This method is used to fetch all Associate user document of requester
+	 **/
 	public static FriendList getAssociatedUserDocForPull(UserMaster user){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		FriendList frndList = null;
@@ -83,6 +88,9 @@ public class FriendsDao {
 		return frndList;
 	}
 	
+	/**
+	 * get All Associated users of requesting user that were updated after specified timestamp 
+	 * */
 	public static List<FriendContact> pullAssociatedUserDoc(UserMaster user,Long pullTime){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		FriendList frndList = null;
@@ -104,11 +112,13 @@ public class FriendsDao {
 		return friendContacts;
 	}
 	
+	
+	/**
+	 *add associate user List to the associa-User document. 
+	 **/
 	public static boolean addFriends(FriendList friendList){
 		boolean flag = false;
 		
-			
-			
 			Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 			Query<FriendList> query = datastore.createQuery(FriendList.class);
 
@@ -126,16 +136,19 @@ public class FriendsDao {
 //		}
 		return flag;
 	}
+
 	
+	/**
+	 * used to update ammount of associate user in requester associate document.
+	 * also setting the to-take and to-give flag
+	 * */
 	public static void updateAmount(String id, String frndId, TransactionDoc transDoc){
-		
 		
 		ObjectMapper mapper = new ObjectMapper();
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		Query<FriendList> query = datastore.createQuery(FriendList.class);
 		query.field("_id").equal(id);
 		query.filter("friends.frndId", frndId );
-		
 		if(!query.asList().isEmpty()){
 		
 			FriendContact frndCon = null;
@@ -246,6 +259,10 @@ System.out.println(privateUser.getPrivateUserId());
 	
 	}*/
 	//method to change the name of friend's contact name
+	
+	/**
+	 * Update the associate user if exist in associate user document
+	 **/
 	public static void updateFriend(List<FriendContact> frndcont,UserMaster user){
 			String id=""+user.getUserId();
 			ObjectMapper mapper = new ObjectMapper();
@@ -276,6 +293,9 @@ System.out.println(privateUser.getPrivateUserId());
 		}
 		
 	
+	/**
+	 * get Associate user from associate user document by ids.
+	 **/
 	public static Object pullFriendsById(UserMaster user, List<String> ids){
 		  Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		  BasicDBList objlist = null;
@@ -305,6 +325,10 @@ System.out.println(privateUser.getPrivateUserId());
 			  return res;
 		 }
 		
+	/**
+	 *get Associate user
+	 *for internal use 
+	 **/
 	public static FriendContact getFriendForWeb(String frndId, int type, UserMaster  user){
 		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		 FriendContact frnd = null;
@@ -376,6 +400,10 @@ System.out.println(privateUser.getPrivateUserId());
 			e.printStackTrace();
 		}
 */	}
+	
+	/**
+	 * get a map where  user as key  and list of associate user as value.
+	 **/
 	public static HashMap<String,FriendContact> getFriendContactbyUserList(UserMaster user,List<Long> userlist) {
 		HashMap<String,FriendContact> hashfriend = new HashMap<String,FriendContact>() ;
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
@@ -394,7 +422,9 @@ System.out.println(privateUser.getPrivateUserId());
 		return hashfriend;
 	}
 	
-
+/**
+ * This Function delete Associate user from associate user list
+ **/
 	public static boolean deleteFrndContFromList(String frndId, UserMaster user){
 		boolean flag = false;
 		
@@ -427,6 +457,10 @@ System.out.println(privateUser.getPrivateUserId());
 	}
 	
 
+	/**
+	 * This function is used to block an associate user
+	 * Blocking user is managed by "friendStatus" value.
+	 **/
 	public static int blockFriend(String frndId, UserMaster user, int status, String blockedBy ){
 		String id=""+user.getUserId();
 		int i = -1;
@@ -454,7 +488,9 @@ System.out.println(privateUser.getPrivateUserId());
 	}
 
 	
-	
+	/**
+	 * This Function is used to get an alternate Private Associate user for a blocked associate user
+	 **/
 	public static FriendContact getFriendForBlocked(String frndId, int type, UserMaster  user){
 		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		 FriendContact frnd = null;
@@ -497,6 +533,9 @@ System.out.println(privateUser.getPrivateUserId());
 	}
 	
 	
+	/**
+	 * Update friendStatus for associate user
+	 **/
 	public static boolean updateFriendsDocsForUnmangedUser(UserMaster user){
 		boolean statusFlag = false;
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
@@ -590,6 +629,9 @@ System.out.println(privateUser.getPrivateUserId());
 			  return flist;
 		 }
 
+	/**
+	 * Pull all updated associated user that were updated after specified timestamp
+	 **/
 	public static List<FriendContact> pullAssociatedUserDocUpdated(
 			UserMaster user, long pullTime) {
 		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
@@ -648,6 +690,10 @@ System.out.println(privateUser.getPrivateUserId());
 //		pullAssociatedUserDocUpdated(user,Long.parseLong("1481893519224"));
 	}
 
+	/**
+	 * Get List of Associate user Ids that are blocked by the user.
+	 * This method is used by staff of user.
+	 **/
 	public static List<String> getBlockedUserIdForSaff(long ownerId) {
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
 		 List<String> flist = new ArrayList<String>();

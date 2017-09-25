@@ -42,15 +42,14 @@ import org.mongodb.morphia.Datastore;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 
-
-
-
-
-
 public class UserDao {
 
 	
-	
+	/**
+	 *User Login
+	 * If user already exist in db as unregistered user then update user as registered user.
+	 * Else add new user and create its profile.  
+	 **/
 	public static UserMaster userLogin(String contact,  String serverToken, String CountryCode,String appVersion) {
 		Session session = null;
 		Transaction tx = null;
@@ -130,6 +129,9 @@ public class UserDao {
 	}
 	
 	
+	/**
+	 * Get User From Auth Token
+	 **/
 	public static UserMaster getUserFromAuthToken(String authToken) {
 		Session session = null;
 		Transaction tx = null;
@@ -160,6 +162,9 @@ public class UserDao {
 	}
 	
 	
+	/**
+	 * Get list of all contact numbers of a user
+	 **/
 	public static List<String> getContactNoListOfUsers() {
 		Session session = null;
 		Transaction tx = null;
@@ -190,6 +195,10 @@ public class UserDao {
 	}
 
 	
+	/**
+	 * Get user Accounts from the list of Contact Numbers
+	 * Returns Map with contcatNumber as key and userAccount as Value  
+	 **/
 	public static HashMap<String,UserMaster> getUserListFronNumbers(List<String> contactNos) {
 		Session session = null;
 		Transaction tx = null;
@@ -217,6 +226,9 @@ public class UserDao {
 		return userMap;
 	}
 
+	/**
+	 * Update Push Token for user 
+	 **/
 	public static boolean updatePushToken(UserMaster user){
 			
 			boolean flag = false;
@@ -256,6 +268,9 @@ public class UserDao {
 			return flag;
 		}
 
+	/**
+	 * Update User Profile of a user.
+	 **/
 	public static boolean updateProfile(UserProfile userProfile){
 		Session session = null;
 		Transaction tx = null;
@@ -307,6 +322,10 @@ public class UserDao {
 		getUserListForPromotionalSms();
 	}
 	
+	
+	/**
+	 * Update User On Boarding Flag
+	 **/
 	public static boolean updateUserOnBoardingFlag(Long userId){
 		Session session = null;
 		Transaction tx = null;
@@ -338,6 +357,11 @@ public class UserDao {
 		return flag;
 	}
 
+	
+	/**
+	 * get User Profiles by user Ids if they were updated after specified timestamp
+	 * Used in sync process
+	 **/
 	public static List<UserProfile> pullUsersByUserIds(UserMaster ownerUser,List<String> userIds,Long pullTime){
 		
 		List<UserProfile> users = new ArrayList<UserProfile>();
@@ -382,6 +406,9 @@ public class UserDao {
 
 	
 	
+	/**
+	 * Update UserProfileImageKey in user Proile 
+	 **/
 	public static boolean updateProfileImageKey(UserProfile userProfile){
 		Session session = null;
 		Transaction tx = null;
@@ -415,6 +442,10 @@ public class UserDao {
 	}
 
 
+	/**
+	 * Fetch  List of user Profiles by list of User ids
+	 *
+	 * */
 	public static List<UserProfile> getUserProfileforlist(List<Long> userlist) {
 		Session session = null;
 		Transaction tx = null;
@@ -440,6 +471,10 @@ public class UserDao {
 	}
 	
 
+	/**
+	 * get Map with key as contact number and value as object with user Profile and Associate user  
+	 *  
+	 **/
 	public static HashMap<String,UserProfileFriendBean> getHashUserProfileforlist(List<String> userlist) throws JsonGenerationException, JsonMappingException, IOException {
 		Session session = null;
 		Transaction tx = null;
@@ -483,6 +518,9 @@ public class UserDao {
 		
 	}
 	
+	/**
+	 * Get Users by user Ids
+	 **/
 	public static List<UserMaster> getUserByIds(List<Long> userlist) {
 		Session session = null;
 		Transaction tx = null;
@@ -504,6 +542,10 @@ public class UserDao {
 		return userList;
 	}
 	
+	
+	/**
+	 * fetch user by id 
+	 **/
 	public static UserMaster getUserForWeb(long userId) {
 		Session session = null;
 		Transaction tx = null;
@@ -525,6 +567,10 @@ public class UserDao {
 		}
 		return user;
 	}
+	
+	/**
+	 * Get User Profile By Id
+	 **/
 	public static UserProfile getUserProfileById(long userid) {
 		Session session = null;
 		Transaction tx = null;
@@ -550,6 +596,10 @@ public class UserDao {
 	}
 
 
+	/**
+	 * This method is used to add new unmanaged user
+	 * 
+	 **/
 	public static UserMaster userLogin2(Contact contact, String serverToken, int userType, long ownerId) {
 		Session session = null;
 		Transaction tx = null;
@@ -615,6 +665,13 @@ public class UserDao {
 		
 		return user;
 	}
+	
+	
+	/**
+	 * Not in use
+	 * 
+	 * 
+	 * */
 	public static List<UserMaster> userLoginForStaffUser(List<String> contact) {
 		Session session = null;
 		List<UserMaster> user = null;
@@ -662,6 +719,10 @@ public class UserDao {
 	}
 
 
+	/**
+	 * Get User By Contact number
+	 * returns user object or null
+	 * */
 	public static UserMaster getUserByContactNo(String contactNo) {
 		
 			Session session = null;
@@ -688,6 +749,9 @@ public class UserDao {
 			return userList;
 		}
 	
+	/**
+	 * It is used for updating the user's  sms count by 1
+	 **/
 	public static void updateSmsCount(UserMaster user, UserMaster sender){
 		
 		boolean flag = false;
@@ -724,6 +788,10 @@ public class UserDao {
 		}
 	}
 
+	/**
+	 * This method is used to delete all user request that are 2 days older 
+	 * It Is used in cron job
+	 * */
 	public static void deleteUserRequest(){
 		Session session = null;
 		try {
@@ -747,6 +815,12 @@ public class UserDao {
 			session.close();
 		}
 	}
+	
+	/**
+	 * Not in use now.
+	 * 
+	 * This method is used for adding an unmanaged user.
+	 * */
 	public static FriendContact addUnRegisteredUser(UserMaster user1, Contact contact)
 	{
 		
@@ -885,6 +959,10 @@ public class UserDao {
 	}
 	  */
 	
+	/**
+	 * Add myultiple unmanaged users in single process
+	 *  
+	 * */
 	public static void addUnRegisteredUserInBulk(List<String> contactList, HashMap<String, Contact> contactMap) {
 		Session session = null;
 		Transaction tx = null;
@@ -963,6 +1041,9 @@ public class UserDao {
 	
 	}
 	
+	/**
+	 * get User from Token
+	 **/
 	public static UserMaster getUserFromAuthToken1(String authToken,String userId) {
 		Session session = null;
 		Transaction tx = null;
@@ -1001,6 +1082,11 @@ public class UserDao {
 		return user;
 	}
 	
+	/**
+	 * Add all users from db into a map
+	 * This method is called at server startup
+	 * 
+	 **/
 	public static void setUserMasterInHashMap() {
 		Session session = null;
 		
@@ -1065,6 +1151,10 @@ public class UserDao {
 		}
 		
 	}*/
+	
+	/**
+	 * not in use
+	 **/
 	public static void test(Contact contact, int userType) {
 		  Session session = null;
 		  Transaction tx = null;
@@ -1119,6 +1209,10 @@ public class UserDao {
 		 }
 
 
+	/**
+	 * this method is used to set transaction counts for all users
+	 * This method is called from a cron job
+	 * */
 	public static void setTransactionCount(Entry pair) {
 		Session session = null;
 		Transaction tx = null;
@@ -1150,6 +1244,10 @@ public class UserDao {
 	}
 
 
+	/**
+	 * Not In Use
+	 * 
+	 * Get users by contact number for pull Doc */
 	public static UserMaster getUserByContactNoForAddPullDoc(String contactNo) {
 		
 		Session session = null;
@@ -1176,7 +1274,9 @@ public class UserDao {
 		return userList;
 	}
 
-
+	/**
+	 * This method is used to update appVersion of user.
+	 **/
 	public static boolean setAppVersion(UserMaster user, int appVersion) {
 		Session session = null;
 		Transaction tx = null;
@@ -1208,7 +1308,9 @@ public class UserDao {
 		return flag;
 	}
 	
-	
+	/**
+	 * Update Last Sync time of user
+	 * */
 	public static boolean updateLastSyncTime(long userId, long epoch){
 		boolean flag = false;
 		Session session = null;
@@ -1243,6 +1345,9 @@ public class UserDao {
 	}
 	
 	
+	/**
+	 * This method is used to update the last transaction activity of user
+	 **/
 	public static boolean updateTransActivityTime(long userId, long epoch){
 		boolean flag = false;
 		Session session = null;
@@ -1275,6 +1380,10 @@ public class UserDao {
 	}
 
 
+	/**
+	 * This method is used load List of all contacts that are present in db
+	 * This method is called at the time of server startup
+	 **/
 	public static void setContactListAll() {
 		Session session = null;
 		Transaction tx = null;
@@ -1299,6 +1408,11 @@ public class UserDao {
 		}		
 	}
 	
+	/**
+	 * Create Promotional sms for 200 random users
+	 * It was used for a app promotion via sms
+	 * Not in use now 
+	 **/
 	public static List<PromotionalSms> getUserListForPromotionalSms(){
 		Session session = null;
 		List<PromotionalSms> smsUserList = new ArrayList<PromotionalSms>();
@@ -1332,6 +1446,10 @@ public class UserDao {
 		return smsUserList;
 	}
 
+	/**
+	 * Update promotional flag for user 
+	 * To eliminate user selection at time of next promotion activity cycle
+	 **/
 	public static boolean updatePromotionalFlag(List<PromotionalSms> smsUserList){
 		
 		Session session = null;

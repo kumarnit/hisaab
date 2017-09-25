@@ -14,6 +14,10 @@ import org.hibernate.criterion.Restrictions;
 
 public class AppVersionDao {
 
+	/**
+	 * get current appversion
+	 * used by web view services
+	 **/
 	public static List<AppVersion> getAppVersionUpdate(int appVersion) {
 		Session session = null;
 		List<AppVersion> appVersionList = null;
@@ -34,6 +38,10 @@ public class AppVersionDao {
 		return appVersionList;
 	}
 
+	/**
+	 * set current app version 
+	 * used by web view services
+	 **/
 	public static void setAppVersionDetail(AppVersion appVersion) {
 		Session session = null;
 		Transaction tx = null;

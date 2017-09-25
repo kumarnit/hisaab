@@ -8,7 +8,9 @@ import java.util.List;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-
+/**
+ * This is an Object Mapping class for DeviceInfo (device_doc) Collection  in Mongodb
+ **/
 @Entity("device_doc")
 public class DeviceInfoDoc {
 	

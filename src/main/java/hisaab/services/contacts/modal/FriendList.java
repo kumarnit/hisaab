@@ -7,7 +7,10 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-
+/**
+ * This is an Object Mapping class for FriendLists Collection  in Mongodb
+ * This are the Document with list of Associated User
+ **/
 @Entity("friend_list")
 public class FriendList {
 	

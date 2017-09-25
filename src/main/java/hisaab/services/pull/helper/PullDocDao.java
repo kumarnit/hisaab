@@ -26,6 +26,9 @@ import com.mongodb.BasicDBObject;
 
 public class PullDocDao {
 
+	/**
+	 * get PullDoc or create new Pull Doc for user.
+	 * */
 	public static PullDoc getPullDoc(PullDoc pullDoc ){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
 		Query<PullDoc> query = datastore.createQuery(PullDoc.class);
@@ -41,13 +44,16 @@ public class PullDocDao {
 		return pullDoc;
 	}
 	
+	
+	/**
+	 * This function checks for pullDoc returns the pull Doc or null if pull doc not exist
+	 **/
 	public static PullDoc getPullDocForSync(long userId ){
 		PullDoc pullDoc = null;
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
 		Query<PullDoc> query = datastore.createQuery(PullDoc.class);
 		query.field("userId").equal(""+userId);
 		if(query.get() != null){
-			
 			pullDoc = query.get();
 		}
 		/*else{
@@ -57,6 +63,9 @@ public class PullDocDao {
 		return pullDoc;
 	}
 	
+	/**
+	 * Adds Transaction that have been approved. 
+	 **/
 	public static void addUpdateApproval(TransactionDoc transactionDoc, PullDoc pullDoc, UserMaster user) {
 		Transaction tempTrans = transactionDoc.getTransactions().get(0);	
 		int stat = 0;
@@ -122,6 +131,9 @@ public class PullDocDao {
 		
         }
 		
+	/**
+	 * Add New Transaction To the pull Doc.
+	 **/
 	public static void addTransaction(TransactionDoc transactionDoc, PullDoc pullDoc) {
 		Transaction tempTrans = transactionDoc.getTransactions().get(0);	
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
@@ -138,6 +150,9 @@ public class PullDocDao {
         }
 		
 
+	/**
+	 * Add Transaction in modified transaction List.
+	 **/
 	public static void addModifiedTransaction(TransactionDoc transactionDoc,
 			PullDoc pullDoc) {
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
@@ -152,6 +167,9 @@ public class PullDocDao {
 		
 	}
 	
+	/**
+	 * Remove the rejected modified transaction from Pull Doc.
+	 **/
 	public static void addUpdateReject(TransactionDoc transactionDoc, PullDoc pullDoc, UserMaster user) {
 		Transaction tempTrans = transactionDoc.getTransactions().get(0);	
 		
@@ -166,6 +184,11 @@ public class PullDocDao {
 		
         }
 
+	/**
+	 * Update the Pull Doc for delete transaction Approval 
+	 * If delete request is approved the transaction will be removed from the transaction List
+	 *, If it exist.
+	 **/
 	public static void addDeleteTransaction(TransactionDoc pullTransDoc,
 			PullDoc pullDoc, UserMaster user, int userResponse) {
 		Transaction tempTrans = pullTransDoc.getTransactions().get(0);	
@@ -200,6 +223,9 @@ public class PullDocDao {
 		
 	}
 
+	/**
+	 * Add or Update  Opening Balance request to pull Doc.  
+	 **/
 	public static void addAndUpadteOpeningBalanceRequest(OpeningBalRequest obr,
 			PullDoc pullDoc) {
 			
@@ -242,6 +268,9 @@ public class PullDocDao {
 		
 	}
 
+	/**
+	 * Update the opening Balance request Status
+	 **/
 	public static void UpadteOpeningBalanceResponse(OpeningBalRequest req,
 			PullDoc pullDoc, int userResponse) {
 		int stat = 0;
@@ -283,6 +312,7 @@ public class PullDocDao {
 		
 	}
 
+	
 	public static void addStaffRequest(PullDoc pullDoc,
 			StaffUserRequest staffUser) {
 		
@@ -301,6 +331,10 @@ public class PullDocDao {
 		
 	}
 
+	/**
+	 * Add and Update Staff Request That Have been received for user.
+	 *   
+	 **/
 	public static void addAndUpdateStaffRequestForYou(PullDoc pullDoc,
 			StaffUserRequest staffUser,int status) {
 		int stat = 0;
@@ -345,6 +379,9 @@ public class PullDocDao {
 		
 	}
 
+	/**
+	 * Update Status of Staff User Request in Pull Doc. 
+	 * */
 	public static void setStatusToStaffUserRequest(StaffUserRequest st,
 			PullDoc pullDoc, int status) {
 		int stat = 0;
@@ -389,6 +426,11 @@ public class PullDocDao {
 		
 	}
 
+	
+	/**
+	 * Add Mofifiection request for transaction it may be an update or delete request.
+	 * 
+	 * */
 	public static void addModificationRequest(ModificationRequest modReq,
 			PullDoc pullDoc) {
 		
@@ -418,10 +460,12 @@ public class PullDocDao {
 		
 	}
 
+	/**
+	 * This Function is used to clear or delete data from pull doc.
+	 **/
 	public static void clearPullDoc(UserMaster user) {
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(PullDoc.class);
 		datastore.delete(datastore.createQuery(PullDoc.class).filter("userId", ""+user.getUserId()));
-		
 	}
 	
 }

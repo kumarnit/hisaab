@@ -14,6 +14,15 @@ import java.util.List;
 
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+
+/**
+ * This is an Object Mapping class for Pull Doc Collection  in Mongodb
+ * 
+ * This document is used to stored data that is tpo be pulled by the user in next pull call
+ * for syncing purpose
+ * 
+ **/
+
 @Entity("pull_doc")
 public class PullDoc {
 	

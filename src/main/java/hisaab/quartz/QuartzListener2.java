@@ -17,6 +17,7 @@ import org.quartz.impl.StdSchedulerFactory;
 /**
  * Application Lifecycle Listener implementation class QuartzListener2
  *
+ *this listener is used for sending notification for auto update and auto delete
  */
 public class QuartzListener2 implements ServletContextListener {
 

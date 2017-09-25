@@ -14,6 +14,9 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
+/**
+ * this listener is for auto approving transaction update and delete request.
+ **/
 public class QuartzListener1 implements ServletContextListener {
 	Scheduler scheduler = null;
 

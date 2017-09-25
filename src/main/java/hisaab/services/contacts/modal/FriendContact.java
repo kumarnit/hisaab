@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.mongodb.morphia.annotations.Transient;
 
-
+/**
+ * Actual json properties for Associated User  used in FriendList Collection's Documents
+ **/
 
 
 public class FriendContact {

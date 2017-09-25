@@ -40,6 +40,10 @@ import com.mongodb.WriteResult;
 
 public class PrivateUserDao {
 
+	/**
+	 * add private-user By owner.
+	 *  
+	 **/
 		public static PrivateUser addPrivateuser(UserMaster user1,Contact contact){
 		Session session = null;
 		Transaction tx = null;
@@ -103,6 +107,10 @@ public class PrivateUserDao {
 	}
 		
 		
+		/**
+		 * Create a private user for a Blocked contact Of Owner
+		 *  
+		 **/
 	public static boolean addPrivateUserForBlocked(long userId, PrivateUser privateUser){
 			Session session = null;
 			Transaction tx = null;
@@ -165,6 +173,9 @@ public class PrivateUserDao {
 		}
 */
 
+	/**
+	 * Add Associate User entry for a private user
+	 **/
 		public static FriendList addFriendContactofPrivateUser(UserMaster user,Contact contact, PrivateUser unmanUser) {
 			FriendList frndlist = null ;
 			long epoch= System.currentTimeMillis();
@@ -193,6 +204,10 @@ public class PrivateUserDao {
 		}
 
 
+		/**
+		 * get List of all private User created by Requester.
+		 *  
+		 **/
 		public static List<PrivateUser> getPrivateUser(UserMaster user,
 				long pullTime) {
 			
@@ -226,6 +241,9 @@ public class PrivateUserDao {
 		}
 
 
+		/**
+		 * get Private User by Id. 
+		 **/
 		public static boolean getPrivateUserById(String privateUserId, UserMaster user) {
 			
 			Session session = null;
@@ -265,6 +283,9 @@ public class PrivateUserDao {
 		}
 
 
+		/**
+		 * Delete Private User and all transactions with it 
+		 **/
 		public static boolean deletePrivateUser(String privateUserId,
 				UserMaster usermaster) {
 			boolean flag = false;
@@ -323,6 +344,9 @@ public static void main(String [] arg){
 }
 
 
+/**
+ * get Private user by id 
+ **/
 public static PrivateUser getPrivateUserByIdFor(String frndId) {
 	Session session = null;
 	

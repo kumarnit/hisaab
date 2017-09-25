@@ -31,6 +31,10 @@ import com.mongodb.TagSet;
 
 public class ContactsDao {
 
+	/**
+	 * get contacts document for user
+	 * if not exist create new
+	 **/
 	public static ContactList getContactsDocForUser(UserMaster user){
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(ContactList.class);
 		ContactList contactList = null;
@@ -50,6 +54,9 @@ public class ContactsDao {
 		return contactList;
 	}
 	
+	/**
+	 *add contacts List to contacts document.
+	 **/
 	public static boolean addContacts(ContactList contactList){
 		boolean flag = false;
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(FriendList.class);
@@ -68,7 +75,11 @@ public class ContactsDao {
 		return flag;
 	}
 	
-	
+	/**
+	 * Not in Use
+	 * 
+	 * this method adds the contacts to contact Document
+	 **/
 	public static void getContactList(List<Contact> contacts ){
 		
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(ContactList.class);
@@ -107,7 +118,9 @@ public class ContactsDao {
 		getContactForWeb("+916532541251","4");
 	}
 	
-	
+	/**
+	 * get Friend User List for specified user id
+	 **/
 	public static List<FriendContact> getFriendListbyUserId(String userId ){
 
 		  List<FriendContact> frncon=new ArrayList<FriendContact>();
@@ -131,6 +144,9 @@ public class ContactsDao {
 		  return frncon;
 		}
 
+	/**
+	 *get contact object for given phone number in a requester's contact document
+	 **/
 	public static Contact getContactForWeb(String contactno, String  id){
 		 Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(ContactList.class);
 		 Contact contact = null;
@@ -161,11 +177,12 @@ public class ContactsDao {
 		  }
 		 
 		 return contact;
-		 
-		 
 
 	}
 
+	/**
+	 * this method is used for getting contact from the contact document of a user.
+	 **/
 	public static Contact getContactForUserId(String contactNo, long uid) {
 		
 		Datastore datastore = MorphiaDatastoreTrasaction.getDatastore(ContactList.class);
@@ -178,7 +195,7 @@ public class ContactsDao {
 			contactList = query.get();
 		}            
 		for(Contact contact : contactList.getContactList())
-		{
+		{//searching contact
 			if(contact.getContactNo().equals(contactNo)){
 				name = contact;
 				System.out.println(contact.getName());

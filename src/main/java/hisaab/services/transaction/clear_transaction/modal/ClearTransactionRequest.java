@@ -6,6 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+/**
+ * This is a object mapping for clear Transaction Request
+ * In mYsql . This is used for storing the user requests for clearing transactions.
+ * 
+ * */
 
 @Entity
 @Table(name="clear_transaction_request")

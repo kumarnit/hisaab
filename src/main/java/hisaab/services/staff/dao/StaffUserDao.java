@@ -36,7 +36,9 @@ import hisaab.util.RandomStringHelper;
 
 public class StaffUserDao {
 
-
+/**
+ * Add Staff User
+ **/
 	public static List<Contact> addStaffUser(List<StaffUser> user, UserMaster user1,List<Contact> contact,List<Contact> invalidcontactlist) {
 		
 		Session session = null;
@@ -238,7 +240,9 @@ public class StaffUserDao {
 		return contact;
 		}
 
-	
+	/**
+	 * Add Staff user Request
+	 **/
 	private static void addStaffUserRequest(StaffUserRequest staffUser) {
 		Session session = null;
 		Transaction tx = null;
@@ -293,6 +297,9 @@ public class StaffUserDao {
 	}
 
 
+	/**
+	 * Verify User Code for Staff Request
+	 **/
 	public static StaffUserRequest verifyStaffUserCode(String contact, long reqId, int status) {
 		Session session = null;
 		Transaction tx = null;
@@ -313,7 +320,6 @@ public class StaffUserDao {
 				{
 					st = null;	
 				}
-					 	
 			}			
 		} catch (Exception e) {
 			System.out.println("Exception = " + e.getMessage());
@@ -326,6 +332,9 @@ public class StaffUserDao {
 	}
 
 	
+	/**
+	 * Staff User Login 
+	 **/
 	public static StaffUser staffUserLogin(StaffUserRequest reqUser,Contact contact, String serverToken, int userType, long ownerId, int status) {
 		Session session = null;
 		Transaction tx = null;
@@ -341,12 +350,12 @@ public class StaffUserDao {
 			Query query = session.createQuery(hql);
 			query.setParameter("contact", contact.getContactNo());
 			query.setParameter("delFlag", 0);
-			
+			//check fro user
 			if(query.list().size()>0){
 				
 				user = (StaffUser) query.list().get(0);
 				if(reqUser != null ){
-
+										// Update staff user and staff_user profile
 					tx = session.beginTransaction();
 					Query query2 = session.createQuery("update StaffUser set ownerId = :id , updatedTime = :update where contactNo = :contact");
 							query2.setParameter("contact", contact.getContactNo());
@@ -370,7 +379,7 @@ public class StaffUserDao {
 				
 			}
 			else{
-					
+				//create new staff user and generate its profile	
 				user = new StaffUser();
 				user.setContactNo(contact.getContactNo());
 				user.setCountrCode(contact.getCountryCode());
@@ -397,7 +406,7 @@ public class StaffUserDao {
 			}
 			
 			reqUser.setStaffUserId(user.getStaffId());
-			StaffUserRequestUpdate(reqUser ,status);
+			StaffUserRequestUpdate(reqUser ,status);//update request status
 			
 		} catch (Exception e) {
 			System.out.println("Exception = " + e.getMessage());
@@ -411,7 +420,9 @@ public class StaffUserDao {
 		return user;
 	}
 
-	
+	/**
+	 * get Staff user by contact number.
+	 **/
 	public static StaffUser getStaffUserByContactNo(String contact) {
 		Session session = null;
 		Transaction tx = null;
@@ -447,7 +458,9 @@ public class StaffUserDao {
 
 	
 	
-	
+	/**
+	 * Get staff user from Auth Token
+	 * */
 	public static StaffUser getStaffUserFromAuthToken(String authToken) {
 		Session session = null;
 		Transaction tx = null;
@@ -476,6 +489,9 @@ public class StaffUserDao {
 	}
 	
 	
+	/**
+	 * Get Staff requests created by user
+	 **/
 	public static List<StaffUserRequest> getStaffRequestsByUser(UserMaster user, long pullTime) {
 		Session session = null;
 		Transaction tx = null;
@@ -508,6 +524,9 @@ public class StaffUserDao {
 	}
 
 
+	/**
+	 * Get staff requests received by user
+	 **/
 	public static List<StaffUserRequest> getStaffRequestsForUser(String contact, long pullTime) {
 		Session session = null;
 		Transaction tx = null;
@@ -542,6 +561,9 @@ public class StaffUserDao {
 	}
 
 	
+	/**
+	 * Get Staff Users for owner user.
+	 **/
 	public static List<StaffProfile> getStaffUsers(UserMaster user, long pullTime) {
 		Session session = null;
 		Transaction tx = null;
@@ -711,6 +733,9 @@ public class StaffUserDao {
 		return i;
 	}
 	
+	/**
+	 * Update push Token for user
+	 **/
 	public static boolean updatePushToken(StaffUser user){
 		
 		boolean flag = false;
@@ -762,6 +787,9 @@ public class StaffUserDao {
 		
 	}
 
+	/**
+	 * Get Staff User from contact Number
+	 **/
 	public static List<StaffUser> getStaffUserByContact(List<String> contact1) {
 		Session session = null;
 		List<StaffUser> user = new ArrayList<StaffUser>();	
@@ -846,7 +874,9 @@ public class StaffUserDao {
 
 	
 	
-	
+	/**
+	 * update staff user profile
+	 **/
 	public static boolean updateStaffProfile(StaffProfile userProfile){
 		Session session = null;
 		Transaction tx = null;
@@ -887,6 +917,10 @@ public class StaffUserDao {
 		}
 		return flag;
 	}
+	
+	/**
+	 * Update staff user Onboarding Flag
+	 * */
 	public static boolean updateUserOnBoardingFlag(Long userId){
 		Session session = null;
 		Transaction tx = null;
@@ -919,7 +953,9 @@ public class StaffUserDao {
 		return flag;
 	}
 
-
+/** 
+ * Get Staff request by request id
+ **/
 	public static StaffUserRequest getStaffRequestsByReqId(long reqId) {
 		Session session = null;
 		StaffUserRequest user = new StaffUserRequest();	
@@ -950,6 +986,9 @@ public class StaffUserDao {
 	}
 
 
+	/**
+	 * Cancel staff Request By Owner
+	 **/
 	public static boolean cancelStaffUserRequest(UserMaster user, long id, int status,StaffUserRequest st) {
 		Session session = null;
 		Transaction tx = null;
@@ -1008,6 +1047,10 @@ public class StaffUserDao {
 		return flag;
 	}
 	
+	/**
+	 * Staff User Request Update By the response from staff. 
+	 * can be Accepted or rejected
+	 * */
 	public static void StaffUserRequestUpdate(StaffUserRequest st, int status) {
 			Session session = null;
 			Transaction tx = null;
@@ -1052,7 +1095,9 @@ public class StaffUserDao {
 				}
 			}
 	
-	
+	/**
+	 * Get List Of all staff user ids for owner.
+	 **/
 	public static List<String> getStaffIdsForUser(Long ownerId) {
 		Session session = null;
 		Transaction tx = null;
@@ -1084,6 +1129,9 @@ public class StaffUserDao {
 		return staffIds;
 	}
 	
+	/**
+	 * Add staff user to Staff User HashMap 
+	 **/
 	public static void setStaffUserInHashMap() {
 		Session session = null;
 		Transaction tx = null;
@@ -1118,6 +1166,11 @@ public class StaffUserDao {
 		
 	}
 	
+	/**
+	 * get Staff User From Auth Token : Modified 
+	 * here first it checks in hashMap if it gets user then Ok 
+	 * Else query to db for getting user from authToken
+	 **/
 	public static StaffUser getStaffUserFromAuthToken1(String authToken,String userId) {
 		Session session = null;
 		Transaction tx = null;

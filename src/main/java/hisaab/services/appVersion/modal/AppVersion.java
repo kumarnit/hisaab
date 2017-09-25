@@ -9,7 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+/**
+ * this is a object mapping class for app_version table in mySql
+ * This is for keeping track of which app version is current and which versions are outdated*/
 @Entity
 @Table(name = "app_version")
 public class AppVersion {

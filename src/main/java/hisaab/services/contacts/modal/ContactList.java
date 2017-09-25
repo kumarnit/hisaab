@@ -8,6 +8,9 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
+/**
+ * This is an Object Mapping class for ContactLists Collection  in Mongodb
+ **/
 @Entity("contact_lists")
 public class ContactList {
 	
